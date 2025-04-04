@@ -32,4 +32,7 @@ public class User {
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserKpi userKpi;
+
 }
