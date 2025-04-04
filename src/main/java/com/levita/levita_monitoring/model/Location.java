@@ -27,4 +27,7 @@ public class Location {
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
 
+    @OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
+    private LocationKpi locationKpi;
+
 }
