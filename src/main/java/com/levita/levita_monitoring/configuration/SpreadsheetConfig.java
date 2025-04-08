@@ -1,68 +1,70 @@
+// TODO: 08 04 2025 - Переделать под один файл credentials (сделать доступ у разных таблиц к 1 гугл проекту)
+
 package com.levita.levita_monitoring.configuration;
 
-import com.levita.levita_monitoring.integration.SheetsRanges;
+import com.levita.levita_monitoring.integration.enums.SheetsRanges;
 
 import java.util.List;
-import java.util.Objects;
-
 
 public class SpreadsheetConfig {
     private String spreadsheetId; // ID таблицы
-    private String credentialsFile; // Путь до файла credentials
     private List<SheetsRanges> ranges; // Список диапазонов для этой таблицы
 
-    public SpreadsheetConfig(String spreadsheetId, String credentialsFile, List<SheetsRanges> ranges) {
+    public SpreadsheetConfig(String spreadsheetId, List<SheetsRanges> ranges) {
         this.spreadsheetId = spreadsheetId;
-        this.credentialsFile = credentialsFile;
         this.ranges = ranges;
     }
 
     public SpreadsheetConfig() {
     }
 
+
     public String getSpreadsheetId() {
-        return spreadsheetId;
+        return this.spreadsheetId;
+    }
+
+    public List<SheetsRanges> getRanges() {
+        return this.ranges;
     }
 
     public void setSpreadsheetId(String spreadsheetId) {
         this.spreadsheetId = spreadsheetId;
     }
 
-    public String getCredentialsFile() {
-        return credentialsFile;
-    }
-
-    public void setCredentialsFile(String credentialsFile) {
-        this.credentialsFile = credentialsFile;
-    }
-
-    public List<SheetsRanges> getRanges() {
-        return ranges;
-    }
-
     public void setRanges(List<SheetsRanges> ranges) {
         this.ranges = ranges;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SpreadsheetConfig that = (SpreadsheetConfig) o;
-        return Objects.equals(spreadsheetId, that.spreadsheetId) && Objects.equals(credentialsFile, that.credentialsFile) && Objects.equals(ranges, that.ranges);
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof SpreadsheetConfig)) return false;
+        final SpreadsheetConfig other = (SpreadsheetConfig) o;
+        if (!other.canEqual((Object) this)) return false;
+        final Object this$spreadsheetId = this.getSpreadsheetId();
+        final Object other$spreadsheetId = other.getSpreadsheetId();
+        if (this$spreadsheetId == null ? other$spreadsheetId != null : !this$spreadsheetId.equals(other$spreadsheetId))
+            return false;
+        final Object this$ranges = this.getRanges();
+        final Object other$ranges = other.getRanges();
+        if (this$ranges == null ? other$ranges != null : !this$ranges.equals(other$ranges)) return false;
+        return true;
     }
 
-    @Override
+    protected boolean canEqual(final Object other) {
+        return other instanceof SpreadsheetConfig;
+    }
+
     public int hashCode() {
-        return Objects.hash(spreadsheetId, credentialsFile, ranges);
+        final int PRIME = 59;
+        int result = 1;
+        final Object $spreadsheetId = this.getSpreadsheetId();
+        result = result * PRIME + ($spreadsheetId == null ? 43 : $spreadsheetId.hashCode());
+        final Object $ranges = this.getRanges();
+        result = result * PRIME + ($ranges == null ? 43 : $ranges.hashCode());
+        return result;
     }
 
-    @Override
     public String toString() {
-        return "SpreadsheetConfig{" +
-                "spreadsheetId='" + spreadsheetId + '\'' +
-                ", credentialsFile='" + credentialsFile + '\'' +
-                ", ranges=" + ranges +
-                '}';
+        return "SpreadsheetConfig(spreadsheetId=" + this.getSpreadsheetId() + ", ranges=" + this.getRanges() + ")";
     }
 }

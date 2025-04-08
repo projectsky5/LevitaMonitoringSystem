@@ -1,6 +1,6 @@
 // TODO: Логирование
 // TODO: Маппинг и отправку в БД через сервисный слой
-
+// TODO: 08 04 2025 - Переделать под один файл credentials (сделать доступ у разных таблиц к 1 гугл проекту)
 package com.levita.levita_monitoring.integration;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -11,6 +11,8 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
+import com.levita.levita_monitoring.integration.enums.SheetsRanges;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,8 +40,18 @@ public class SheetsParser {
         this.spreadsheetsConfig = spreadsheetsConfig;
     }
 
+    @PostConstruct
+    public void init(){
+        this.sheetsService = getSheetsService();
+    }
+
     @Value("${application.name}")
     private static String applicationName;
+
+    @Value("${google.sheets.credentials.file.path}")
+    private String credentials;
+
+    private Sheets sheetsService;
 
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -49,7 +61,6 @@ public class SheetsParser {
         List<Future<?>> futures = new ArrayList<>();
 
         for(SpreadsheetConfig config : spreadsheetsConfig) {
-            final Sheets sheetsService = getSheetsService(config.getCredentialsFile());
             final String spreadsheetId = config.getSpreadsheetId();
             final List<SheetsRanges> ranges = config.getRanges();
 
@@ -95,18 +106,18 @@ public class SheetsParser {
     }
 
 
-    public Sheets getSheetsService(String credentialFilePath){
+    public Sheets getSheetsService(){
         try{
             HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
-            GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(credentialFilePath))
+            GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(credentials))
                     .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS_READONLY));
 
             return new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
                     .setApplicationName(applicationName)
                     .build();
         } catch (GeneralSecurityException | IOException e) {
-            throw new RuntimeException("Ошибка при создании SheetsService для " + credentialFilePath, e);
+            throw new RuntimeException("Ошибка при создании SheetsService для " + credentials, e);
         }
     }
 }

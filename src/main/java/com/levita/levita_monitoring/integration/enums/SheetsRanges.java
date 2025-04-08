@@ -1,4 +1,4 @@
-package com.levita.levita_monitoring.integration;
+package com.levita.levita_monitoring.integration.enums;
 
 public enum SheetsRanges {
 
