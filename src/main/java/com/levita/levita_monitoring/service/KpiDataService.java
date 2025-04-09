@@ -49,6 +49,9 @@ public class KpiDataService {
                 case "MAIN_SALARY_PART":
                     handleMainSalaryPart(id, value);
                     break;
+                case "ACTUAL_INCOME":
+                    handleActualIncome(id, value);
+                    break;
                 case "LOCATION_PLAN":
                     handleLocationPlan(id, value);
                     break;
@@ -134,4 +137,29 @@ public class KpiDataService {
             System.err.printf("Неверный формат для LOCATION_PLAN_%d: %s\n", locationId, value);
         }
     }
+
+    private void handleActualIncome(int locationId, String value){
+        try{
+            BigDecimal actualIncome = new BigDecimal(value);
+
+            Optional<Location> optLocation = locationRepository.findById((long) locationId);
+            if(optLocation.isEmpty()){
+                System.out.printf("Локация с id %d не найдена\n", locationId);
+                return;
+            }
+            Location location = optLocation.get();
+            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
+            LocationKpi locationKpi = optKpi.orElseGet( () -> {
+                LocationKpi newKpi = new LocationKpi();
+                newKpi.setLocation(location);
+                return newKpi;
+            });
+            locationKpi.setActualIncome(actualIncome);
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранен actualIncome для локации с id %d: %s\n", locationId, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Неверный формат для ACTUAL_INCOME_%d: %s\n", locationId, value);
+        }
+    }
+
 }

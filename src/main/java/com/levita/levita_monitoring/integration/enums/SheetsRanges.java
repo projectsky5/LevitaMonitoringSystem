@@ -34,6 +34,17 @@ public enum SheetsRanges {
 //    FOURTH_VALUE_TEST2("'Лист2'!C5:C5"),
 //    FIFTH_VALUE_TEST2("'Лист2'!D7:D7");
 
+    // Diploma-test2
+    ACTUAL_INCOME_1("'Лист2'!G2:G2"),
+    ACTUAL_INCOME_2("'Лист2'!G3:G3"),
+    ACTUAL_INCOME_3("'Лист2'!G4:G4"),
+    ACTUAL_INCOME_4("'Лист2'!G5:G5"),
+    ACTUAL_INCOME_5("'Лист2'!G6:G6"),
+    ACTUAL_INCOME_6("'Лист2'!G7:G7"),
+    ACTUAL_INCOME_7("'Лист2'!G8:G8"),
+    ACTUAL_INCOME_8("'Лист2'!G9:G9"),
+    ACTUAL_INCOME_9("'Лист2'!G10:G10"),
+
 //    Diploma-test
     LOCATION_PLAN_1("'Лист1'!F2:F2"),
     LOCATION_PLAN_2("'Лист1'!F3:F3"),

@@ -57,6 +57,20 @@ public class TableRangesConfig {
                                 SheetsRanges.LOCATION_PLAN_8,
                                 SheetsRanges.LOCATION_PLAN_9
                         )
+                ),
+                new SpreadsheetConfig(
+                        SheetsId.SECOND_TABLE.getPropertyKey(),
+                        Arrays.asList(
+                                SheetsRanges.ACTUAL_INCOME_1,
+                                SheetsRanges.ACTUAL_INCOME_2,
+                                SheetsRanges.ACTUAL_INCOME_3,
+                                SheetsRanges.ACTUAL_INCOME_4,
+                                SheetsRanges.ACTUAL_INCOME_5,
+                                SheetsRanges.ACTUAL_INCOME_6,
+                                SheetsRanges.ACTUAL_INCOME_7,
+                                SheetsRanges.ACTUAL_INCOME_8,
+                                SheetsRanges.ACTUAL_INCOME_9
+                        )
                 )
         );
     }
