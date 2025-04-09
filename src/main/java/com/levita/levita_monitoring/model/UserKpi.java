@@ -20,17 +20,12 @@ public class UserKpi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal plannedIncome;
-
-    private BigDecimal currentIncome;
-
-    private BigDecimal dayBonuses;
-
-    private BigDecimal mainSalaryPart;
-
-    private BigDecimal personalRevenue;
-
     private Double conversionRate;
+    private BigDecimal currentIncome;
+    private BigDecimal plannedIncome;
+    private BigDecimal mainSalaryPart;
+    private BigDecimal personalRevenue;
+    private BigDecimal dayBonuses;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")

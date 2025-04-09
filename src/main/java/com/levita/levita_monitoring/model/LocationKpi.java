@@ -1,3 +1,4 @@
+//TODO: Подумать о введении даты
 package com.levita.levita_monitoring.model;
 
 import jakarta.persistence.*;
@@ -20,27 +21,13 @@ public class LocationKpi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //TODO: Подумать о введении даты
-
-    private BigDecimal locationPlan;
-
-    private Double locationPlanPercent;
-
-    private BigDecimal locationRemainingToPlan;
-
-    private BigDecimal dailyFigure;
-
-    private BigDecimal forecast;
-
-    private BigDecimal actualIncome;
-
-    private Double planCompletionPercent;
-
-    private Double planCompletionPercentDelta;
-
-    private BigDecimal maxDailyRevenue;
-
-    private BigDecimal avgRevenuePerDay;
+    private BigDecimal dailyFigure; //Цифра дня
+    private BigDecimal locationRemainingToPlan; // Осталось до плана
+    private BigDecimal locationPlan; // План локации
+    private BigDecimal maxDailyRevenue; // Макс дневная выручка
+    private Double planCompletionPercent; // выполнение плана %
+    private BigDecimal avgRevenuePerDay; // Средняя выручка
+    private BigDecimal actualIncome; // Фактический доход
 
     @OneToOne
     @JoinColumn(name = "location_id")

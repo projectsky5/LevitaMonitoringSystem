@@ -1,6 +1,5 @@
 // TODO: Логирование
 // TODO: Маппинг и отправку в БД через сервисный слой
-// TODO: 08 04 2025 - Переделать под один файл credentials (сделать доступ у разных таблиц к 1 гугл проекту)
 package com.levita.levita_monitoring.integration;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
