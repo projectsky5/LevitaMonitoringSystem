@@ -59,7 +59,7 @@ public class SheetsParser {
 
     public void getDataFromSheets(){
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        ExecutorService executor = Executors.newFixedThreadPool(8);
         List<Future<?>> futures = new ArrayList<>();
 
         for(SpreadsheetConfig config : spreadsheetsConfig) {

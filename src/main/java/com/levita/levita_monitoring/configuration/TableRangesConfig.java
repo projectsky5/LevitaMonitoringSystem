@@ -101,7 +101,22 @@ public class TableRangesConfig {
                                 SheetsRanges.PLAN_COMPLETION_PERCENT_8,
                                 SheetsRanges.PLAN_COMPLETION_PERCENT_9
                         )
+                ),
+                new SpreadsheetConfig(
+                        SheetsId.SECOND_TABLE.getPropertyKey(),
+                        Arrays.asList(
+                                SheetsRanges.REMAINING_TO_PLAN_1,
+                                SheetsRanges.REMAINING_TO_PLAN_2,
+                                SheetsRanges.REMAINING_TO_PLAN_3,
+                                SheetsRanges.REMAINING_TO_PLAN_4,
+                                SheetsRanges.REMAINING_TO_PLAN_5,
+                                SheetsRanges.REMAINING_TO_PLAN_6,
+                                SheetsRanges.REMAINING_TO_PLAN_7,
+                                SheetsRanges.REMAINING_TO_PLAN_8,
+                                SheetsRanges.REMAINING_TO_PLAN_9
+                        )
                 )
+
         );
     }
 }

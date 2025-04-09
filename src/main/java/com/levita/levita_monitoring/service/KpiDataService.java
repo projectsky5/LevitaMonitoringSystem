@@ -52,6 +52,9 @@ public class KpiDataService {
                 case "ACTUAL_INCOME":
                     handleActualIncome(id, value);
                     break;
+                case "REMAINING_TO_PLAN":
+                    handleRemainingToPlan(id,value);
+                    break;
                 case "LOCATION_PLAN":
                     handleLocationPlan(id, value);
                     break;
@@ -60,9 +63,6 @@ public class KpiDataService {
                     break;
                 case "PLAN_COMPLETION_PERCENT":
                     handlePlanCompletionPercent(id,value);
-                    break;
-                case "REMAINING_TO_PLAN":
-                    handleRemainingToPlan(id,value);
                     break;
                 default:
                     System.out.printf("Нет обработки для категории: %s\n", category);
