@@ -55,6 +55,9 @@ public class KpiDataService {
                 case "LOCATION_PLAN":
                     handleLocationPlan(id, value);
                     break;
+                case "MAX_DAILY_REVENUE":
+                    handleMaxDailyRevenue(id,value);
+                    break;
                 default:
                     System.out.printf("Нет обработки для категории: %s\n", category);
                     break;
@@ -159,6 +162,30 @@ public class KpiDataService {
             System.out.printf("Сохранен actualIncome для локации с id %d: %s\n", locationId, value);
         } catch (NumberFormatException e){
             System.err.printf("Неверный формат для ACTUAL_INCOME_%d: %s\n", locationId, value);
+        }
+    }
+
+    private void handleMaxDailyRevenue(int locationId, String value){
+        try{
+            BigDecimal maxDailyRevenue = new BigDecimal(value);
+
+            Optional<Location> optLocation = locationRepository.findById((long) locationId);
+            if(optLocation.isEmpty()){
+                System.out.printf("Локация с id %d не найдена\n", locationId);
+                return;
+            }
+            Location location = optLocation.get();
+            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
+            LocationKpi locationKpi = optKpi.orElseGet( () -> {
+                LocationKpi newKpi = new LocationKpi();
+                newKpi.setLocation(location);
+                return newKpi;
+            });
+            locationKpi.setMaxDailyRevenue(maxDailyRevenue);
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранен maxDailyRevenue для локации с id %d: %s\n", locationId, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Неверный формат для MAX_DAILY_REVENUE_%d: %s\n", locationId, value);
         }
     }
 

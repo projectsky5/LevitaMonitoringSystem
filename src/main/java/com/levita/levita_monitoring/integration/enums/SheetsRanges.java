@@ -54,7 +54,17 @@ public enum SheetsRanges {
     LOCATION_PLAN_6("'Лист1'!F7:F7"),
     LOCATION_PLAN_7("'Лист1'!F8:F8"),
     LOCATION_PLAN_8("'Лист1'!F9:F9"),
-    LOCATION_PLAN_9("'Лист1'!F10:F10");
+    LOCATION_PLAN_9("'Лист1'!F10:F10"),
+
+    MAX_DAILY_REVENUE_1("'Лист1'!F2:F2"),
+    MAX_DAILY_REVENUE_2("'Лист1'!F3:F3"),
+    MAX_DAILY_REVENUE_3("'Лист1'!F4:F4"),
+    MAX_DAILY_REVENUE_4("'Лист1'!F5:F5"),
+    MAX_DAILY_REVENUE_5("'Лист1'!F6:F6"),
+    MAX_DAILY_REVENUE_6("'Лист1'!F7:F7"),
+    MAX_DAILY_REVENUE_7("'Лист1'!F8:F8"),
+    MAX_DAILY_REVENUE_8("'Лист1'!F9:F9"),
+    MAX_DAILY_REVENUE_9("'Лист1'!F10:F10");
 
 
 

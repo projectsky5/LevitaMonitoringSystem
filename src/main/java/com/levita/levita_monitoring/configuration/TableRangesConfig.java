@@ -1,5 +1,7 @@
+//TODO: Подумать как избавиться от хардкода диапазонов
 package com.levita.levita_monitoring.configuration;
 
+import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
 import com.levita.levita_monitoring.integration.enums.SheetsId;
 import com.levita.levita_monitoring.integration.enums.SheetsRanges;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,6 +72,20 @@ public class TableRangesConfig {
                                 SheetsRanges.ACTUAL_INCOME_7,
                                 SheetsRanges.ACTUAL_INCOME_8,
                                 SheetsRanges.ACTUAL_INCOME_9
+                        )
+                )
+                new SpreadsheetConfig(
+                        SheetsId.SECOND_TABLE.getPropertyKey(),
+                        Arrays.asList(
+                                SheetsRanges.MAX_DAILY_REVENUE_1,
+                                SheetsRanges.MAX_DAILY_REVENUE_2,
+                                SheetsRanges.MAX_DAILY_REVENUE_3,
+                                SheetsRanges.MAX_DAILY_REVENUE_4,
+                                SheetsRanges.MAX_DAILY_REVENUE_5,
+                                SheetsRanges.MAX_DAILY_REVENUE_6,
+                                SheetsRanges.MAX_DAILY_REVENUE_7,
+                                SheetsRanges.MAX_DAILY_REVENUE_8,
+                                SheetsRanges.MAX_DAILY_REVENUE_9
                         )
                 )
         );
