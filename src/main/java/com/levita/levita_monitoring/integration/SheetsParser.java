@@ -8,6 +8,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
 import com.levita.levita_monitoring.integration.enums.SheetsRanges;
@@ -67,30 +68,37 @@ public class SheetsParser {
             final List<SheetsRanges> ranges = config.getRanges();
 
             futures.add(executor.submit( () -> {
-                for (SheetsRanges sheetRange : ranges) {
-                    try{
-                        ValueRange response = sheetsService.spreadsheets().values()
-                                .get(spreadsheetId, sheetRange.getPropertyKey())
-                                .execute();
+                try{
+                    List<String> rangeStrings = ranges.stream()
+                            .map(SheetsRanges::getPropertyKey)
+                            .toList();
 
-                        List<List<Object>> values = response.getValues();
+                    BatchGetValuesResponse response = sheetsService.spreadsheets().values()
+                            .batchGet(spreadsheetId)
+                            .setRanges(rangeStrings)
+                            .execute();
+
+                    List<ValueRange> valueRanges = response.getValueRanges();
+
+                    for (int i = 0; i < valueRanges.size(); i++) {
+                        ValueRange valueRange = valueRanges.get(i);
+
+                        List<List<Object>> values = valueRange.getValues();
                         if(values == null || values.isEmpty()) {
-                            System.out.println("Нет данных для таблицы " + spreadsheetId
-                            + " и диапазона: " + sheetRange.getPropertyKey());
+                            continue;
                         }
-                        else{
-                            List<Object> row = values.get(0);
-                            if(!row.isEmpty()) {
-                                String value = row.get(0).toString();
-                                kpiDataService.saveDataFromSheets(sheetRange, value);
-//                                System.out.println("Таблица: " + spreadsheetId
-//                                + ", диапазон: " + sheetRange.getPropertyKey()
-//                                + ", значение: " + value);
-                            }
+
+                        List<Object> row = values.get(0);
+                        if(row.isEmpty()){
+                            continue;
                         }
-                    } catch (IOException e){
-                        throw new RuntimeException("Ошибка при запросе диапазона " + sheetRange.getPropertyKey(), e);
+
+                        String value = row.get(0).toString();
+                        SheetsRanges originalRange = ranges.get(i);
+                        kpiDataService.saveDataFromSheets(originalRange, value);
                     }
+                } catch (IOException e) {
+                    throw new RuntimeException("Ошибка при пакетном запросе к таблице " + spreadsheetId, e);
                 }
             } ));
         }
