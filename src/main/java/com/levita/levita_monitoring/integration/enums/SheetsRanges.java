@@ -1,3 +1,4 @@
+//TODO: Убрать хардкод значений
 package com.levita.levita_monitoring.integration.enums;
 
 public enum SheetsRanges {
@@ -64,7 +65,17 @@ public enum SheetsRanges {
     MAX_DAILY_REVENUE_6("'Лист1'!F7:F7"),
     MAX_DAILY_REVENUE_7("'Лист1'!F8:F8"),
     MAX_DAILY_REVENUE_8("'Лист1'!F9:F9"),
-    MAX_DAILY_REVENUE_9("'Лист1'!F10:F10");
+    MAX_DAILY_REVENUE_9("'Лист1'!F10:F10"),
+
+    PLAN_COMPLETION_PERCENT_1("'Лист1'!F2:F2"),
+    PLAN_COMPLETION_PERCENT_2("'Лист1'!F3:F3"),
+    PLAN_COMPLETION_PERCENT_3("'Лист1'!F4:F4"),
+    PLAN_COMPLETION_PERCENT_4("'Лист1'!F5:F5"),
+    PLAN_COMPLETION_PERCENT_5("'Лист1'!F6:F6"),
+    PLAN_COMPLETION_PERCENT_6("'Лист1'!F7:F7"),
+    PLAN_COMPLETION_PERCENT_7("'Лист1'!F8:F8"),
+    PLAN_COMPLETION_PERCENT_8("'Лист1'!F9:F9"),
+    PLAN_COMPLETION_PERCENT_9("'Лист1'!F10:F10");
 
 
 

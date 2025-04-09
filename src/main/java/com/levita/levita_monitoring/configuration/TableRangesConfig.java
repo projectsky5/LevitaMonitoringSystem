@@ -73,7 +73,7 @@ public class TableRangesConfig {
                                 SheetsRanges.ACTUAL_INCOME_8,
                                 SheetsRanges.ACTUAL_INCOME_9
                         )
-                )
+                ),
                 new SpreadsheetConfig(
                         SheetsId.SECOND_TABLE.getPropertyKey(),
                         Arrays.asList(
@@ -86,6 +86,20 @@ public class TableRangesConfig {
                                 SheetsRanges.MAX_DAILY_REVENUE_7,
                                 SheetsRanges.MAX_DAILY_REVENUE_8,
                                 SheetsRanges.MAX_DAILY_REVENUE_9
+                        )
+                ),
+                new SpreadsheetConfig(
+                        SheetsId.SECOND_TABLE.getPropertyKey(),
+                        Arrays.asList(
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_1,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_2,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_3,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_4,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_5,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_6,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_7,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_8,
+                                SheetsRanges.PLAN_COMPLETION_PERCENT_9
                         )
                 )
         );

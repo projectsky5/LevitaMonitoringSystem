@@ -58,6 +58,9 @@ public class KpiDataService {
                 case "MAX_DAILY_REVENUE":
                     handleMaxDailyRevenue(id,value);
                     break;
+                case "PLAN_COMPLETION_PERCENT":
+                    handlePlanCompletionPercent(id,value);
+                    break;
                 default:
                     System.out.printf("Нет обработки для категории: %s\n", category);
                     break;
@@ -87,33 +90,6 @@ public class KpiDataService {
             System.out.printf("Сохранен mainSalaryPart для пользователя с id %d: %s\n", userId, value);
         } catch (NumberFormatException e){
             System.err.printf("Неверный формат для MAIN_SALARY_PART_%d: %s\n", userId, value);
-        }
-    }
-
-    private void handleConversionRate(int userId, String value){
-        try{
-            String sanitizedValue = value.replace("%", "").trim();
-            Double conversion = Double.valueOf(sanitizedValue);
-
-            Optional<User> optUser = userRepository.findById((long) userId);
-            if(optUser.isEmpty()){
-                System.out.printf("Пользователь с индексом %s не найден\n", userId);
-                return;
-            }
-            User user = optUser.get();
-
-            Optional<UserKpi> optKpi = userKpiRepository.findByUser(user);
-            UserKpi userKpi = optKpi.orElseGet( () -> {
-                UserKpi newKpi = new UserKpi();
-                newKpi.setUser(user);
-                return newKpi;
-            });
-            userKpi.setConversionRate(conversion);
-            userKpiRepository.save(userKpi);
-
-            System.out.printf("Сохранена conversionRate для пользователя с индексом %d: %.1f\n", userId, conversion);
-        } catch (NumberFormatException e){
-            System.err.printf("Неверный формат для CONVERSATION_RATE_%d: %s\n", userId, value);
         }
     }
 
@@ -186,6 +162,58 @@ public class KpiDataService {
             System.out.printf("Сохранен maxDailyRevenue для локации с id %d: %s\n", locationId, value);
         } catch (NumberFormatException e){
             System.err.printf("Неверный формат для MAX_DAILY_REVENUE_%d: %s\n", locationId, value);
+        }
+    }
+
+    private void handleConversionRate(int userId, String value){
+        try{
+            String sanitizedValue = value.replace("%", "").trim();
+            Double conversion = Double.valueOf(sanitizedValue);
+
+            Optional<User> optUser = userRepository.findById((long) userId);
+            if(optUser.isEmpty()){
+                System.out.printf("Пользователь с индексом %s не найден\n", userId);
+                return;
+            }
+            User user = optUser.get();
+
+            Optional<UserKpi> optKpi = userKpiRepository.findByUser(user);
+            UserKpi userKpi = optKpi.orElseGet( () -> {
+                UserKpi newKpi = new UserKpi();
+                newKpi.setUser(user);
+                return newKpi;
+            });
+            userKpi.setConversionRate(conversion);
+            userKpiRepository.save(userKpi);
+
+            System.out.printf("Сохранена conversionRate для пользователя с индексом %d: %.1f\n", userId, conversion);
+        } catch (NumberFormatException e){
+            System.err.printf("Неверный формат для CONVERSATION_RATE_%d: %s\n", userId, value);
+        }
+    }
+
+    private void handlePlanCompletionPercent(int locationId, String value){
+        try{
+            String sanitizedValue = value.replace("%", "").trim();
+            Double planCompletionPercent = Double.valueOf(sanitizedValue);
+
+            Optional<Location> optLocation = locationRepository.findById((long) locationId);
+            if(optLocation.isEmpty()){
+                System.out.printf("Локация с id %d не найдена\n", locationId);
+                return;
+            }
+            Location location = optLocation.get();
+            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
+            LocationKpi locationKpi = optKpi.orElseGet( () -> {
+                LocationKpi newKpi = new LocationKpi();
+                newKpi.setLocation(location);
+                return newKpi;
+            });
+            locationKpi.setPlanCompletionPercent(planCompletionPercent);
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранен planCompletionPercent для локации с id %d: %s\n", locationId, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Неверный формат для PLAN_COMPLETION_PERCENT_%d: %s\n", locationId, value);
         }
     }
 
