@@ -1,8 +1,12 @@
 package com.levita.levita_monitoring.service;
 
 import com.levita.levita_monitoring.integration.enums.SheetsRanges;
+import com.levita.levita_monitoring.model.Location;
+import com.levita.levita_monitoring.model.LocationKpi;
 import com.levita.levita_monitoring.model.User;
 import com.levita.levita_monitoring.model.UserKpi;
+import com.levita.levita_monitoring.repository.LocationKpiRepository;
+import com.levita.levita_monitoring.repository.LocationRepository;
 import com.levita.levita_monitoring.repository.UserKpiRepository;
 import com.levita.levita_monitoring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +20,18 @@ public class KpiDataService {
 
     private final UserKpiRepository userKpiRepository;
     private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
+    private final LocationKpiRepository locationKpiRepository;
 
     @Autowired
-    public KpiDataService(UserKpiRepository userKpiRepository, UserRepository userRepository) {
+    public KpiDataService(UserKpiRepository userKpiRepository,
+                          UserRepository userRepository,
+                          LocationRepository locationRepository,
+                          LocationKpiRepository locationKpiRepository) {
         this.userKpiRepository = userKpiRepository;
         this.userRepository = userRepository;
+        this.locationRepository = locationRepository;
+        this.locationKpiRepository = locationKpiRepository;
     }
 
     public void saveDataFromSheets(SheetsRanges sheetRange, String value){
@@ -37,6 +48,9 @@ public class KpiDataService {
                     break;
                 case "MAIN_SALARY_PART":
                     handleMainSalaryPart(id, value);
+                    break;
+                case "LOCATION_PLAN":
+                    handleLocationPlan(id, value);
                     break;
                 default:
                     System.out.printf("Нет обработки для категории: %s\n", category);
@@ -94,6 +108,30 @@ public class KpiDataService {
             System.out.printf("Сохранена conversionRate для пользователя с индексом %d: %.1f\n", userId, conversion);
         } catch (NumberFormatException e){
             System.err.printf("Неверный формат для CONVERSATION_RATE_%d: %s\n", userId, value);
+        }
+    }
+
+    private void handleLocationPlan(int locationId, String value) {
+        try{
+            BigDecimal locationPlan = new BigDecimal(value);
+
+            Optional<Location> optLocation = locationRepository.findById((long) locationId);
+            if(optLocation.isEmpty()){
+                System.out.printf("Локация с id %d не найдена\n", locationId);
+                return;
+            }
+            Location location = optLocation.get();
+            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
+            LocationKpi locationKpi = optKpi.orElseGet( () -> {
+                LocationKpi newKpi = new LocationKpi();
+                newKpi.setLocation(location);
+                return newKpi;
+            });
+            locationKpi.setLocationPlan(locationPlan);
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранен locationPlan для локации с id %d: %s\n", locationId, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Неверный формат для LOCATION_PLAN_%d: %s\n", locationId, value);
         }
     }
 }

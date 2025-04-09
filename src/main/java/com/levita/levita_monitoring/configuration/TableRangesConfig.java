@@ -18,24 +18,44 @@ public class TableRangesConfig {
         return Arrays.asList(
                 new SpreadsheetConfig(
                         SheetsId.FIRST_TABLE.getPropertyKey(),
-                            Arrays.asList(SheetsRanges.CONVERSION_RATE_1,
-                                            SheetsRanges.CONVERSION_RATE_2
-//                        Arrays.asList(SheetsRanges.FIRST_VALUE_TEST,
-//                                SheetsRanges.SECOND_VALUE_TEST,
-//                                SheetsRanges.THIRD_VALUE_TEST,
-//                                SheetsRanges.FOURTH_VALUE_TEST,
-//                                SheetsRanges.FIFTH_VALUE_TEST
+                        Arrays.asList(
+                                SheetsRanges.CONVERSION_RATE_1,
+                                SheetsRanges.CONVERSION_RATE_2,
+                                SheetsRanges.CONVERSION_RATE_3,
+                                SheetsRanges.CONVERSION_RATE_4,
+                                SheetsRanges.CONVERSION_RATE_5,
+                                SheetsRanges.CONVERSION_RATE_6,
+                                SheetsRanges.CONVERSION_RATE_7,
+                                SheetsRanges.CONVERSION_RATE_8,
+                                SheetsRanges.CONVERSION_RATE_9
                         )
                 ),
                 new SpreadsheetConfig(
                         SheetsId.SECOND_TABLE.getPropertyKey(),
-                                    Arrays.asList(SheetsRanges.MAIN_SALARY_PART_1,
-                                                    SheetsRanges.MAIN_SALARY_PART_2
-//                        Arrays.asList(SheetsRanges.FIRST_VALUE_TEST2,
-//                                SheetsRanges.SECOND_VALUE_TEST2,
-//                                SheetsRanges.THIRD_VALUE_TEST2,
-//                                SheetsRanges.FOURTH_VALUE_TEST2,
-//                                SheetsRanges.FIFTH_VALUE_TEST2
+                        Arrays.asList(
+                                SheetsRanges.MAIN_SALARY_PART_1,
+                                SheetsRanges.MAIN_SALARY_PART_2,
+                                SheetsRanges.MAIN_SALARY_PART_3,
+                                SheetsRanges.MAIN_SALARY_PART_4,
+                                SheetsRanges.MAIN_SALARY_PART_5,
+                                SheetsRanges.MAIN_SALARY_PART_6,
+                                SheetsRanges.MAIN_SALARY_PART_7,
+                                SheetsRanges.MAIN_SALARY_PART_8,
+                                SheetsRanges.MAIN_SALARY_PART_9
+                        )
+                ),
+                new SpreadsheetConfig(
+                        SheetsId.FIRST_TABLE.getPropertyKey(),
+                        Arrays.asList(
+                                SheetsRanges.LOCATION_PLAN_1,
+                                SheetsRanges.LOCATION_PLAN_2,
+                                SheetsRanges.LOCATION_PLAN_3,
+                                SheetsRanges.LOCATION_PLAN_4,
+                                SheetsRanges.LOCATION_PLAN_5,
+                                SheetsRanges.LOCATION_PLAN_6,
+                                SheetsRanges.LOCATION_PLAN_7,
+                                SheetsRanges.LOCATION_PLAN_8,
+                                SheetsRanges.LOCATION_PLAN_9
                         )
                 )
         );
