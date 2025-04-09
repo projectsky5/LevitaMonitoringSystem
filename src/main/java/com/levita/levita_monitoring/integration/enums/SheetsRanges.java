@@ -36,6 +36,7 @@ public enum SheetsRanges {
 //    FIFTH_VALUE_TEST2("'Лист2'!D7:D7");
 
     // Diploma-test2
+    // Для локации
     ACTUAL_INCOME_1("'Лист2'!G2:G2"),
     ACTUAL_INCOME_2("'Лист2'!G3:G3"),
     ACTUAL_INCOME_3("'Лист2'!G4:G4"),
@@ -75,7 +76,19 @@ public enum SheetsRanges {
     PLAN_COMPLETION_PERCENT_6("'Лист1'!F7:F7"),
     PLAN_COMPLETION_PERCENT_7("'Лист1'!F8:F8"),
     PLAN_COMPLETION_PERCENT_8("'Лист1'!F9:F9"),
-    PLAN_COMPLETION_PERCENT_9("'Лист1'!F10:F10");
+    PLAN_COMPLETION_PERCENT_9("'Лист1'!F10:F10"),
+
+    REMAINING_TO_PLAN_1("'Лист1'!F2:F2"),
+    REMAINING_TO_PLAN_2("'Лист1'!F3:F3"),
+    REMAINING_TO_PLAN_3("'Лист1'!F4:F4"),
+    REMAINING_TO_PLAN_4("'Лист1'!F5:F5"),
+    REMAINING_TO_PLAN_5("'Лист1'!F6:F6"),
+    REMAINING_TO_PLAN_6("'Лист1'!F7:F7"),
+    REMAINING_TO_PLAN_7("'Лист1'!F8:F8"),
+    REMAINING_TO_PLAN_8("'Лист1'!F9:F9"),
+    REMAINING_TO_PLAN_9("'Лист1'!F10:F10");
+
+
 
 
 

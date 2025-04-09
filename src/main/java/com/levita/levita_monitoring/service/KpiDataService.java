@@ -61,6 +61,9 @@ public class KpiDataService {
                 case "PLAN_COMPLETION_PERCENT":
                     handlePlanCompletionPercent(id,value);
                     break;
+                case "REMAINING_TO_PLAN":
+                    handleRemainingToPlan(id,value);
+                    break;
                 default:
                     System.out.printf("Нет обработки для категории: %s\n", category);
                     break;
@@ -69,27 +72,20 @@ public class KpiDataService {
         }
     }
 
-    private void handleMainSalaryPart(int userId, String value) {
+    private void handleRemainingToPlan(int locationId, String value){
         try{
-            BigDecimal mainSalaryPart = new BigDecimal(value);
+            BigDecimal remainingToPlan = new BigDecimal(value);
 
-            Optional<User> optUser = userRepository.findById((long) userId);
-            if (optUser.isEmpty()) {
-                System.out.printf("Пользователь с id %d не найден\n", userId);
+            Optional<LocationKpi> optKpi = getLocationKpi(locationId);
+            if(optKpi.isEmpty()){
                 return;
             }
-            User user = optUser.get();
-            Optional<UserKpi> optKpi = userKpiRepository.findByUser(user);
-            UserKpi userKpi = optKpi.orElseGet( () -> {
-                UserKpi newKpi = new UserKpi();
-                newKpi.setUser(user);
-                return newKpi;
-            });
-            userKpi.setMainSalaryPart(mainSalaryPart);
-            userKpiRepository.save(userKpi);
-            System.out.printf("Сохранен mainSalaryPart для пользователя с id %d: %s\n", userId, value);
+            LocationKpi locationKpi = optKpi.get();
+            locationKpi.setLocationRemainingToPlan(remainingToPlan);
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранен remainingToPlan для локации с id %d: %s\n", locationId, value);
         } catch (NumberFormatException e){
-            System.err.printf("Неверный формат для MAIN_SALARY_PART_%d: %s\n", userId, value);
+            System.err.printf("Неверный формат для REMAINING_TO_PLAN_%d: %s\n", locationId, value);
         }
     }
 
@@ -97,18 +93,11 @@ public class KpiDataService {
         try{
             BigDecimal locationPlan = new BigDecimal(value);
 
-            Optional<Location> optLocation = locationRepository.findById((long) locationId);
-            if(optLocation.isEmpty()){
-                System.out.printf("Локация с id %d не найдена\n", locationId);
+            Optional<LocationKpi> optKpi = getLocationKpi(locationId);
+            if(optKpi.isEmpty()){
                 return;
             }
-            Location location = optLocation.get();
-            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
-            LocationKpi locationKpi = optKpi.orElseGet( () -> {
-                LocationKpi newKpi = new LocationKpi();
-                newKpi.setLocation(location);
-                return newKpi;
-            });
+            LocationKpi locationKpi = optKpi.get();
             locationKpi.setLocationPlan(locationPlan);
             locationKpiRepository.save(locationKpi);
             System.out.printf("Сохранен locationPlan для локации с id %d: %s\n", locationId, value);
@@ -117,46 +106,15 @@ public class KpiDataService {
         }
     }
 
-    private void handleActualIncome(int locationId, String value){
-        try{
-            BigDecimal actualIncome = new BigDecimal(value);
-
-            Optional<Location> optLocation = locationRepository.findById((long) locationId);
-            if(optLocation.isEmpty()){
-                System.out.printf("Локация с id %d не найдена\n", locationId);
-                return;
-            }
-            Location location = optLocation.get();
-            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
-            LocationKpi locationKpi = optKpi.orElseGet( () -> {
-                LocationKpi newKpi = new LocationKpi();
-                newKpi.setLocation(location);
-                return newKpi;
-            });
-            locationKpi.setActualIncome(actualIncome);
-            locationKpiRepository.save(locationKpi);
-            System.out.printf("Сохранен actualIncome для локации с id %d: %s\n", locationId, value);
-        } catch (NumberFormatException e){
-            System.err.printf("Неверный формат для ACTUAL_INCOME_%d: %s\n", locationId, value);
-        }
-    }
-
     private void handleMaxDailyRevenue(int locationId, String value){
         try{
             BigDecimal maxDailyRevenue = new BigDecimal(value);
 
-            Optional<Location> optLocation = locationRepository.findById((long) locationId);
-            if(optLocation.isEmpty()){
-                System.out.printf("Локация с id %d не найдена\n", locationId);
+            Optional<LocationKpi> optKpi = getLocationKpi(locationId);
+            if(optKpi.isEmpty()){
                 return;
             }
-            Location location = optLocation.get();
-            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
-            LocationKpi locationKpi = optKpi.orElseGet( () -> {
-                LocationKpi newKpi = new LocationKpi();
-                newKpi.setLocation(location);
-                return newKpi;
-            });
+            LocationKpi locationKpi = optKpi.get();
             locationKpi.setMaxDailyRevenue(maxDailyRevenue);
             locationKpiRepository.save(locationKpi);
             System.out.printf("Сохранен maxDailyRevenue для локации с id %d: %s\n", locationId, value);
@@ -165,24 +123,51 @@ public class KpiDataService {
         }
     }
 
+    private void handlePlanCompletionPercent(int locationId, String value){
+        try{
+            String sanitizedValue = value.replace("%", "").trim();
+            Double planCompletionPercent = Double.valueOf(sanitizedValue);
+
+            Optional<LocationKpi> optKpi = getLocationKpi(locationId);
+            if(optKpi.isEmpty()){
+                return;
+            }
+            LocationKpi locationKpi = optKpi.get();
+            locationKpi.setPlanCompletionPercent(planCompletionPercent);
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранен planCompletionPercent для локации с id %d: %s\n", locationId, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Неверный формат для PLAN_COMPLETION_PERCENT_%d: %s\n", locationId, value);
+        }
+    }
+
+    private void handleActualIncome(int locationId, String value){
+        try{
+            BigDecimal actualIncome = new BigDecimal(value);
+
+            Optional<LocationKpi> optKpi = getLocationKpi(locationId);
+            if(optKpi.isEmpty()){
+                return;
+            }
+            LocationKpi locationKpi = optKpi.get();
+            locationKpi.setActualIncome(actualIncome);
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранен actualIncome для локации с id %d: %s\n", locationId, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Неверный формат для ACTUAL_INCOME_%d: %s\n", locationId, value);
+        }
+    }
+
     private void handleConversionRate(int userId, String value){
         try{
             String sanitizedValue = value.replace("%", "").trim();
             Double conversion = Double.valueOf(sanitizedValue);
 
-            Optional<User> optUser = userRepository.findById((long) userId);
-            if(optUser.isEmpty()){
-                System.out.printf("Пользователь с индексом %s не найден\n", userId);
+            Optional<UserKpi> optKpi = getUserKpi(userId);
+            if(optKpi.isEmpty()){
                 return;
             }
-            User user = optUser.get();
-
-            Optional<UserKpi> optKpi = userKpiRepository.findByUser(user);
-            UserKpi userKpi = optKpi.orElseGet( () -> {
-                UserKpi newKpi = new UserKpi();
-                newKpi.setUser(user);
-                return newKpi;
-            });
+            UserKpi userKpi = optKpi.get();
             userKpi.setConversionRate(conversion);
             userKpiRepository.save(userKpi);
 
@@ -192,29 +177,52 @@ public class KpiDataService {
         }
     }
 
-    private void handlePlanCompletionPercent(int locationId, String value){
+    private void handleMainSalaryPart(int userId, String value) {
         try{
-            String sanitizedValue = value.replace("%", "").trim();
-            Double planCompletionPercent = Double.valueOf(sanitizedValue);
+            BigDecimal mainSalaryPart = new BigDecimal(value);
 
-            Optional<Location> optLocation = locationRepository.findById((long) locationId);
-            if(optLocation.isEmpty()){
-                System.out.printf("Локация с id %d не найдена\n", locationId);
+            Optional<UserKpi> optKpi = getUserKpi(userId);
+            if(optKpi.isEmpty()){
                 return;
             }
-            Location location = optLocation.get();
-            Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
-            LocationKpi locationKpi = optKpi.orElseGet( () -> {
-                LocationKpi newKpi = new LocationKpi();
-                newKpi.setLocation(location);
-                return newKpi;
-            });
-            locationKpi.setPlanCompletionPercent(planCompletionPercent);
-            locationKpiRepository.save(locationKpi);
-            System.out.printf("Сохранен planCompletionPercent для локации с id %d: %s\n", locationId, value);
+            UserKpi userKpi = optKpi.get();
+            userKpi.setMainSalaryPart(mainSalaryPart);
+            userKpiRepository.save(userKpi);
+            System.out.printf("Сохранен mainSalaryPart для пользователя с id %d: %s\n", userId, value);
         } catch (NumberFormatException e){
-            System.err.printf("Неверный формат для PLAN_COMPLETION_PERCENT_%d: %s\n", locationId, value);
+            System.err.printf("Неверный формат для MAIN_SALARY_PART_%d: %s\n", userId, value);
         }
     }
 
+    private Optional<LocationKpi> getLocationKpi(int locationId){
+        Optional<Location> optLocation = locationRepository.findById((long) locationId);
+        if(optLocation.isEmpty()){
+            System.out.printf("Локация с id %d не найдена\n", locationId);
+            return Optional.empty();
+        }
+        Location location = optLocation.get();
+        Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
+        LocationKpi locationKpi = optKpi.orElseGet( () -> {
+            LocationKpi newKpi = new LocationKpi();
+            newKpi.setLocation(location);
+            return newKpi;
+        });
+        return Optional.of(locationKpi);
+    }
+
+    private Optional<UserKpi> getUserKpi(int userId){
+        Optional<User> optUser = userRepository.findById((long) userId);
+        if (optUser.isEmpty()) {
+            System.out.printf("Пользователь с id %d не найден\n", userId);
+            return Optional.empty();
+        }
+        User user = optUser.get();
+        Optional<UserKpi> optKpi = userKpiRepository.findByUser(user);
+        UserKpi userKpi = optKpi.orElseGet( () -> {
+            UserKpi newKpi = new UserKpi();
+            newKpi.setUser(user);
+            return newKpi;
+        });
+        return Optional.of(userKpi);
+    }
 }
