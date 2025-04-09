@@ -1,5 +1,3 @@
-// TODO: 08 04 2025 - Переделать под один файл credentials (сделать доступ у разных таблиц к 1 гугл проекту)
-
 package com.levita.levita_monitoring.configuration;
 
 import com.levita.levita_monitoring.integration.enums.SheetsRanges;

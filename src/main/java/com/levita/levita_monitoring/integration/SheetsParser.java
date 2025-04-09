@@ -11,6 +11,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
 import com.levita.levita_monitoring.integration.enums.SheetsRanges;
+import com.levita.levita_monitoring.service.KpiDataService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,10 +34,12 @@ import java.util.concurrent.Future;
 public class SheetsParser {
 
     private final List<SpreadsheetConfig> spreadsheetsConfig;
+    private final KpiDataService kpiDataService;
 
     @Autowired
-    public SheetsParser(List<SpreadsheetConfig> spreadsheetsConfig) {
+    public SheetsParser(List<SpreadsheetConfig> spreadsheetsConfig, KpiDataService kpiDataService) {
         this.spreadsheetsConfig = spreadsheetsConfig;
+        this.kpiDataService = kpiDataService;
     }
 
     @PostConstruct
@@ -79,9 +82,10 @@ public class SheetsParser {
                             List<Object> row = values.get(0);
                             if(!row.isEmpty()) {
                                 String value = row.get(0).toString();
-                                System.out.println("Таблица: " + spreadsheetId
-                                + ", диапазон: " + sheetRange.getPropertyKey()
-                                + ", значение: " + value);
+                                kpiDataService.saveDataFromSheets(sheetRange, value);
+//                                System.out.println("Таблица: " + spreadsheetId
+//                                + ", диапазон: " + sheetRange.getPropertyKey()
+//                                + ", значение: " + value);
                             }
                         }
                     } catch (IOException e){
