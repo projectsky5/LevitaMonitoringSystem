@@ -1,14 +1,14 @@
 package com.levita.levita_monitoring.configuration;
 
-import com.levita.levita_monitoring.integration.enums.SheetsRanges;
+import com.levita.levita_monitoring.integration.model.RangeDescriptor;
 
 import java.util.List;
 
 public class SpreadsheetConfig {
     private String spreadsheetId; // ID таблицы
-    private List<SheetsRanges> ranges; // Список диапазонов для этой таблицы
+    private List<RangeDescriptor> ranges; // Список диапазонов для этой таблицы
 
-    public SpreadsheetConfig(String spreadsheetId, List<SheetsRanges> ranges) {
+    public SpreadsheetConfig(String spreadsheetId, List<RangeDescriptor> ranges) {
         this.spreadsheetId = spreadsheetId;
         this.ranges = ranges;
     }
@@ -21,7 +21,7 @@ public class SpreadsheetConfig {
         return this.spreadsheetId;
     }
 
-    public List<SheetsRanges> getRanges() {
+    public List<RangeDescriptor> getRanges() {
         return this.ranges;
     }
 
@@ -29,7 +29,7 @@ public class SpreadsheetConfig {
         this.spreadsheetId = spreadsheetId;
     }
 
-    public void setRanges(List<SheetsRanges> ranges) {
+    public void setRanges(List<RangeDescriptor> ranges) {
         this.ranges = ranges;
     }
 

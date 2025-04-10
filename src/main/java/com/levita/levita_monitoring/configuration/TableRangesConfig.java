@@ -1,150 +1,87 @@
-//TODO: Подумать как избавиться от хардкода диапазонов
 package com.levita.levita_monitoring.configuration;
 
-import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
 import com.levita.levita_monitoring.integration.enums.SheetsId;
-import com.levita.levita_monitoring.integration.enums.SheetsRanges;
-import org.springframework.beans.factory.annotation.Value;
+import com.levita.levita_monitoring.integration.model.RangeDescriptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.IntStream;
 
 @Configuration
 public class TableRangesConfig {
 
     @Bean
     public List<SpreadsheetConfig> spreadsheetConfig(){
-        return Arrays.asList(
-                new SpreadsheetConfig(
-                        SheetsId.SECOND_TABLE.getPropertyKey(),
-                        Arrays.asList(
-                                SheetsRanges.CONVERSION_RATE_1,
-                                SheetsRanges.CONVERSION_RATE_2,
-                                SheetsRanges.CONVERSION_RATE_3,
-                                SheetsRanges.CONVERSION_RATE_4,
-                                SheetsRanges.CONVERSION_RATE_5,
-                                SheetsRanges.CONVERSION_RATE_6,
-                                SheetsRanges.CONVERSION_RATE_7,
-                                SheetsRanges.CONVERSION_RATE_8,
-                                SheetsRanges.CONVERSION_RATE_9,
-                                SheetsRanges.CONVERSION_RATE_10,
-                                SheetsRanges.CONVERSION_RATE_11,
-                                SheetsRanges.CONVERSION_RATE_12,
-                                SheetsRanges.CONVERSION_RATE_13,
-                                SheetsRanges.CONVERSION_RATE_14,
-                                SheetsRanges.CONVERSION_RATE_15,
-                                SheetsRanges.CONVERSION_RATE_16
-                        )
-                ),
-                new SpreadsheetConfig(
-                        SheetsId.SECOND_TABLE.getPropertyKey(),
-                        Arrays.asList(
-                                SheetsRanges.PERSONAL_REVENUE_1,
-                                SheetsRanges.PERSONAL_REVENUE_2,
-                                SheetsRanges.PERSONAL_REVENUE_3,
-                                SheetsRanges.PERSONAL_REVENUE_4,
-                                SheetsRanges.PERSONAL_REVENUE_5,
-                                SheetsRanges.PERSONAL_REVENUE_6,
-                                SheetsRanges.PERSONAL_REVENUE_7,
-                                SheetsRanges.PERSONAL_REVENUE_8,
-                                SheetsRanges.PERSONAL_REVENUE_9,
-                                SheetsRanges.PERSONAL_REVENUE_10,
-                                SheetsRanges.PERSONAL_REVENUE_11,
-                                SheetsRanges.PERSONAL_REVENUE_12,
-                                SheetsRanges.PERSONAL_REVENUE_13,
-                                SheetsRanges.PERSONAL_REVENUE_14,
-                                SheetsRanges.PERSONAL_REVENUE_15,
-                                SheetsRanges.PERSONAL_REVENUE_16
-                        )
-                ),
-//                new SpreadsheetConfig(
-//                        SheetsId.SECOND_TABLE.getPropertyKey(),
-//                        Arrays.asList(
-//                                SheetsRanges.MAIN_SALARY_PART_1,
-//                                SheetsRanges.MAIN_SALARY_PART_2,
-//                                SheetsRanges.MAIN_SALARY_PART_3,
-//                                SheetsRanges.MAIN_SALARY_PART_4,
-//                                SheetsRanges.MAIN_SALARY_PART_5,
-//                                SheetsRanges.MAIN_SALARY_PART_6,
-//                                SheetsRanges.MAIN_SALARY_PART_7,
-//                                SheetsRanges.MAIN_SALARY_PART_8,
-//                                SheetsRanges.MAIN_SALARY_PART_9
-//                        )
-//                ),
-                new SpreadsheetConfig(
-                        SheetsId.FIRST_TABLE.getPropertyKey(),
-                        Arrays.asList(
-                                SheetsRanges.LOCATION_PLAN_1,
-                                SheetsRanges.LOCATION_PLAN_2,
-                                SheetsRanges.LOCATION_PLAN_3,
-                                SheetsRanges.LOCATION_PLAN_4,
-                                SheetsRanges.LOCATION_PLAN_5,
-                                SheetsRanges.LOCATION_PLAN_6,
-                                SheetsRanges.LOCATION_PLAN_7,
-                                SheetsRanges.LOCATION_PLAN_8,
-                                SheetsRanges.LOCATION_PLAN_9
-                        )
-                ),
-                new SpreadsheetConfig(
-                        SheetsId.FIRST_TABLE.getPropertyKey(),
-                        Arrays.asList(
-                                SheetsRanges.ACTUAL_INCOME_1,
-                                SheetsRanges.ACTUAL_INCOME_2,
-                                SheetsRanges.ACTUAL_INCOME_3,
-                                SheetsRanges.ACTUAL_INCOME_4,
-                                SheetsRanges.ACTUAL_INCOME_5,
-                                SheetsRanges.ACTUAL_INCOME_6,
-                                SheetsRanges.ACTUAL_INCOME_7,
-                                SheetsRanges.ACTUAL_INCOME_8,
-                                SheetsRanges.ACTUAL_INCOME_9
-                        )
-                ),
-                new SpreadsheetConfig(
-                        SheetsId.FIRST_TABLE.getPropertyKey(),
-                        Arrays.asList(
-                                SheetsRanges.MAX_DAILY_REVENUE_1,
-                                SheetsRanges.MAX_DAILY_REVENUE_2,
-                                SheetsRanges.MAX_DAILY_REVENUE_3,
-                                SheetsRanges.MAX_DAILY_REVENUE_4,
-                                SheetsRanges.MAX_DAILY_REVENUE_5,
-                                SheetsRanges.MAX_DAILY_REVENUE_6,
-                                SheetsRanges.MAX_DAILY_REVENUE_7,
-                                SheetsRanges.MAX_DAILY_REVENUE_8,
-                                SheetsRanges.MAX_DAILY_REVENUE_9
-                        )
-                ),
-                new SpreadsheetConfig(
-                        SheetsId.FIRST_TABLE.getPropertyKey(),
-                        Arrays.asList(
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_1,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_2,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_3,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_4,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_5,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_6,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_7,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_8,
-                                SheetsRanges.PLAN_COMPLETION_PERCENT_9
-                        )
-                ),
-                new SpreadsheetConfig(
-                        SheetsId.FIRST_TABLE.getPropertyKey(),
-                        Arrays.asList(
-                                SheetsRanges.REMAINING_TO_PLAN_1,
-                                SheetsRanges.REMAINING_TO_PLAN_2,
-                                SheetsRanges.REMAINING_TO_PLAN_3,
-                                SheetsRanges.REMAINING_TO_PLAN_4,
-                                SheetsRanges.REMAINING_TO_PLAN_5,
-                                SheetsRanges.REMAINING_TO_PLAN_6,
-                                SheetsRanges.REMAINING_TO_PLAN_7,
-                                SheetsRanges.REMAINING_TO_PLAN_8,
-                                SheetsRanges.REMAINING_TO_PLAN_9
-                        )
-                )
+        List<SpreadsheetConfig> configs = new ArrayList<>();
 
+        List<RangeDescriptor> planCompletionPercent = IntStream.rangeClosed(1, 9)
+                .mapToObj(i -> new RangeDescriptor("PLAN_COMPLETION_PERCENT", i, String.format("'План-Факт %d'!BJ4:BM4", i)))
+                .toList();
+
+        List<RangeDescriptor> actualIncome = IntStream.rangeClosed(1, 9)
+                .mapToObj(i -> new RangeDescriptor("ACTUAL_INCOME",i,String.format("'План-Факт %d'!BF4:BH4", i)))
+                .toList();
+
+        List<RangeDescriptor> locationPlan = IntStream.rangeClosed(1, 9)
+                .mapToObj(i -> new RangeDescriptor("LOCATION_PLAN",i,String.format("'План-Факт %d'!BF3:BH3", i)))
+                .toList();
+
+        List<RangeDescriptor> maxDailyRevenue = IntStream.rangeClosed(1, 9)
+                .mapToObj(i -> new RangeDescriptor("MAX_DAILY_REVENUE",i,String.format("'План-Факт %d'!BL100:BL100", i)))
+                .toList();
+
+        List<RangeDescriptor> remainingToPlan = IntStream.rangeClosed(1, 9)
+                .mapToObj(i -> new RangeDescriptor("REMAINING_TO_PLAN",i,String.format("'План-Факт %d'!BK50:BK50", i)))
+                .toList();
+
+        List<RangeDescriptor> conversionRate = List.of(
+                new RangeDescriptor("CONVERSION_RATE", 1, "'Пробные (команда Кати)'!D51:D51"),
+                new RangeDescriptor("CONVERSION_RATE", 2, "'Пробные (команда Кати)'!D52:D52"),
+                new RangeDescriptor("CONVERSION_RATE", 3, "'Пробные (команда Кати)'!D54:D54"),
+                new RangeDescriptor("CONVERSION_RATE", 4, "'Пробные (команда Кати)'!D55:D55"),
+                new RangeDescriptor("CONVERSION_RATE", 5, "'Пробные (команда Кати)'!D60:D60"),
+                new RangeDescriptor("CONVERSION_RATE", 6, "'Пробные (команда Кати)'!D61:D61"),
+                new RangeDescriptor("CONVERSION_RATE", 7, "'Пробные (команда Кати)'!D63:D63"),
+                new RangeDescriptor("CONVERSION_RATE", 8, "'Пробные (команда Кати)'!D64:D64"),
+                new RangeDescriptor("CONVERSION_RATE", 9, "'Пробные (команда Алины)'!D51:D51"),
+                new RangeDescriptor("CONVERSION_RATE", 10, "'Пробные (команда Алины)'!D52:D52"),
+                new RangeDescriptor("CONVERSION_RATE", 11, "'Пробные (команда Алины)'!D53:D53"),
+                new RangeDescriptor("CONVERSION_RATE", 12, "'Пробные (команда Алины)'!D54:D54"),
+                new RangeDescriptor("CONVERSION_RATE", 13, "'Пробные (команда Алины)'!D56:D56"),
+                new RangeDescriptor("CONVERSION_RATE", 14, "'Пробные (команда Алины)'!D55:D55"),
+                new RangeDescriptor("CONVERSION_RATE", 15, "'Пробные (команда Алины)'!D57:D57"),
+                new RangeDescriptor("CONVERSION_RATE", 16, "'Пробные (команда Алины)'!D58:D58")
         );
+
+        List<RangeDescriptor> personalRevenue = List.of(
+                new RangeDescriptor("CONVERSION_RATE", 1, "'Пробные (команда Кати)'!J51:J51"),
+                new RangeDescriptor("PERSONAL_REVENUE", 2, "'Пробные (команда Кати)'!J52:J52"),
+                new RangeDescriptor("PERSONAL_REVENUE", 3, "'Пробные (команда Кати)'!J54:J54"),
+                new RangeDescriptor("PERSONAL_REVENUE", 4, "'Пробные (команда Кати)'!J55:J55"),
+                new RangeDescriptor("PERSONAL_REVENUE", 5, "'Пробные (команда Кати)'!J60:J60"),
+                new RangeDescriptor("PERSONAL_REVENUE", 6, "'Пробные (команда Кати)'!J61:J61"),
+                new RangeDescriptor("PERSONAL_REVENUE", 7, "'Пробные (команда Кати)'!J63:J63"),
+                new RangeDescriptor("PERSONAL_REVENUE", 8, "'Пробные (команда Кати)'!J64:J64"),
+                new RangeDescriptor("PERSONAL_REVENUE", 9, "'Пробные (команда Алины)'!J51:J51"),
+                new RangeDescriptor("PERSONAL_REVENUE", 10, "'Пробные (команда Алины)'!J52:J52"),
+                new RangeDescriptor("PERSONAL_REVENUE", 11, "'Пробные (команда Алины)'!J53:J53"),
+                new RangeDescriptor("PERSONAL_REVENUE", 12, "'Пробные (команда Алины)'!J54:J54"),
+                new RangeDescriptor("PERSONAL_REVENUE", 13, "'Пробные (команда Алины)'!J56:J56"),
+                new RangeDescriptor("PERSONAL_REVENUE", 14, "'Пробные (команда Алины)'!J55:J55"),
+                new RangeDescriptor("PERSONAL_REVENUE", 15, "'Пробные (команда Алины)'!J57:J57"),
+                new RangeDescriptor("PERSONAL_REVENUE", 16, "'Пробные (команда Алины)'!J58:J58")
+        );
+
+        configs.add(new SpreadsheetConfig(SheetsId.FIRST_TABLE.getPropertyKey(), planCompletionPercent));
+        configs.add(new SpreadsheetConfig(SheetsId.FIRST_TABLE.getPropertyKey(), actualIncome));
+        configs.add(new SpreadsheetConfig(SheetsId.FIRST_TABLE.getPropertyKey(), locationPlan));
+        configs.add(new SpreadsheetConfig(SheetsId.FIRST_TABLE.getPropertyKey(), maxDailyRevenue));
+        configs.add(new SpreadsheetConfig(SheetsId.FIRST_TABLE.getPropertyKey(), remainingToPlan));
+        configs.add(new SpreadsheetConfig(SheetsId.SECOND_TABLE.getPropertyKey(), conversionRate));
+        configs.add(new SpreadsheetConfig(SheetsId.SECOND_TABLE.getPropertyKey(), personalRevenue));
+
+        return configs;
     }
 }

@@ -11,7 +11,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
-import com.levita.levita_monitoring.integration.enums.SheetsRanges;
+import com.levita.levita_monitoring.integration.model.RangeDescriptor;
 import com.levita.levita_monitoring.service.KpiDataService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +65,12 @@ public class SheetsParser {
 
         for(SpreadsheetConfig config : spreadsheetsConfig) {
             final String spreadsheetId = config.getSpreadsheetId();
-            final List<SheetsRanges> ranges = config.getRanges();
+            final List<RangeDescriptor> ranges = config.getRanges();
 
             futures.add(executor.submit( () -> {
                 try{
                     List<String> rangeStrings = ranges.stream()
-                            .map(SheetsRanges::getPropertyKey)
+                            .map(RangeDescriptor::range)
                             .toList();
 
                     BatchGetValuesResponse response = sheetsService.spreadsheets().values()
@@ -94,8 +94,8 @@ public class SheetsParser {
                         }
 
                         String value = row.get(0).toString();
-                        SheetsRanges originalRange = ranges.get(i);
-                        kpiDataService.saveDataFromSheets(originalRange, value);
+                        RangeDescriptor descriptor = ranges.get(i);
+                        kpiDataService.saveDataFromSheets(descriptor, value);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException("Ошибка при пакетном запросе к таблице " + spreadsheetId, e);
