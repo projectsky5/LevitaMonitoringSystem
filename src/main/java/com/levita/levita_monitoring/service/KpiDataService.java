@@ -64,6 +64,9 @@ public class KpiDataService {
                 case "PLAN_COMPLETION_PERCENT":
                     handlePlanCompletionPercent(id,value);
                     break;
+                case "PERSONAL_REVENUE":
+                    handlePersonalRevenue(id, value);
+                    break;
                 default:
                     System.out.printf("Нет обработки для категории: %s\n", category);
                     break;
@@ -74,7 +77,7 @@ public class KpiDataService {
 
     private void handleRemainingToPlan(int locationId, String value){
         try{
-            BigDecimal remainingToPlan = new BigDecimal(value);
+            BigDecimal remainingToPlan = new BigDecimal(sanitizeNumericString(value));
 
             Optional<LocationKpi> optKpi = getLocationKpi(locationId);
             if(optKpi.isEmpty()){
@@ -91,7 +94,7 @@ public class KpiDataService {
 
     private void handleLocationPlan(int locationId, String value) {
         try{
-            BigDecimal locationPlan = new BigDecimal(value);
+            BigDecimal locationPlan = new BigDecimal(sanitizeNumericString(value));
 
             Optional<LocationKpi> optKpi = getLocationKpi(locationId);
             if(optKpi.isEmpty()){
@@ -108,7 +111,7 @@ public class KpiDataService {
 
     private void handleMaxDailyRevenue(int locationId, String value){
         try{
-            BigDecimal maxDailyRevenue = new BigDecimal(value);
+            BigDecimal maxDailyRevenue = new BigDecimal(sanitizeNumericString(value));
 
             Optional<LocationKpi> optKpi = getLocationKpi(locationId);
             if(optKpi.isEmpty()){
@@ -125,8 +128,7 @@ public class KpiDataService {
 
     private void handlePlanCompletionPercent(int locationId, String value){
         try{
-            String sanitizedValue = value.replace("%", "").trim();
-            Double planCompletionPercent = Double.valueOf(sanitizedValue);
+            Double planCompletionPercent = Double.valueOf(sanitizeNumericString(value));
 
             Optional<LocationKpi> optKpi = getLocationKpi(locationId);
             if(optKpi.isEmpty()){
@@ -143,7 +145,7 @@ public class KpiDataService {
 
     private void handleActualIncome(int locationId, String value){
         try{
-            BigDecimal actualIncome = new BigDecimal(value);
+            BigDecimal actualIncome = new BigDecimal(sanitizeNumericString(value));
 
             Optional<LocationKpi> optKpi = getLocationKpi(locationId);
             if(optKpi.isEmpty()){
@@ -160,8 +162,7 @@ public class KpiDataService {
 
     private void handleConversionRate(int userId, String value){
         try{
-            String sanitizedValue = value.replace("%", "").trim();
-            Double conversion = Double.valueOf(sanitizedValue);
+            Double conversion = Double.valueOf(sanitizeNumericString(value));
 
             Optional<UserKpi> optKpi = getUserKpi(userId);
             if(optKpi.isEmpty()){
@@ -179,7 +180,7 @@ public class KpiDataService {
 
     private void handleMainSalaryPart(int userId, String value) {
         try{
-            BigDecimal mainSalaryPart = new BigDecimal(value);
+            BigDecimal mainSalaryPart = new BigDecimal(sanitizeNumericString(value));
 
             Optional<UserKpi> optKpi = getUserKpi(userId);
             if(optKpi.isEmpty()){
@@ -191,6 +192,23 @@ public class KpiDataService {
             System.out.printf("Сохранен mainSalaryPart для пользователя с id %d: %s\n", userId, value);
         } catch (NumberFormatException e){
             System.err.printf("Неверный формат для MAIN_SALARY_PART_%d: %s\n", userId, value);
+        }
+    }
+
+    private void handlePersonalRevenue(int userId, String value){
+        try{
+            BigDecimal personalRevenue = new BigDecimal(sanitizeNumericString(value));
+
+            Optional<UserKpi> optKpi = getUserKpi(userId);
+            if(optKpi.isEmpty()){
+                return;
+            }
+            UserKpi userKpi = optKpi.get();
+            userKpi.setPersonalRevenue(personalRevenue);
+            userKpiRepository.save(userKpi);
+            System.out.printf("Сохранена personalRevenue для пользователя с id %d: %s\n", userId, value);
+        } catch(NumberFormatException e){
+            System.err.printf("Неверный формат для PERSONAL_REVENUE_%d: %s\n", userId, value);
         }
     }
 
@@ -224,5 +242,14 @@ public class KpiDataService {
             return newKpi;
         });
         return Optional.of(userKpi);
+    }
+
+    private String sanitizeNumericString(String value){
+        return value.replace("\u00A0", "")
+                .replace(" ", "")
+                .replace(",", ".")
+                .replace("%", "")
+                .replace("₽", "")
+                .trim();
     }
 }
