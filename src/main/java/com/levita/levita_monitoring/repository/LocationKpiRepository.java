@@ -9,6 +9,4 @@ import java.util.Optional;
 
 @Repository
 public interface LocationKpiRepository extends JpaRepository<LocationKpi, Long> {
-
-    Optional<LocationKpi> findByLocation(Location location);
 }

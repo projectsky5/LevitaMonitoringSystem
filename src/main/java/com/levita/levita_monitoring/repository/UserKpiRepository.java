@@ -9,7 +9,4 @@ import java.util.Optional;
 
 @Repository
 public interface UserKpiRepository extends JpaRepository<UserKpi, Long> {
-
-    Optional<UserKpi> findByUser(User user);
-
 }

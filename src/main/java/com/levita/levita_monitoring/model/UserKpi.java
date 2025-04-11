@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 public class UserKpi {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Double conversionRate;
@@ -25,13 +24,12 @@ public class UserKpi {
     private BigDecimal personalRevenue;
     private BigDecimal dayBonuses;
 
+
     @OneToOne
+    @MapsId
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Long getId() {
-        return this.id;
-    }
 
     public Double getConversionRate() {
         return this.conversionRate;
@@ -59,10 +57,6 @@ public class UserKpi {
 
     public User getUser() {
         return this.user;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setConversionRate(Double conversionRate) {
@@ -98,9 +92,6 @@ public class UserKpi {
         if (!(o instanceof UserKpi)) return false;
         final UserKpi other = (UserKpi) o;
         if (!other.canEqual((Object) this)) return false;
-        final Object this$id = this.getId();
-        final Object other$id = other.getId();
-        if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
         final Object this$conversionRate = this.getConversionRate();
         final Object other$conversionRate = other.getConversionRate();
         if (this$conversionRate == null ? other$conversionRate != null : !this$conversionRate.equals(other$conversionRate))
@@ -138,8 +129,6 @@ public class UserKpi {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $id = this.getId();
-        result = result * PRIME + ($id == null ? 43 : $id.hashCode());
         final Object $conversionRate = this.getConversionRate();
         result = result * PRIME + ($conversionRate == null ? 43 : $conversionRate.hashCode());
         final Object $currentIncome = this.getCurrentIncome();
@@ -158,6 +147,6 @@ public class UserKpi {
     }
 
     public String toString() {
-        return "UserKpi(id=" + this.getId() + ", conversionRate=" + this.getConversionRate() + ", currentIncome=" + this.getCurrentIncome() + ", plannedIncome=" + this.getPlannedIncome() + ", mainSalaryPart=" + this.getMainSalaryPart() + ", personalRevenue=" + this.getPersonalRevenue() + ", dayBonuses=" + this.getDayBonuses() + ", user=" + this.getUser() + ")";
+        return "UserKpi(conversionRate=" + this.getConversionRate() + ", currentIncome=" + this.getCurrentIncome() + ", plannedIncome=" + this.getPlannedIncome() + ", mainSalaryPart=" + this.getMainSalaryPart() + ", personalRevenue=" + this.getPersonalRevenue() + ", dayBonuses=" + this.getDayBonuses() + ", user=" + this.getUser() + ")";
     }
 }

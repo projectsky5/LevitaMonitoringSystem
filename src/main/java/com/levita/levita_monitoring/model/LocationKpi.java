@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 public class LocationKpi {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private BigDecimal dailyFigure; //Цифра дня
@@ -28,12 +27,10 @@ public class LocationKpi {
     private BigDecimal actualIncome; // Фактический доход
 
     @OneToOne
+    @MapsId
     @JoinColumn(name = "location_id")
     private Location location;
 
-    public Long getId() {
-        return this.id;
-    }
 
     public BigDecimal getDailyFigure() {
         return this.dailyFigure;
@@ -65,10 +62,6 @@ public class LocationKpi {
 
     public Location getLocation() {
         return this.location;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setDailyFigure(BigDecimal dailyFigure) {
@@ -108,9 +101,6 @@ public class LocationKpi {
         if (!(o instanceof LocationKpi)) return false;
         final LocationKpi other = (LocationKpi) o;
         if (!other.canEqual((Object) this)) return false;
-        final Object this$id = this.getId();
-        final Object other$id = other.getId();
-        if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
         final Object this$dailyFigure = this.getDailyFigure();
         final Object other$dailyFigure = other.getDailyFigure();
         if (this$dailyFigure == null ? other$dailyFigure != null : !this$dailyFigure.equals(other$dailyFigure))
@@ -152,8 +142,6 @@ public class LocationKpi {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $id = this.getId();
-        result = result * PRIME + ($id == null ? 43 : $id.hashCode());
         final Object $dailyFigure = this.getDailyFigure();
         result = result * PRIME + ($dailyFigure == null ? 43 : $dailyFigure.hashCode());
         final Object $locationRemainingToPlan = this.getLocationRemainingToPlan();
@@ -174,6 +162,6 @@ public class LocationKpi {
     }
 
     public String toString() {
-        return "LocationKpi(id=" + this.getId() + ", dailyFigure=" + this.getDailyFigure() + ", locationRemainingToPlan=" + this.getLocationRemainingToPlan() + ", locationPlan=" + this.getLocationPlan() + ", maxDailyRevenue=" + this.getMaxDailyRevenue() + ", planCompletionPercent=" + this.getPlanCompletionPercent() + ", avgRevenuePerDay=" + this.getAvgRevenuePerDay() + ", actualIncome=" + this.getActualIncome() + ", location=" + this.getLocation() + ")";
+        return "LocationKpi(dailyFigure=" + this.getDailyFigure() + ", locationRemainingToPlan=" + this.getLocationRemainingToPlan() + ", locationPlan=" + this.getLocationPlan() + ", maxDailyRevenue=" + this.getMaxDailyRevenue() + ", planCompletionPercent=" + this.getPlanCompletionPercent() + ", avgRevenuePerDay=" + this.getAvgRevenuePerDay() + ", actualIncome=" + this.getActualIncome() + ", location=" + this.getLocation() + ")";
     }
 }

@@ -11,6 +11,7 @@ import com.levita.levita_monitoring.repository.UserKpiRepository;
 import com.levita.levita_monitoring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -34,6 +35,7 @@ public class KpiDataService {
         this.locationKpiRepository = locationKpiRepository;
     }
 
+    @Transactional
     public void saveDataFromSheets(RangeDescriptor rangeDescriptor, String value) {
         String category = rangeDescriptor.category();
         int id = rangeDescriptor.id();
@@ -208,35 +210,34 @@ public class KpiDataService {
     }
 
     private Optional<LocationKpi> getLocationKpi(int locationId) {
-        Optional<Location> optLocation = locationRepository.findById((long) locationId);
-        if (optLocation.isEmpty()) {
-            System.out.printf("Локация с id %d не найдена\n", locationId);
-            return Optional.empty();
+        Optional<LocationKpi> optKpi = locationKpiRepository.findById((long) locationId);
+        if (optKpi.isPresent()) {
+            return optKpi;
         }
-        Location location = optLocation.get();
-        Optional<LocationKpi> optKpi = locationKpiRepository.findByLocation(location);
-        LocationKpi locationKpi = optKpi.orElseGet(() -> {
-            LocationKpi newKpi = new LocationKpi();
-            newKpi.setLocation(location);
-            return newKpi;
-        });
-        return Optional.of(locationKpi);
+
+        Location location = locationRepository.findById((long) locationId)
+                .orElseThrow(() -> new IllegalStateException("Локация не найдена: " + locationId));
+
+        LocationKpi newKpi = new LocationKpi();
+        newKpi.setLocation(location);
+
+        return Optional.of(locationKpiRepository.save(newKpi));
+
     }
 
     private Optional<UserKpi> getUserKpi(int userId) {
-        Optional<User> optUser = userRepository.findById((long) userId);
-        if (optUser.isEmpty()) {
-            System.out.printf("Пользователь с id %d не найден\n", userId);
-            return Optional.empty();
+        Optional<UserKpi> optKpi = userKpiRepository.findById((long) userId);
+        if (optKpi.isPresent()) {
+            return optKpi;
         }
-        User user = optUser.get();
-        Optional<UserKpi> optKpi = userKpiRepository.findByUser(user);
-        UserKpi userKpi = optKpi.orElseGet(() -> {
-            UserKpi newKpi = new UserKpi();
-            newKpi.setUser(user);
-            return newKpi;
-        });
-        return Optional.of(userKpi);
+
+        User user = userRepository.findById((long) userId)
+                .orElseThrow(() -> new IllegalStateException("Пользователь не найден: " + userId));
+
+        UserKpi newKpi = new UserKpi();
+        newKpi.setUser(user);
+
+        return Optional.of(userKpiRepository.save(newKpi));
     }
 
     private String sanitizeNumericString(String value) {
