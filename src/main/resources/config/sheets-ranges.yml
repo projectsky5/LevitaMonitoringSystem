@@ -1,0 +1,99 @@
+spreadsheets:
+  - id: "16c-SSNDJSQWj2jCHVWSoVOCnZMBbAHKAC3Tq5JOCi5U"
+    ranges:
+      - category: "PLAN_COMPLETION_PERCENT"
+        template: "'План-Факт %d'!BJ4:BM4"
+        count: 9
+
+      - category: "ACTUAL_INCOME"
+        template: "'План-Факт %d'!BF4:BH4"
+        count: 9
+
+      - category: "LOCATION_PLAN"
+        template: "'План-Факт %d'!BF3:BH3"
+        count: 9
+
+      - category: "MAX_DAILY_REVENUE"
+        template: "'План-Факт %d'!BL100:BL100"
+        count: 9
+
+      - category: "REMAINING_TO_PLAN"
+        template: "'План-Факт %d'!BK50:BK50"
+        count: 9
+
+  - id: "1BwQdns8KkBsZ0C4k8dC6BtGxaLNocbmDR0bfuGKXSJs"
+    ranges:
+      - category: "CONVERSION_RATE"
+        explicit:
+          - id: 1
+            range: "'Пробные (команда Кати)'!D51:D51"
+          - id: 2
+            range: "'Пробные (команда Кати)'!D52:D52"
+          - id: 3
+            range: "'Пробные (команда Кати)'!D54:D54"
+          - id: 4
+            range: "'Пробные (команда Кати)'!D55:D55"
+          - id: 5
+            range: "'Пробные (команда Кати)'!D60:D60"
+          - id: 6
+            range: "'Пробные (команда Кати)'!D61:D61"
+          - id: 7
+            range: "'Пробные (команда Кати)'!D63:D63"
+          - id: 8
+            range: "'Пробные (команда Кати)'!D64:D64"
+          - id: 9
+            range: "'Пробные (команда Алины)'!D51:D51"
+          - id: 10
+            range: "'Пробные (команда Алины)'!D52:D52"
+          - id: 11
+            range: "'Пробные (команда Алины)'!D53:D53"
+          - id: 12
+            range: "'Пробные (команда Алины)'!D54:D54"
+          - id: 13
+            range: "'Пробные (команда Алины)'!D56:D56"
+          - id: 14
+            range: "'Пробные (команда Алины)'!D55:D55"
+          - id: 15
+            range: "'Пробные (команда Алины)'!D57:D57"
+          - id: 16
+            range: "'Пробные (команда Алины)'!D58:D58"
+
+      - category: "PERSONAL_REVENUE"
+        explicit:
+          - id: 1
+            range: "'Пробные (команда Кати)'!J51:J51"
+          - id: 2
+            range: "'Пробные (команда Кати)'!J52:J52"
+          - id: 3
+            range: "'Пробные (команда Кати)'!J54:J54"
+          - id: 4
+            range: "'Пробные (команда Кати)'!J55:J55"
+          - id: 5
+            range: "'Пробные (команда Кати)'!J60:J60"
+          - id: 6
+            range: "'Пробные (команда Кати)'!J61:J61"
+          - id: 7
+            range: "'Пробные (команда Кати)'!J63:J63"
+          - id: 8
+            range: "'Пробные (команда Кати)'!J64:J64"
+          - id: 9
+            range: "'Пробные (команда Алины)'!J51:J51"
+          - id: 10
+            range: "'Пробные (команда Алины)'!J52:J52"
+          - id: 11
+            range: "'Пробные (команда Алины)'!J53:J53"
+          - id: 12
+            range: "'Пробные (команда Алины)'!J54:J54"
+          - id: 13
+            range: "'Пробные (команда Алины)'!J56:J56"
+          - id: 14
+            range: "'Пробные (команда Алины)'!J55:J55"
+          - id: 15
+            range: "'Пробные (команда Алины)'!J57:J57"
+          - id: 16
+            range: "'Пробные (команда Алины)'!J58:J58"
+
+
+#  - id: "1QcOiHd5pY3wxMtGvkeGMd7z826RQotHBWZ6u_mWWFg0"
+#
+#  - id: "1rFLR_5Zb43AVQedKCKcFXyLmO42Qt1CFMNHAqiFW8FU"
