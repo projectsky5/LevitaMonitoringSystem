@@ -86,6 +86,23 @@ public class KpiDataService {
         };
     }
 
+    private Optional<UserKpi> getUserKpiByNameAndLocation(String rawUser){
+        String[] nameAndLocation = extractNameAndLocation(rawUser);
+        String name = nameAndLocation[0];
+        String location = nameAndLocation[1];
+
+        return userRepository.findAll().stream()
+                .filter( user -> user.getName().equalsIgnoreCase(name)
+                        && user.getLocation() != null
+                        && user.getLocation().getName().equalsIgnoreCase(location))
+                .findFirst()
+                .map( user -> userKpiRepository.findById(user.getId()).orElseGet( () -> {
+                    UserKpi newKpi = new UserKpi();
+                    newKpi.setUser(user);
+                    return userKpiRepository.save(newKpi);
+                }));
+    }
+
     private String[] extractNameAndLocation(String raw){
         String cleaned = raw.trim();
         String[] parts = cleaned.split("\\s*\\(|\\)");
