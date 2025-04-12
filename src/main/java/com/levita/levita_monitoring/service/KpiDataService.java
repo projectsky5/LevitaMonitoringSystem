@@ -126,7 +126,32 @@ public class KpiDataService {
                 }));
     }
 
-    private Optional<LocationKpi> getLocationKpiByNameAndLocation(String locationName){
+    private void handleLocationKpiByName(String category, String rawLocation, String value){
+        Optional<LocationKpi> optKpi = getLocationKpiByName(rawLocation.trim());
+
+        if(optKpi.isEmpty()) {
+            System.err.printf("Локация не найдена: %s\n", rawLocation);
+            return;
+        }
+
+        LocationKpi locationKpi = optKpi.get();
+
+        try{
+            switch(category){
+                case "ACTUAL_INCOME" -> locationKpi.setActualIncome(new BigDecimal(sanitizeNumericString(value)));
+                case "LOCATION_PLAN" -> locationKpi.setLocationPlan(new BigDecimal(sanitizeNumericString(value)));
+                case "MAX_DAILY_REVENUE" -> locationKpi.setMaxDailyRevenue(new BigDecimal(sanitizeNumericString(value)));
+                case "PLAN_COMPLETION_PERCENT" -> locationKpi.setPlanCompletionPercent(Double.valueOf(sanitizeNumericString(value)));
+                case "REMAINING_TO_PLAN" -> locationKpi.setLocationRemainingToPlan(new BigDecimal(sanitizeNumericString(value)));
+            }
+            locationKpiRepository.save(locationKpi);
+            System.out.printf("Сохранено [%s] для локации [%s]: %s\n", category, rawLocation, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Ошибка парсинга [%s] для локации [%s]: %s\n", category, rawLocation, value);
+        }
+    }
+
+    private Optional<LocationKpi> getLocationKpiByName(String locationName){
         return locationRepository.findAll().stream()
                 .filter( location -> location.getName().equalsIgnoreCase(locationName))
                 .findFirst()
