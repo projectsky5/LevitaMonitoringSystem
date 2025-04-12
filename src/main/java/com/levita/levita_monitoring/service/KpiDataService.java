@@ -79,6 +79,13 @@ public class KpiDataService {
         };
     }
 
+    private boolean isLocationKpiCategory(String category) {
+        return switch(category){
+            case "ACTUAL_INCOME", "REMAINING_TO_PLAN", "LOCATION_PLAN", "MAX_DAILY_REVENUE", "PLAN_COMPLETION_PERCENT" -> true;
+            default -> false;
+        };
+    }
+
     private void handleRemainingToPlan(int locationId, String value) {
         try {
             BigDecimal remainingToPlan = new BigDecimal(sanitizeNumericString(value));
