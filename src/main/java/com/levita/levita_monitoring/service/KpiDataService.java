@@ -86,6 +86,17 @@ public class KpiDataService {
         };
     }
 
+    private String[] extractNameAndLocation(String raw){
+        String cleaned = raw.trim();
+        String[] parts = cleaned.split("\\s*\\(|\\)");
+
+        if(parts.length == 2){
+            return new String[]{parts[0].trim(), parts[1].trim()};
+        } else {
+            return new String[]{cleaned, ""};
+        }
+    }
+
     private void handleRemainingToPlan(int locationId, String value) {
         try {
             BigDecimal remainingToPlan = new BigDecimal(sanitizeNumericString(value));
