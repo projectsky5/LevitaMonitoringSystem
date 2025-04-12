@@ -38,9 +38,10 @@ public class RangeDescriptorLoader {
                 if(rangeGroup.template != null && rangeGroup.count != null) {
                     IntStream.rangeClosed(1, rangeGroup.count).forEach(i ->
                             descriptors.add(new RangeDescriptor(
-                                    rangeGroup.category,
                                     i,
-                                    String.format(rangeGroup.template, i)
+                                    String.format(rangeGroup.template, i),
+                                    rangeGroup.category,
+                                    null
                             ))
                     );
                 }
@@ -48,10 +49,11 @@ public class RangeDescriptorLoader {
                 if(rangeGroup.explicit != null) {
                     for (ExplicitRange explicitRange : rangeGroup.explicit){
                         descriptors.add(new RangeDescriptor(
-                                rangeGroup.category,
                                 explicitRange.id,
-                                explicitRange.range
-                        ));
+                                explicitRange.range,
+                                rangeGroup.category,
+                                explicitRange.label
+                                ));
                     }
                 }
             }

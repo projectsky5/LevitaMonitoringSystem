@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.rmi.ServerError;
 import java.util.Optional;
 
 @Service
@@ -40,18 +39,51 @@ public class KpiDataService {
     public void saveDataFromSheets(RangeDescriptor rangeDescriptor, String value) {
         String category = rangeDescriptor.category();
 
+        if(category.equals("USERS")){
+            handleUserCreation(value);
+            return;
+        }
+
+        if(category.equals("LOCATIONS")){
+            handleLocationCreation(value);
+            return;
+        }
+
         if(isUserKpiCategory(category)){
-            handleUserKpiByNameAndLocation(category, value, value);
+            String rawUser = rangeDescriptor.label();
+            handleUserKpiByNameAndLocation(category, rawUser, value);
             return;
         }
 
         if(isLocationKpiCategory(category)){
-            handleLocationKpiByName(category, value, value);
+            String rawLocation = rangeDescriptor.label();
+            handleLocationKpiByName(category, rawLocation, value);
             return;
         }
 
         System.out.printf("Нет обработки для категории: %s\n", category);
 
+    }
+
+    private void handleUserCreation(String value) {
+
+    }
+
+    private void handleLocationCreation(String value) {
+        String sanitizedName = sanitizeNumericString(value);
+        if(sanitizedName.isBlank()){
+            return;
+        }
+
+        boolean exists = locationRepository.findAll().stream()
+                .anyMatch(location -> location.getName().equals(sanitizedName));
+
+        if(!exists){
+            Location location = new Location();
+            location.setName(sanitizedName);
+            locationRepository.save(location);
+            System.out.printf("Создана локация [%s]\n", sanitizedName);
+        }
     }
 
     private boolean isUserKpiCategory(String category) {
