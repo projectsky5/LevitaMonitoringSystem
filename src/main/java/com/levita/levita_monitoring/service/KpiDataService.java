@@ -103,6 +103,18 @@ public class KpiDataService {
                 }));
     }
 
+    private Optional<LocationKpi> getLocationKpiByNameAndLocation(String locationName){
+        return locationRepository.findAll().stream()
+                .filter( location -> location.getName().equalsIgnoreCase(locationName))
+                .findFirst()
+                .map( location -> locationKpiRepository.findById(location.getId())
+                        .orElseGet( () -> {
+                            LocationKpi newKpi = new LocationKpi();
+                            newKpi.setLocation(location);
+                            return locationKpiRepository.save(newKpi);
+                        }));
+    }
+
     private String[] extractNameAndLocation(String raw){
         String cleaned = raw.trim();
         String[] parts = cleaned.split("\\s*\\(|\\)");
