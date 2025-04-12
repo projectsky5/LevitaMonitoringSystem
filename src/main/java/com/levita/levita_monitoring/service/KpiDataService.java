@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.rmi.ServerError;
 import java.util.Optional;
 
 @Service
@@ -84,6 +85,28 @@ public class KpiDataService {
             case "ACTUAL_INCOME", "REMAINING_TO_PLAN", "LOCATION_PLAN", "MAX_DAILY_REVENUE", "PLAN_COMPLETION_PERCENT" -> true;
             default -> false;
         };
+    }
+
+    private void handleUserKpiByNameAndLocation(String category, String rawUser, String value){
+        Optional<UserKpi> optKpi = getUserKpiByNameAndLocation(rawUser);
+        if(optKpi.isEmpty()) {
+            System.err.printf("Пользователь не найден для [%s]: %s\n", category, rawUser);
+            return;
+        }
+
+        UserKpi userKpi = optKpi.get();
+
+        try{
+            switch(category){
+                case "CONVERSION_RATE" -> userKpi.setConversionRate(Double.valueOf(sanitizeNumericString(value)));
+                case "MAIN_SALARY_PART" -> userKpi.setMainSalaryPart(new BigDecimal(sanitizeNumericString(value)));
+                case "PERSONAL_REVENUE" -> userKpi.setPersonalRevenue(new BigDecimal(sanitizeNumericString(value)));
+            }
+            userKpiRepository.save(userKpi);
+            System.out.printf("Сохранено [%s] для пользователя [%s]: %s\n", category, rawUser, value);
+        } catch (NumberFormatException e){
+            System.err.printf("Ошибка парсинга [%s] для [%s]: %s\n", category, rawUser, value);
+        }
     }
 
     private Optional<UserKpi> getUserKpiByNameAndLocation(String rawUser){
