@@ -72,6 +72,13 @@ public class KpiDataService {
         }
     }
 
+    private boolean isUserKpiCategory(String category) {
+        return switch(category){
+            case "CONVERSION_RATE", "MAIN_SALARY_PART", "PERSONAL_REVENUE" -> true;
+            default -> false;
+        };
+    }
+
     private void handleRemainingToPlan(int locationId, String value) {
         try {
             BigDecimal remainingToPlan = new BigDecimal(sanitizeNumericString(value));
