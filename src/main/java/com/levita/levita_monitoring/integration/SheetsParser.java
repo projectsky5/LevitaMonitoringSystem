@@ -1,5 +1,3 @@
-// TODO: Логирование
-// TODO: Маппинг и отправку в БД через сервисный слой
 package com.levita.levita_monitoring.integration;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -14,6 +12,8 @@ import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
 import com.levita.levita_monitoring.integration.model.RangeDescriptor;
 import com.levita.levita_monitoring.service.KpiDataService;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,8 @@ import java.util.concurrent.Future;
 @Service
 public class SheetsParser {
 
+    private static final Logger log = LoggerFactory.getLogger(SheetsParser.class);
+
     private final List<SpreadsheetConfig> spreadsheetsConfig;
     private final KpiDataService kpiDataService;
 
@@ -49,7 +51,7 @@ public class SheetsParser {
     }
 
     @Value("${application.name}")
-    private static String applicationName;
+    private String applicationName;
 
     @Value("${google.sheets.credentials.file.path}")
     private String credentials;
@@ -107,6 +109,8 @@ public class SheetsParser {
             try{
                 List<String> rangeStrings = ranges.stream().map(RangeDescriptor::range).toList();
 
+                log.info("Загрузка {} диапазонов из таблицы [{}]", ranges.size(), spreadsheetId);
+
                 BatchGetValuesResponse response = sheetsService.spreadsheets().values()
                         .batchGet(spreadsheetId)
                         .setRanges(rangeStrings)
@@ -115,7 +119,7 @@ public class SheetsParser {
                 List<ValueRange> valueRanges = response.getValueRanges();
 
                 if(valueRanges == null || valueRanges.size() != ranges.size()){
-                    System.err.printf("Ошибка: пустой или несоответствующий valueRanges из таблицы [%s]\n", spreadsheetId);
+                    log.warn("Ошибка: пустой или несоответствующий valueRanges из таблицы [{}]", spreadsheetId);
                     return;
                 }
 
@@ -123,11 +127,13 @@ public class SheetsParser {
                     ValueRange valueRange = valueRanges.get(i);
                     List<List<Object>> values = valueRange.getValues();
                     if(values == null || values.isEmpty()) {
+                        log.warn("Пропущен пустой range [{}]", ranges.get(i).range());
                         continue;
                     }
 
                     List<Object> row = values.get(0);
                     if(row.isEmpty()){
+                        log.warn("Пропущена строка в range [{}]", ranges.get(i).range());
                         continue;
                     }
 
@@ -136,6 +142,7 @@ public class SheetsParser {
                     kpiDataService.saveDataFromSheets(descriptor, value);
                 }
             } catch (IOException e) {
+                log.error("Ошибка при пакетном запросе к таблице [{}]", spreadsheetId, e);
                 throw new RuntimeException("Ошибка при пакетном запросе к таблице " + spreadsheetId, e);
             }
         }));
@@ -144,8 +151,10 @@ public class SheetsParser {
             try{
                 future.get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                log.error("Ошибка выполнения потока при чтении таблицы [{}]", spreadsheetId, e);
             }
+
+            log.info("Завершена загрузка из таблицы [{}]", spreadsheetId);
 
             executor.shutdown();
         }
@@ -162,6 +171,7 @@ public class SheetsParser {
                     .setApplicationName(applicationName)
                     .build();
         } catch (GeneralSecurityException | IOException e) {
+            log.error("Ошибка при создании SheetsService для [{}]", credentials, e);
             throw new RuntimeException("Ошибка при создании SheetsService для " + credentials, e);
         }
     }
