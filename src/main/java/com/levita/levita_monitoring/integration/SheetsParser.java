@@ -117,6 +117,53 @@ public class SheetsParser {
     }
 
 
+    private void parseRanges(String spreadsheetId, List<RangeDescriptor> ranges){
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        List<Future<?>> futures = new ArrayList<>();
+
+        futures.add(executor.submit( () -> {
+            try{
+                List<String> rangeStrings = ranges.stream().map(RangeDescriptor::range).toList();
+
+                BatchGetValuesResponse response = sheetsService.spreadsheets().values()
+                        .batchGet(spreadsheetId)
+                        .setRanges(rangeStrings)
+                        .execute();
+
+                List<ValueRange> valueRanges = response.getValueRanges();
+
+                for (int i = 0; i < valueRanges.size(); i++) {
+                    ValueRange valueRange = valueRanges.get(i);
+                    List<List<Object>> values = valueRange.getValues();
+                    if(values == null || values.isEmpty()) {
+                        continue;
+                    }
+
+                    List<Object> row = values.get(0);
+                    if(row.isEmpty()){
+                        continue;
+                    }
+
+                    String value = row.get(0).toString();
+                    RangeDescriptor descriptor = ranges.get(i);
+                    kpiDataService.saveDataFromSheets(descriptor, value);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Ошибка при пакетном запросе к таблице " + spreadsheetId, e);
+            }
+        }));
+
+        for (Future<?> future : futures) {
+            try{
+                future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            executor.shutdown();
+        }
+    }
+
     public Sheets getSheetsService(){
         try{
             HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
