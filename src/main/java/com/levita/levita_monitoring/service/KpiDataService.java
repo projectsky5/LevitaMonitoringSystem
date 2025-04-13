@@ -9,6 +9,8 @@ import com.levita.levita_monitoring.repository.LocationKpiRepository;
 import com.levita.levita_monitoring.repository.LocationRepository;
 import com.levita.levita_monitoring.repository.UserKpiRepository;
 import com.levita.levita_monitoring.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,8 @@ import java.util.Optional;
 
 @Service
 public class KpiDataService {
+
+    private static final Logger log = LoggerFactory.getLogger(KpiDataService.class);
 
     private final UserKpiRepository userKpiRepository;
     private final UserRepository userRepository;
@@ -61,7 +65,7 @@ public class KpiDataService {
             return;
         }
 
-        System.out.printf("Нет обработки для категории: %s\n", category);
+        log.warn("Нет обработки для категории: {}", category);
 
     }
 
@@ -71,7 +75,7 @@ public class KpiDataService {
         String locationName = nameAndLocation[1];
 
         if(name.isBlank() || locationName.isBlank()){
-            System.err.printf("Некорректное имя или локация: %s\n", rawUser);
+            log.warn("Некорректное имя или локация: {}", rawUser);
             return;
         }
 
@@ -96,7 +100,7 @@ public class KpiDataService {
             user.setPassword(String.valueOf(Math.random() * 100));
             user.setLocation(location);
             userRepository.save(user);
-            System.out.printf("Создан пользователь [%s (%s)]\n", name, locationName);
+            log.info("Создан пользователь [{} ({})]", name, locationName);
         }
     }
 
@@ -113,7 +117,7 @@ public class KpiDataService {
             Location location = new Location();
             location.setName(sanitizedName);
             locationRepository.save(location);
-            System.out.printf("Создана локация [%s]\n", sanitizedName);
+            log.info("Создана локация [{}]", sanitizedName);
         }
     }
 
@@ -134,7 +138,7 @@ public class KpiDataService {
     private void handleUserKpiByNameAndLocation(String category, String rawUser, String value){
         Optional<UserKpi> optKpi = getUserKpiByNameAndLocation(rawUser);
         if(optKpi.isEmpty()) {
-            System.err.printf("Пользователь не найден для [%s]: %s\n", category, rawUser);
+            log.warn("Пользователь не найден для [{}]: {}", category, rawUser);
             return;
         }
 
@@ -147,9 +151,9 @@ public class KpiDataService {
                 case "PERSONAL_REVENUE" -> userKpi.setPersonalRevenue(new BigDecimal(sanitizeNumericString(value)));
             }
             userKpiRepository.save(userKpi);
-            System.out.printf("Сохранено [%s] для пользователя [%s]: %s\n", category, rawUser, value);
+            log.info("Сохранено [{}}] для пользователя [{}]: {}", category, rawUser, value);
         } catch (NumberFormatException e){
-            System.err.printf("Ошибка парсинга [%s] для [%s]: %s\n", category, rawUser, value);
+            log.error("Ошибка парсинга [{}] для [{}]: {}", category, rawUser, value);
         }
     }
 
@@ -172,14 +176,14 @@ public class KpiDataService {
 
     private void handleLocationKpiByName(String category, String rawLocation, String value){
         if(rawLocation == null || rawLocation.isBlank()){
-            System.err.printf("Ошибка: отсутствует label (название локации) для [%s]\n",category);
+            log.warn("Ошибка: отсутствует label (название локации) для [{}]",category);
             return;
         }
 
         Optional<LocationKpi> optKpi = getLocationKpiByName(rawLocation.trim());
 
         if(optKpi.isEmpty()) {
-            System.err.printf("Локация не найдена: %s\n", rawLocation);
+            log.warn("Локация не найдена: {}", rawLocation);
             return;
         }
 
@@ -194,9 +198,9 @@ public class KpiDataService {
                 case "REMAINING_TO_PLAN" -> locationKpi.setLocationRemainingToPlan(new BigDecimal(sanitizeNumericString(value)));
             }
             locationKpiRepository.save(locationKpi);
-            System.out.printf("Сохранено [%s] для локации [%s]: %s\n", category, rawLocation, value);
+            log.info("Сохранено [{}] для локации [{}]: {}", category, rawLocation, value);
         } catch (NumberFormatException e){
-            System.err.printf("Ошибка парсинга [%s] для локации [%s]: %s\n", category, rawLocation, value);
+            log.error("Ошибка парсинга [{}] для локации [{}]: {}", category, rawLocation, value);
         }
     }
 

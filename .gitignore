@@ -5,8 +5,8 @@ target/
 !**/src/test/**/target/
 application-local.properties
 credentials.json
-credentials2.json
-
+src/main/resources/config/sheets-ranges.yml
+sheets-ranges.yml
 
 ### STS ###
 .apt_generated
