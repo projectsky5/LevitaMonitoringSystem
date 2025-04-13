@@ -65,8 +65,39 @@ public class KpiDataService {
 
     }
 
-    private void handleUserCreation(String value) {
+    private void handleUserCreation(String rawUser) {
+        String[] nameAndLocation = extractNameAndLocation(rawUser);
+        String name = nameAndLocation[0];
+        String locationName = nameAndLocation[1];
 
+        if(name.isBlank() || locationName.isBlank()){
+            System.err.printf("Некорректное имя или локация: %s\n", rawUser);
+            return;
+        }
+
+        Location location = locationRepository.findAll().stream()
+                .filter( loc -> loc.getName().equalsIgnoreCase(locationName))
+                .findFirst()
+                .orElseGet( () -> {
+                    Location loc = new Location();
+                    loc.setName(locationName);
+                    return locationRepository.save(loc);
+                });
+
+        boolean exists = userRepository.findAll().stream()
+                .anyMatch( user -> user.getName().equalsIgnoreCase(name)
+                        && user.getLocation() != null
+                        && user.getLocation().getName().equalsIgnoreCase(locationName));
+
+        if(!exists){
+            User user = new User();
+            user.setName(name);
+            user.setLogin("user_" + name.toLowerCase() + "_" + locationName.toLowerCase());
+            user.setPassword(String.valueOf(Math.random() * 100));
+            user.setLocation(location);
+            userRepository.save(user);
+            System.out.printf("Создан пользователь [%s (%s)]\n", name, locationName);
+        }
     }
 
     private void handleLocationCreation(String value) {
