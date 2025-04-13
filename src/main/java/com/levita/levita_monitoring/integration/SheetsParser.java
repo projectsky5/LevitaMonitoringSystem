@@ -116,6 +116,15 @@ public class SheetsParser {
 
     }
 
+    private void parseByCategory(String category){
+        for (SpreadsheetConfig config : spreadsheetsConfig) {
+            List<RangeDescriptor> filteredRanges = config.getRanges().stream()
+                    .filter(descriptor -> descriptor.category().equalsIgnoreCase(category))
+                    .toList();
+
+            parseRanges(config.getSpreadsheetId(), filteredRanges);
+        }
+    }
 
     private void parseRanges(String spreadsheetId, List<RangeDescriptor> ranges){
         ExecutorService executor = Executors.newFixedThreadPool(4);
