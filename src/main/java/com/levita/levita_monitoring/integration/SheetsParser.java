@@ -102,50 +102,58 @@ public class SheetsParser {
     }
 
     private void parseRanges(String spreadsheetId, List<RangeDescriptor> ranges){
+        final int BATCH_SIZE = 36;
+
         ExecutorService executor = Executors.newFixedThreadPool(4);
         List<Future<?>> futures = new ArrayList<>();
 
-        futures.add(executor.submit( () -> {
-            try{
-                List<String> rangeStrings = ranges.stream().map(RangeDescriptor::range).toList();
+        for (int i = 0; i < ranges.size(); i+=BATCH_SIZE) {
+            int end = Math.min(i + BATCH_SIZE, ranges.size());
+            List<RangeDescriptor> batch = ranges.subList(i, end);
 
-                log.info("Загрузка {} диапазонов из таблицы [{}]", ranges.size(), spreadsheetId);
+            futures.add(executor.submit( () -> {
+                try{
+                    List<String> rangeStrings = batch.stream()
+                            .map(RangeDescriptor::range)
+                            .toList();
 
-                BatchGetValuesResponse response = sheetsService.spreadsheets().values()
-                        .batchGet(spreadsheetId)
-                        .setRanges(rangeStrings)
-                        .execute();
+                    log.info("Загрузка {} диапазонов из таблицы [{}]", batch.size(), spreadsheetId);
 
-                List<ValueRange> valueRanges = response.getValueRanges();
+                    BatchGetValuesResponse response = sheetsService.spreadsheets().values()
+                            .batchGet(spreadsheetId)
+                            .setRanges(rangeStrings)
+                            .execute();
 
-                if(valueRanges == null || valueRanges.size() != ranges.size()){
-                    log.warn("Ошибка: пустой или несоответствующий valueRanges из таблицы [{}]", spreadsheetId);
-                    return;
-                }
+                    List<ValueRange> valueRanges = response.getValueRanges();
 
-                for (int i = 0; i < valueRanges.size(); i++) {
-                    ValueRange valueRange = valueRanges.get(i);
-                    List<List<Object>> values = valueRange.getValues();
-                    if(values == null || values.isEmpty()) {
-                        log.warn("Пропущен пустой range [{}]", ranges.get(i).range());
-                        continue;
+                    if(valueRanges == null || valueRanges.size() != batch.size()){
+                        log.warn("Ошибка: пустой или несоответствующий valueRanges из таблицы [{}]", spreadsheetId);
+                        return;
                     }
 
-                    List<Object> row = values.get(0);
-                    if(row.isEmpty()){
-                        log.warn("Пропущена строка в range [{}]", ranges.get(i).range());
-                        continue;
-                    }
+                    for (int j = 0; j < valueRanges.size(); j++) {
+                        List<List<Object>> values = valueRanges.get(j).getValues();
+                        if(values == null || values.isEmpty()) {
+                            log.warn("Пропущен пустой range [{}]", ranges.get(j).range());
+                            continue;
+                        }
 
-                    String value = row.get(0).toString();
-                    RangeDescriptor descriptor = ranges.get(i);
-                    kpiDataService.saveDataFromSheets(descriptor, value);
+                        List<Object> row = values.get(0);
+                        if(row.isEmpty()){
+                            log.warn("Пропущена строка в range [{}]", ranges.get(j).range());
+                            continue;
+                        }
+
+                        String value = row.get(0).toString();
+                        RangeDescriptor descriptor = batch.get(j);
+                        kpiDataService.saveDataFromSheets(descriptor, value);
+                    }
+                } catch (IOException e) {
+                    log.error("Ошибка при пакетном запросе к таблице [{}]", spreadsheetId, e);
+                    throw new RuntimeException("Ошибка при пакетном запросе к таблице " + spreadsheetId, e);
                 }
-            } catch (IOException e) {
-                log.error("Ошибка при пакетном запросе к таблице [{}]", spreadsheetId, e);
-                throw new RuntimeException("Ошибка при пакетном запросе к таблице " + spreadsheetId, e);
-            }
-        }));
+            }));
+        }
 
         for (Future<?> future : futures) {
             try{

@@ -7,6 +7,8 @@ application-local.properties
 credentials.json
 src/main/resources/config/sheets-ranges.yml
 sheets-ranges.yml
+logs/application.log
+logs/*.log
 
 ### STS ###
 .apt_generated
