@@ -59,61 +59,29 @@ public class SheetsParser {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     public void getDataFromSheets(){
+        parseLocations();
+        parseUsers();
+        parseKpiData();
+    }
 
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-        List<Future<?>> futures = new ArrayList<>();
+    private void parseLocations(){
+        parseByCategory("LOCATIONS");
+    }
 
-        for(SpreadsheetConfig config : spreadsheetsConfig) {
-            final String spreadsheetId = config.getSpreadsheetId();
-            final List<RangeDescriptor> ranges = config.getRanges();
+    private void parseUsers(){
+        parseByCategory("USERS");
+    }
 
-            futures.add(executor.submit( () -> {
-                try{
-                    List<String> rangeStrings = ranges.stream()
-                            .map(RangeDescriptor::range)
-                            .toList();
+    private void parseKpiData(){
+        List<String> skipCategories = List.of("USERS", "LOCATIONS");
 
-                    BatchGetValuesResponse response = sheetsService.spreadsheets().values()
-                            .batchGet(spreadsheetId)
-                            .setRanges(rangeStrings)
-                            .execute();
+        for (SpreadsheetConfig config : spreadsheetsConfig) {
+            List<RangeDescriptor> filteredRanges = config.getRanges().stream()
+                    .filter(descriptor -> !skipCategories.contains(descriptor.category()))
+                    .toList();
 
-                    List<ValueRange> valueRanges = response.getValueRanges();
-
-                    for (int i = 0; i < valueRanges.size(); i++) {
-                        ValueRange valueRange = valueRanges.get(i);
-
-                        List<List<Object>> values = valueRange.getValues();
-                        if(values == null || values.isEmpty()) {
-                            continue;
-                        }
-
-                        List<Object> row = values.get(0);
-                        if(row.isEmpty()){
-                            continue;
-                        }
-
-                        String value = row.get(0).toString();
-                        RangeDescriptor descriptor = ranges.get(i);
-                        kpiDataService.saveDataFromSheets(descriptor, value);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException("Ошибка при пакетном запросе к таблице " + spreadsheetId, e);
-                }
-            } ));
+            parseRanges(config.getSpreadsheetId(), filteredRanges);
         }
-
-        for (Future<?> future : futures) {
-            try{
-                future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-
-        executor.shutdown();
-
-
     }
 
     private void parseByCategory(String category){
@@ -122,7 +90,12 @@ public class SheetsParser {
                     .filter(descriptor -> descriptor.category().equalsIgnoreCase(category))
                     .toList();
 
-            parseRanges(config.getSpreadsheetId(), filteredRanges);
+            boolean hasSuchCategory = config.getRanges().stream()
+                            .anyMatch(descriptor -> descriptor.category().equalsIgnoreCase(category));
+
+            if(!filteredRanges.isEmpty()){
+                parseRanges(config.getSpreadsheetId(), filteredRanges);
+            }
         }
     }
 
@@ -140,6 +113,11 @@ public class SheetsParser {
                         .execute();
 
                 List<ValueRange> valueRanges = response.getValueRanges();
+
+                if(valueRanges == null || valueRanges.size() != ranges.size()){
+                    System.err.printf("Ошибка: пустой или несоответствующий valueRanges из таблицы [%s]\n", spreadsheetId);
+                    return;
+                }
 
                 for (int i = 0; i < valueRanges.size(); i++) {
                     ValueRange valueRange = valueRanges.get(i);

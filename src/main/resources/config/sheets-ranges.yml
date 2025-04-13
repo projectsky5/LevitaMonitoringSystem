@@ -1,25 +1,160 @@
 spreadsheets:
   - id: "16c-SSNDJSQWj2jCHVWSoVOCnZMBbAHKAC3Tq5JOCi5U" #Управ
     ranges:
-      - category: "PLAN_COMPLETION_PERCENT"
-        template: "'План-Факт %d'!BJ4:BM4"
-        count: 9
-
+      - category: "LOCATIONS"
+        explicit: []
+      - category: "USERS"
+        explicit: []
       - category: "ACTUAL_INCOME"
-        template: "'План-Факт %d'!BF4:BH4"
-        count: 9
+        explicit:
+          - id: 1
+            range: "'План-Факт 1'!BF4:BF4"
+            label: "Варварская"
+          - id: 2
+            range: "'План-Факт 2'!BF4:BF4"
+            label: "Чугунова"
+          - id: 3
+            range: "'План-Факт 3'!BF4:BF4"
+            label: "Родионова"
+          - id: 4
+            range: "'План-Факт 4'!BF4:BF4"
+            label: "Мещерский"
+          - id: 5
+            range: "'План-Факт 5'!BF4:BF4"
+            label: "Богородского"
+          - id: 6
+            range: "'План-Факт 6'!BF4:BF4"
+            label: "Воровского"
+          - id: 7
+            range: "'План-Факт 7'!BF4:BF4"
+            label: "Краснодонцев"
+          - id: 8
+            range: "'План-Факт 8'!BF4:BF4"
+            label: "Щербакова"
+          - id: 9
+            range: "'План-Факт 9'!BF4:BF4"
+            label: "Лескова"
+
+
+      - category: "PLAN_COMPLETION_PERCENT"
+        explicit:
+          - id: 1
+            range: "'План-Факт 1'!BJ4:BJ4"
+            label: "Варварская"
+          - id: 2
+            range: "'План-Факт 2'!BJ4:BJ4"
+            label: "Чугунова"
+          - id: 3
+            range: "'План-Факт 3'!BJ4:BJ4"
+            label: "Родионова"
+          - id: 4
+            range: "'План-Факт 4'!BJ4:BJ4"
+            label: "Мещерский"
+          - id: 5
+            range: "'План-Факт 5'!BJ4:BJ4"
+            label: "Богородского"
+          - id: 6
+            range: "'План-Факт 6'!BJ4:BJ4"
+            label: "Воровского"
+          - id: 7
+            range: "'План-Факт 7'!BJ4:BJ4"
+            label: "Краснодонцев"
+          - id: 8
+            range: "'План-Факт 8'!BJ4:BJ4"
+            label: "Щербакова"
+          - id: 9
+            range: "'План-Факт 9'!BJ4:BJ4"
+            label: "Лескова"
 
       - category: "LOCATION_PLAN"
-        template: "'План-Факт %d'!BF3:BH3"
-        count: 9
+        explicit:
+          - id: 1
+            range: "'План-Факт 1'!BF3:BF3"
+            label: "Варварская"
+          - id: 2
+            range: "'План-Факт 2'!BF3:BF3"
+            label: "Чугунова"
+          - id: 3
+            range: "'План-Факт 3'!BF3:BF3"
+            label: "Родионова"
+          - id: 4
+            range: "'План-Факт 4'!BF3:BF3"
+            label: "Мещерский"
+          - id: 5
+            range: "'План-Факт 5'!BF3:BF3"
+            label: "Богородского"
+          - id: 6
+            range: "'План-Факт 6'!BF3:BF3"
+            label: "Воровского"
+          - id: 7
+            range: "'План-Факт 7'!BF3:BF3"
+            label: "Краснодонцев"
+          - id: 8
+            range: "'План-Факт 8'!BF3:BF3"
+            label: "Щербакова"
+          - id: 9
+            range: "'План-Факт 9'!BF3:BF3"
+            label: "Лескова"
 
       - category: "MAX_DAILY_REVENUE"
-        template: "'План-Факт %d'!BL100:BL100"
-        count: 9
+        explicit:
+          - id: 1
+            range: "'План-Факт 1'!BL100:BL100"
+            label: "Варварская"
+          - id: 2
+            range: "'План-Факт 2'!BL100:BL100"
+            label: "Чугунова"
+          - id: 3
+            range: "'План-Факт 3'!BL100:BL100"
+            label: "Родионова"
+          - id: 4
+            range: "'План-Факт 4'!BL100:BL100"
+            label: "Мещерский"
+          - id: 5
+            range: "'План-Факт 5'!BL100:BL100"
+            label: "Богородского"
+          - id: 6
+            range: "'План-Факт 6'!BL100:BL100"
+            label: "Воровского"
+          - id: 7
+            range: "'План-Факт 7'!BL100:BL100"
+            label: "Краснодонцев"
+          - id: 8
+            range: "'План-Факт 8'!BL100:BL100"
+            label: "Щербакова"
+          - id: 9
+            range: "'План-Факт 9'!BL100:BL100"
+            label: "Лескова"
 
       - category: "REMAINING_TO_PLAN"
-        template: "'План-Факт %d'!BK50:BK50"
-        count: 9
+        explicit:
+          - id: 1
+            range: "'План-Факт 1'!BK50:BK50"
+            label: "Варварская"
+          - id: 2
+            range: "'План-Факт 2'!BK50:BK50"
+            label: "Чугунова"
+          - id: 3
+            range: "'План-Факт 3'!BK50:BK50"
+            label: "Родионова"
+          - id: 4
+            range: "'План-Факт 4'!BK50:BK50"
+            label: "Мещерский"
+          - id: 5
+            range: "'План-Факт 5'!BK50:BK50"
+            label: "Богородского"
+          - id: 6
+            range: "'План-Факт 6'!BK50:BK50"
+            label: "Воровского"
+          - id: 7
+            range: "'План-Факт 7'!BK50:BK50"
+            label: "Краснодонцев"
+          - id: 8
+            range: "'План-Факт 8'!BK50:BK50"
+            label: "Щербакова"
+          - id: 9
+            range: "'План-Факт 9'!BK50:BK50"
+            label: "Лескова"
 
   - id: "1BwQdns8KkBsZ0C4k8dC6BtGxaLNocbmDR0bfuGKXSJs" #Показ админов
     ranges:

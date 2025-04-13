@@ -171,6 +171,11 @@ public class KpiDataService {
     }
 
     private void handleLocationKpiByName(String category, String rawLocation, String value){
+        if(rawLocation == null || rawLocation.isBlank()){
+            System.err.printf("Ошибка: отсутствует label (название локации) для [%s]\n",category);
+            return;
+        }
+
         Optional<LocationKpi> optKpi = getLocationKpiByName(rawLocation.trim());
 
         if(optKpi.isEmpty()) {
