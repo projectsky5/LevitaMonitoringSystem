@@ -1,5 +1,7 @@
 package com.levita.levita_monitoring.controller;
 
+import com.levita.levita_monitoring.dto.DashboardDto;
+import com.levita.levita_monitoring.service.DashboardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
