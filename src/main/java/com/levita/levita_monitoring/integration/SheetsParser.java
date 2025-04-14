@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.json.JsonFactory;
@@ -60,7 +61,13 @@ public class SheetsParser {
 
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-    public void getDataFromSheets(){
+    @Scheduled(fixedRate = 60 * 60 * 1000)
+    public void scheduleDataParsing(){
+        log.info("Запуск планового парсинга данных из Google Sheets");
+        getDataFromSheets();
+    }
+
+    private void getDataFromSheets(){
         parseLocations();
         parseUsers();
         parseKpiData();
