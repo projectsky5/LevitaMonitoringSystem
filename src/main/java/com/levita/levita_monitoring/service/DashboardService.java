@@ -5,7 +5,6 @@ import com.levita.levita_monitoring.model.LocationKpi;
 import com.levita.levita_monitoring.model.User;
 import com.levita.levita_monitoring.model.UserKpi;
 import com.levita.levita_monitoring.repository.LocationKpiRepository;
-import com.levita.levita_monitoring.repository.LocationRepository;
 import com.levita.levita_monitoring.repository.UserKpiRepository;
 import com.levita.levita_monitoring.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -58,6 +57,4 @@ public class DashboardService {
 
                 .build();
     }
-
-
 }

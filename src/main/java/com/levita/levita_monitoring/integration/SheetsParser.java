@@ -102,7 +102,7 @@ public class SheetsParser {
     }
 
     private void parseRanges(String spreadsheetId, List<RangeDescriptor> ranges){
-        final int BATCH_SIZE = 36;
+        final int BATCH_SIZE = 30;
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
         List<Future<?>> futures = new ArrayList<>();

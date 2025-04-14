@@ -20,8 +20,8 @@ public class DashboardController {
     }
 
     @GetMapping
-    public ResponseEntity<DashboardDto> getDashboard(Principal principal){
-        DashboardDto dto = dashboardService.getDashboardForUser(principal.getName());
+    public ResponseEntity<DashboardDto> getDashboard(){
+        DashboardDto dto = dashboardService.getDashboardForUser("user_женя_варварская");
         return ResponseEntity.ok(dto);
     }
 }
