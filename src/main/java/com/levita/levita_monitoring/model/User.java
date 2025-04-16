@@ -1,5 +1,6 @@
 package com.levita.levita_monitoring.model;
 
+import com.levita.levita_monitoring.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     public Long getId() {
         return this.id;
@@ -68,6 +73,14 @@ public class User {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public boolean equals(final Object o) {

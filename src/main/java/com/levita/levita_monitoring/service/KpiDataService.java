@@ -1,5 +1,6 @@
 package com.levita.levita_monitoring.service;
 
+import com.levita.levita_monitoring.enums.Role;
 import com.levita.levita_monitoring.integration.model.RangeDescriptor;
 import com.levita.levita_monitoring.model.Location;
 import com.levita.levita_monitoring.model.LocationKpi;
@@ -99,6 +100,7 @@ public class KpiDataService {
             user.setLogin("user_" + name.toLowerCase() + "_" + locationName.toLowerCase());
             user.setPassword(String.valueOf(Math.random() * 100));
             user.setLocation(location);
+            user.setRole(Role.ADMIN);
             userRepository.save(user);
             log.info("Создан пользователь [{} ({})]", name, locationName);
         }

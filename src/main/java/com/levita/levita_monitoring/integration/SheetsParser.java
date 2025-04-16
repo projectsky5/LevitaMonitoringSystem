@@ -65,6 +65,7 @@ public class SheetsParser {
     public void scheduleDataParsing(){
         log.info("Запуск планового парсинга данных из Google Sheets");
         getDataFromSheets();
+        log.info("Плановый парсинг завершен");
     }
 
     private void getDataFromSheets(){
