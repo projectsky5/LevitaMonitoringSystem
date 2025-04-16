@@ -13,6 +13,7 @@ import com.levita.levita_monitoring.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,16 +29,19 @@ public class KpiDataService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final LocationKpiRepository locationKpiRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public KpiDataService(UserKpiRepository userKpiRepository,
                           UserRepository userRepository,
                           LocationRepository locationRepository,
-                          LocationKpiRepository locationKpiRepository) {
+                          LocationKpiRepository locationKpiRepository,
+                          PasswordEncoder passwordEncoder) {
         this.userKpiRepository = userKpiRepository;
         this.userRepository = userRepository;
         this.locationRepository = locationRepository;
         this.locationKpiRepository = locationKpiRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -71,6 +75,7 @@ public class KpiDataService {
     }
 
     private void handleUserCreation(String rawUser) {
+        String rawPassword = "123456"; // Для теста
         String[] nameAndLocation = extractNameAndLocation(rawUser);
         String name = nameAndLocation[0];
         String locationName = nameAndLocation[1];
@@ -98,7 +103,7 @@ public class KpiDataService {
             User user = new User();
             user.setName(name);
             user.setLogin("user_" + name.toLowerCase() + "_" + locationName.toLowerCase());
-            user.setPassword(String.valueOf(Math.random() * 100));
+            user.setPassword(String.valueOf(passwordEncoder.encode(rawPassword)));
             user.setLocation(location);
             user.setRole(Role.ADMIN);
             userRepository.save(user);
