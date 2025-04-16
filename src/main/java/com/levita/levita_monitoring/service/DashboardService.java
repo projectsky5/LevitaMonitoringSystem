@@ -30,6 +30,18 @@ public class DashboardService {
         User user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        return buildDashboardFor(user);
+    }
+
+    @Transactional (readOnly = true)
+    public DashboardDto getDashboardByUserId(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return buildDashboardFor(user);
+    }
+
+    private DashboardDto buildDashboardFor(User user) {
         UserKpi userKpi = userKpiRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User KPI not found"));
 
