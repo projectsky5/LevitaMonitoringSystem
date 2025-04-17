@@ -10,6 +10,7 @@ import com.levita.levita_monitoring.repository.LocationKpiRepository;
 import com.levita.levita_monitoring.repository.LocationRepository;
 import com.levita.levita_monitoring.repository.UserKpiRepository;
 import com.levita.levita_monitoring.repository.UserRepository;
+import com.levita.levita_monitoring.security.CredentialsGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,6 @@ public class KpiDataService {
     }
 
     private void handleUserCreation(String rawUser) {
-        String rawPassword = "123456"; // Для теста
         String[] nameAndLocation = extractNameAndLocation(rawUser);
         String name = nameAndLocation[0];
         String locationName = nameAndLocation[1];
@@ -98,12 +98,11 @@ public class KpiDataService {
                 .anyMatch( user -> user.getName().equalsIgnoreCase(name)
                         && user.getLocation() != null
                         && user.getLocation().getName().equalsIgnoreCase(locationName));
-
         if(!exists){
             User user = new User();
             user.setName(name);
-            user.setLogin("user_" + name.toLowerCase() + "_" + locationName.toLowerCase());
-            user.setPassword(String.valueOf(passwordEncoder.encode(rawPassword)));
+            user.setLogin(CredentialsGenerator.generateLogin(name, locationName));
+            user.setPassword(String.valueOf(passwordEncoder.encode(CredentialsGenerator.generatePassword(name, locationName))));
             user.setLocation(location);
             user.setRole(Role.ADMIN);
             userRepository.save(user);
