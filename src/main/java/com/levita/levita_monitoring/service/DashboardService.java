@@ -1,6 +1,8 @@
 package com.levita.levita_monitoring.service;
 
+import com.levita.levita_monitoring.dto.AdminDto;
 import com.levita.levita_monitoring.dto.DashboardDto;
+import com.levita.levita_monitoring.enums.Role;
 import com.levita.levita_monitoring.model.LocationKpi;
 import com.levita.levita_monitoring.model.User;
 import com.levita.levita_monitoring.model.UserKpi;
@@ -9,6 +11,8 @@ import com.levita.levita_monitoring.repository.UserKpiRepository;
 import com.levita.levita_monitoring.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class DashboardService {
@@ -68,5 +72,11 @@ public class DashboardService {
                 .actualIncome(locationKpi.getActualIncome())
 
                 .build();
+    }
+
+    public List<AdminDto> getAllAdmins() {
+        return userRepository.findAllByRole(Role.ADMIN).stream()
+                .map(AdminDto::new)
+                .toList();
     }
 }
