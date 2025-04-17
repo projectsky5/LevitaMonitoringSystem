@@ -1,6 +1,7 @@
 package com.levita.levita_monitoring.configuration;
 
 import com.levita.levita_monitoring.security.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +36,15 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/api/dashboard", true)
                         .permitAll()
                 )
-                .logout(logout -> logout.permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/api/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((req, resp, auth) -> {
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                        })
+                        .permitAll()
+                )
                 .build();
 
     }
