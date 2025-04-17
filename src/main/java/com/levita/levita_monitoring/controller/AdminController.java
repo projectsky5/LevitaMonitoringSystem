@@ -3,7 +3,6 @@ package com.levita.levita_monitoring.controller;
 import com.levita.levita_monitoring.dto.AdminDto;
 import com.levita.levita_monitoring.dto.DashboardDto;
 import com.levita.levita_monitoring.service.DashboardService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +26,7 @@ public class AdminController {
     }
 
     @GetMapping("/{userId}/dashboard")
-    public ResponseEntity<DashboardDto> getAdminDashboard(@PathVariable Long userId) {
-        DashboardDto dto = dashboardService.getDashboardByUserId(userId);
-        return ResponseEntity.ok(dto);
+    public DashboardDto getAdminDashboard(@PathVariable Long userId) {
+        return dashboardService.getDashboardByUserId(userId);
     }
 }
