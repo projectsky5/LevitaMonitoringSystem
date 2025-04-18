@@ -58,7 +58,7 @@ public class DashboardService {
 
                 .conversionRate(userKpi.getConversionRate())
                 .currentIncome(userKpi.getCurrentIncome())
-                .plannedIncome(userKpi.getPlannedIncome())
+//                .plannedIncome(userKpi.getPlannedIncome())
                 .mainSalaryPart(userKpi.getMainSalaryPart())
                 .personalRevenue(userKpi.getPersonalRevenue())
                 .dayBonuses(userKpi.getDayBonuses())

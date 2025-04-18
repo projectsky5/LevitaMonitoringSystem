@@ -19,7 +19,7 @@ public class UserKpi {
 
     private Double conversionRate;
     private BigDecimal currentIncome;
-    private BigDecimal plannedIncome;
+//    private BigDecimal plannedIncome;
     private BigDecimal mainSalaryPart;
     private BigDecimal personalRevenue;
     private BigDecimal dayBonuses;
@@ -39,9 +39,9 @@ public class UserKpi {
         return this.currentIncome;
     }
 
-    public BigDecimal getPlannedIncome() {
-        return this.plannedIncome;
-    }
+//    public BigDecimal getPlannedIncome() {
+//        return this.plannedIncome;
+//    }
 
     public BigDecimal getMainSalaryPart() {
         return this.mainSalaryPart;
@@ -67,9 +67,9 @@ public class UserKpi {
         this.currentIncome = currentIncome;
     }
 
-    public void setPlannedIncome(BigDecimal plannedIncome) {
-        this.plannedIncome = plannedIncome;
-    }
+//    public void setPlannedIncome(BigDecimal plannedIncome) {
+//        this.plannedIncome = plannedIncome;
+//    }
 
     public void setMainSalaryPart(BigDecimal mainSalaryPart) {
         this.mainSalaryPart = mainSalaryPart;
@@ -100,10 +100,10 @@ public class UserKpi {
         final Object other$currentIncome = other.getCurrentIncome();
         if (this$currentIncome == null ? other$currentIncome != null : !this$currentIncome.equals(other$currentIncome))
             return false;
-        final Object this$plannedIncome = this.getPlannedIncome();
-        final Object other$plannedIncome = other.getPlannedIncome();
-        if (this$plannedIncome == null ? other$plannedIncome != null : !this$plannedIncome.equals(other$plannedIncome))
-            return false;
+//        final Object this$plannedIncome = this.getPlannedIncome();
+//        final Object other$plannedIncome = other.getPlannedIncome();
+//        if (this$plannedIncome == null ? other$plannedIncome != null : !this$plannedIncome.equals(other$plannedIncome))
+//            return false;
         final Object this$mainSalaryPart = this.getMainSalaryPart();
         final Object other$mainSalaryPart = other.getMainSalaryPart();
         if (this$mainSalaryPart == null ? other$mainSalaryPart != null : !this$mainSalaryPart.equals(other$mainSalaryPart))
@@ -133,8 +133,8 @@ public class UserKpi {
         result = result * PRIME + ($conversionRate == null ? 43 : $conversionRate.hashCode());
         final Object $currentIncome = this.getCurrentIncome();
         result = result * PRIME + ($currentIncome == null ? 43 : $currentIncome.hashCode());
-        final Object $plannedIncome = this.getPlannedIncome();
-        result = result * PRIME + ($plannedIncome == null ? 43 : $plannedIncome.hashCode());
+//        final Object $plannedIncome = this.getPlannedIncome();
+//        result = result * PRIME + ($plannedIncome == null ? 43 : $plannedIncome.hashCode());
         final Object $mainSalaryPart = this.getMainSalaryPart();
         result = result * PRIME + ($mainSalaryPart == null ? 43 : $mainSalaryPart.hashCode());
         final Object $personalRevenue = this.getPersonalRevenue();
@@ -147,6 +147,6 @@ public class UserKpi {
     }
 
     public String toString() {
-        return "UserKpi(conversionRate=" + this.getConversionRate() + ", currentIncome=" + this.getCurrentIncome() + ", plannedIncome=" + this.getPlannedIncome() + ", mainSalaryPart=" + this.getMainSalaryPart() + ", personalRevenue=" + this.getPersonalRevenue() + ", dayBonuses=" + this.getDayBonuses() + ", user=" + this.getUser() + ")";
+        return "UserKpi(conversionRate=" + this.getConversionRate() + ", currentIncome=" + this.getCurrentIncome() /*+ ", plannedIncome=" + this.getPlannedIncome()*/ + ", mainSalaryPart=" + this.getMainSalaryPart() + ", personalRevenue=" + this.getPersonalRevenue() + ", dayBonuses=" + this.getDayBonuses() + ", user=" + this.getUser() + ")";
     }
 }

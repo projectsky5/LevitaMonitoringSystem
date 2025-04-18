@@ -129,14 +129,14 @@ public class KpiDataService {
 
     private boolean isUserKpiCategory(String category) {
         return switch(category){
-            case "CONVERSION_RATE", "MAIN_SALARY_PART", "PERSONAL_REVENUE" -> true;
+            case "CONVERSION_RATE", "MAIN_SALARY_PART", "PERSONAL_REVENUE", "CURRENT_INCOME", "DAY_BONUSES" -> true;
             default -> false;
         };
     }
 
     private boolean isLocationKpiCategory(String category) {
         return switch(category){
-            case "ACTUAL_INCOME", "REMAINING_TO_PLAN", "LOCATION_PLAN", "MAX_DAILY_REVENUE", "PLAN_COMPLETION_PERCENT" -> true;
+            case "ACTUAL_INCOME", "LOCATION_PLAN", "MAX_DAILY_REVENUE", "PLAN_COMPLETION_PERCENT", "REMAINING_TO_PLAN", "DAILY_FIGURE", "AVG_REVENUE_PER_DAY" -> true;
             default -> false;
         };
     }
@@ -155,6 +155,8 @@ public class KpiDataService {
                 case "CONVERSION_RATE" -> userKpi.setConversionRate(Double.valueOf(sanitizeNumericString(value)));
                 case "MAIN_SALARY_PART" -> userKpi.setMainSalaryPart(new BigDecimal(sanitizeNumericString(value)));
                 case "PERSONAL_REVENUE" -> userKpi.setPersonalRevenue(new BigDecimal(sanitizeNumericString(value)));
+                case "CURRENT_INCOME" -> userKpi.setCurrentIncome(new BigDecimal(sanitizeNumericString(value)));
+                case "DAY_BONUSES" -> userKpi.setDayBonuses(new BigDecimal(sanitizeNumericString(value)));
             }
             userKpiRepository.save(userKpi);
             log.info("Сохранено [{}}] для пользователя [{}]: {}", category, rawUser, value);
@@ -202,6 +204,8 @@ public class KpiDataService {
                 case "MAX_DAILY_REVENUE" -> locationKpi.setMaxDailyRevenue(new BigDecimal(sanitizeNumericString(value)));
                 case "PLAN_COMPLETION_PERCENT" -> locationKpi.setPlanCompletionPercent(Double.valueOf(sanitizeNumericString(value)));
                 case "REMAINING_TO_PLAN" -> locationKpi.setLocationRemainingToPlan(new BigDecimal(sanitizeNumericString(value)));
+                case "DAILY_FIGURE" -> locationKpi.setDailyFigure(new BigDecimal(sanitizeNumericString(value)));
+                case "AVG_REVENUE_PER_DAY" -> locationKpi.setAvgRevenuePerDay(new BigDecimal(sanitizeNumericString(value)));
             }
             locationKpiRepository.save(locationKpi);
             log.info("Сохранено [{}] для локации [{}]: {}", category, rawLocation, value);

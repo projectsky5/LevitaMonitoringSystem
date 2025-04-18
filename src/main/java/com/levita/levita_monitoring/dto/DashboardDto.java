@@ -16,7 +16,7 @@ public class DashboardDto {
 
     private Double conversionRate;
     private BigDecimal currentIncome;
-    private BigDecimal plannedIncome;
+//    private BigDecimal plannedIncome;
     private BigDecimal mainSalaryPart;
     private BigDecimal personalRevenue;
     private BigDecimal dayBonuses;
@@ -31,12 +31,12 @@ public class DashboardDto {
     private BigDecimal avgRevenuePerDay;
     private BigDecimal actualIncome;
 
-    public DashboardDto(String username, String locationName, Double conversionRate, BigDecimal currentIncome, BigDecimal plannedIncome, BigDecimal mainSalaryPart, BigDecimal personalRevenue, BigDecimal dayBonuses, BigDecimal dailyFigure, BigDecimal remainingToPlan, BigDecimal locationPlan, BigDecimal maxDailyRevenue, Double planCompletionPercent, BigDecimal avgRevenuePerDay, BigDecimal actualIncome) {
+    public DashboardDto(String username, String locationName, Double conversionRate, BigDecimal currentIncome /*BigDecimal plannedIncome*/, BigDecimal mainSalaryPart, BigDecimal personalRevenue, BigDecimal dayBonuses, BigDecimal dailyFigure, BigDecimal remainingToPlan, BigDecimal locationPlan, BigDecimal maxDailyRevenue, Double planCompletionPercent, BigDecimal avgRevenuePerDay, BigDecimal actualIncome) {
         this.username = username;
         this.locationName = locationName;
         this.conversionRate = conversionRate;
         this.currentIncome = currentIncome;
-        this.plannedIncome = plannedIncome;
+//        this.plannedIncome = plannedIncome;
         this.mainSalaryPart = mainSalaryPart;
         this.personalRevenue = personalRevenue;
         this.dayBonuses = dayBonuses;
@@ -72,9 +72,9 @@ public class DashboardDto {
         return this.currentIncome;
     }
 
-    public BigDecimal getPlannedIncome() {
-        return this.plannedIncome;
-    }
+//    public BigDecimal getPlannedIncome() {
+//        return this.plannedIncome;
+//    }
 
     public BigDecimal getMainSalaryPart() {
         return this.mainSalaryPart;
@@ -132,9 +132,9 @@ public class DashboardDto {
         this.currentIncome = currentIncome;
     }
 
-    public void setPlannedIncome(BigDecimal plannedIncome) {
-        this.plannedIncome = plannedIncome;
-    }
+//    public void setPlannedIncome(BigDecimal plannedIncome) {
+//        this.plannedIncome = plannedIncome;
+//    }
 
     public void setMainSalaryPart(BigDecimal mainSalaryPart) {
         this.mainSalaryPart = mainSalaryPart;
@@ -196,10 +196,10 @@ public class DashboardDto {
         final Object other$currentIncome = other.getCurrentIncome();
         if (this$currentIncome == null ? other$currentIncome != null : !this$currentIncome.equals(other$currentIncome))
             return false;
-        final Object this$plannedIncome = this.getPlannedIncome();
-        final Object other$plannedIncome = other.getPlannedIncome();
-        if (this$plannedIncome == null ? other$plannedIncome != null : !this$plannedIncome.equals(other$plannedIncome))
-            return false;
+//        final Object this$plannedIncome = this.getPlannedIncome();
+//        final Object other$plannedIncome = other.getPlannedIncome();
+//        if (this$plannedIncome == null ? other$plannedIncome != null : !this$plannedIncome.equals(other$plannedIncome))
+//            return false;
         final Object this$mainSalaryPart = this.getMainSalaryPart();
         final Object other$mainSalaryPart = other.getMainSalaryPart();
         if (this$mainSalaryPart == null ? other$mainSalaryPart != null : !this$mainSalaryPart.equals(other$mainSalaryPart))
@@ -258,8 +258,8 @@ public class DashboardDto {
         result = result * PRIME + ($conversionRate == null ? 43 : $conversionRate.hashCode());
         final Object $currentIncome = this.getCurrentIncome();
         result = result * PRIME + ($currentIncome == null ? 43 : $currentIncome.hashCode());
-        final Object $plannedIncome = this.getPlannedIncome();
-        result = result * PRIME + ($plannedIncome == null ? 43 : $plannedIncome.hashCode());
+//        final Object $plannedIncome = this.getPlannedIncome();
+//        result = result * PRIME + ($plannedIncome == null ? 43 : $plannedIncome.hashCode());
         final Object $mainSalaryPart = this.getMainSalaryPart();
         result = result * PRIME + ($mainSalaryPart == null ? 43 : $mainSalaryPart.hashCode());
         final Object $personalRevenue = this.getPersonalRevenue();
@@ -284,7 +284,7 @@ public class DashboardDto {
     }
 
     public String toString() {
-        return "DashboardDto(username=" + this.getUsername() + ", locationName=" + this.getLocationName() + ", conversionRate=" + this.getConversionRate() + ", currentIncome=" + this.getCurrentIncome() + ", plannedIncome=" + this.getPlannedIncome() + ", mainSalaryPart=" + this.getMainSalaryPart() + ", personalRevenue=" + this.getPersonalRevenue() + ", dayBonuses=" + this.getDayBonuses() + ", dailyFigure=" + this.getDailyFigure() + ", remainingToPlan=" + this.getRemainingToPlan() + ", locationPlan=" + this.getLocationPlan() + ", maxDailyRevenue=" + this.getMaxDailyRevenue() + ", planCompletionPercent=" + this.getPlanCompletionPercent() + ", avgRevenuePerDay=" + this.getAvgRevenuePerDay() + ", actualIncome=" + this.getActualIncome() + ")";
+        return "DashboardDto(username=" + this.getUsername() + ", locationName=" + this.getLocationName() + ", conversionRate=" + this.getConversionRate() + ", currentIncome=" + this.getCurrentIncome() + /*", plannedIncome=" + this.getPlannedIncome() +*/ ", mainSalaryPart=" + this.getMainSalaryPart() + ", personalRevenue=" + this.getPersonalRevenue() + ", dayBonuses=" + this.getDayBonuses() + ", dailyFigure=" + this.getDailyFigure() + ", remainingToPlan=" + this.getRemainingToPlan() + ", locationPlan=" + this.getLocationPlan() + ", maxDailyRevenue=" + this.getMaxDailyRevenue() + ", planCompletionPercent=" + this.getPlanCompletionPercent() + ", avgRevenuePerDay=" + this.getAvgRevenuePerDay() + ", actualIncome=" + this.getActualIncome() + ")";
     }
 
     public static class DashboardDtoBuilder {
@@ -292,7 +292,7 @@ public class DashboardDto {
         private String locationName;
         private Double conversionRate;
         private BigDecimal currentIncome;
-        private BigDecimal plannedIncome;
+//        private BigDecimal plannedIncome;
         private BigDecimal mainSalaryPart;
         private BigDecimal personalRevenue;
         private BigDecimal dayBonuses;
@@ -327,10 +327,10 @@ public class DashboardDto {
             return this;
         }
 
-        public DashboardDtoBuilder plannedIncome(BigDecimal plannedIncome) {
-            this.plannedIncome = plannedIncome;
-            return this;
-        }
+//        public DashboardDtoBuilder plannedIncome(BigDecimal plannedIncome) {
+//            this.plannedIncome = plannedIncome;
+//            return this;
+//        }
 
         public DashboardDtoBuilder mainSalaryPart(BigDecimal mainSalaryPart) {
             this.mainSalaryPart = mainSalaryPart;
@@ -383,11 +383,11 @@ public class DashboardDto {
         }
 
         public DashboardDto build() {
-            return new DashboardDto(this.username, this.locationName, this.conversionRate, this.currentIncome, this.plannedIncome, this.mainSalaryPart, this.personalRevenue, this.dayBonuses, this.dailyFigure, this.remainingToPlan, this.locationPlan, this.maxDailyRevenue, this.planCompletionPercent, this.avgRevenuePerDay, this.actualIncome);
+            return new DashboardDto(this.username, this.locationName, this.conversionRate, this.currentIncome, /*this.plannedIncome,*/ this.mainSalaryPart, this.personalRevenue, this.dayBonuses, this.dailyFigure, this.remainingToPlan, this.locationPlan, this.maxDailyRevenue, this.planCompletionPercent, this.avgRevenuePerDay, this.actualIncome);
         }
 
         public String toString() {
-            return "DashboardDto.DashboardDtoBuilder(username=" + this.username + ", locationName=" + this.locationName + ", conversionRate=" + this.conversionRate + ", currentIncome=" + this.currentIncome + ", plannedIncome=" + this.plannedIncome + ", mainSalaryPart=" + this.mainSalaryPart + ", personalRevenue=" + this.personalRevenue + ", dayBonuses=" + this.dayBonuses + ", dailyFigure=" + this.dailyFigure + ", remainingToPlan=" + this.remainingToPlan + ", locationPlan=" + this.locationPlan + ", maxDailyRevenue=" + this.maxDailyRevenue + ", planCompletionPercent=" + this.planCompletionPercent + ", avgRevenuePerDay=" + this.avgRevenuePerDay + ", actualIncome=" + this.actualIncome + ")";
+            return "DashboardDto.DashboardDtoBuilder(username=" + this.username + ", locationName=" + this.locationName + ", conversionRate=" + this.conversionRate + ", currentIncome=" + this.currentIncome + /*", plannedIncome=" + this.plannedIncome +*/ ", mainSalaryPart=" + this.mainSalaryPart + ", personalRevenue=" + this.personalRevenue + ", dayBonuses=" + this.dayBonuses + ", dailyFigure=" + this.dailyFigure + ", remainingToPlan=" + this.remainingToPlan + ", locationPlan=" + this.locationPlan + ", maxDailyRevenue=" + this.maxDailyRevenue + ", planCompletionPercent=" + this.planCompletionPercent + ", avgRevenuePerDay=" + this.avgRevenuePerDay + ", actualIncome=" + this.actualIncome + ")";
         }
     }
 }
