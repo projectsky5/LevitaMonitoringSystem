@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/api/admins/**").hasRole("OWNER")
                         .requestMatchers("/api/dashboard/**").hasAnyRole("OWNER", "ADMIN")
+                        .requestMatchers("api/me").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
