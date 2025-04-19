@@ -1,0 +1,41 @@
+function formatCurrency(amount, withDecimals = true) {
+    return new Intl.NumberFormat('ru-RU', {
+        minimumFractionDigits: withDecimals ? 2 : 0,
+        maximumFractionDigits: withDecimals ? 2 : 0
+    }).format(amount) + ' ₽';
+}
+
+fetch('/api/dashboard')
+    .then(res => res.json())
+    .then(data => {
+        const income = data.currentIncome;
+        const remaining = Math.max(0, data.remainingToPlan);
+        const plan = Math.round(data.locationPlan);
+        const percent = data.planCompletionPercent;
+
+        document.getElementById('currentIncome').innerText = `≈ ${formatCurrency(income)}`;
+        document.getElementById('remainingToPlan').innerText = `${formatCurrency(remaining, false)} до цели`;
+        document.getElementById('yellowBar').style.width = `${percent}%`;
+        document.getElementById('locationPlan').innerText = `План студии ${formatCurrency(plan, false)}`;
+        document.getElementById('planPercent').innerText = `${percent.toFixed(1)}%`;
+
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [percent, Math.max(0, 100 - percent)],
+                    backgroundColor: ['#4a6cf7', '#e5ecff'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '60%',
+                responsive: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            }
+        });
+    });

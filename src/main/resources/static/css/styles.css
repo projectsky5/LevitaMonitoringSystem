@@ -1,0 +1,56 @@
+.pie-wrapper {
+    width: 100px;
+    height: 100px;
+}
+
+#pieChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.center-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 35%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .pie-wrapper {
+        width: 72px !important;
+        height: 72px !important;
+    }
+
+    .progress {
+        height: 8px !important;
+    }
+
+    #yellowBar {
+        height: 8px !important;
+    }
+
+    .fs-3 {
+        font-size: 1.3rem !important;
+    }
+
+    .fs-5 {
+        font-size: 0.95rem !important;
+    }
+
+    .card {
+        padding: 1rem !important;
+    }
+
+    .container {
+        padding: 0 1rem !important;
+    }
+}
+
+#planPercent, #remainingToPlan {
+    font-size: 0.875rem;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}

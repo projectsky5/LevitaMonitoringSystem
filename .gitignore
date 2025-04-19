@@ -10,6 +10,7 @@ sheets-ranges.yml
 logs/application.log
 logs/*.log
 /src/main/java/com/levita/levita_monitoring/security/CredentialsGenerator.java
+src/main/resources/static/assets/**
 
 ### STS ###
 .apt_generated
