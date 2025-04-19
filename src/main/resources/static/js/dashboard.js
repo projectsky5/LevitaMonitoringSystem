@@ -32,6 +32,9 @@ fetch('/api/dashboard')
         // Блок Основная часть заработной платы
         document.getElementById("mainSalaryPart").innerText = formatCurrency(data.mainSalaryPart, false);
 
+        //Блок Личная Выручка
+        document.getElementById("personalRevenue").innerText = formatCurrency(data.personalRevenue, false);
+
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {
             type: 'doughnut',
