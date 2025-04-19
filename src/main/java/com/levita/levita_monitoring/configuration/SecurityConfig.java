@@ -27,18 +27,22 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/login.html", "/css/**", "/js/**", "/fonts/**", "/assets/**").permitAll()
                         .requestMatchers("/api/admins/**").hasRole("OWNER")
                         .requestMatchers("/api/dashboard/**").hasAnyRole("OWNER", "ADMIN")
-                        .requestMatchers("api/me").authenticated()
+                        .requestMatchers("/api/me").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/dashboard", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/api/logout")
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessHandler((req, resp, auth) -> {
