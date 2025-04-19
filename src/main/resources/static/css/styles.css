@@ -13,6 +13,48 @@
     font-style: normal;
     font-display: swap;
 }
+
+/* Заголовок KPI */
+.kpi-title {
+    font-family: 'Spectral', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #3b3b3b;
+}
+
+/* Значение KPI */
+.kpi-value {
+    font-family: 'Spectral', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #000000;
+}
+
+/* Подписи под прогресс-блоком */
+.kpi-subtext {
+    font-family: 'Spectral', sans-serif;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Контейнер под диаграмму */
+.kpi-chart-container {
+    min-width: 100px;
+    display: flex;
+    align-items: start;
+    justify-content: end;
+}
+
+/* Прогресс-бар */
+.kpi-progress {
+    height: 12px;
+    background-color: #F4DA96;
+}
+
+.kpi-progress .progress-bar {
+    background-color: #F6C956;
+}
+
 /* Диаграмма */
 .pie-wrapper {
     width: 100px;
@@ -35,6 +77,7 @@
 
 /* Блок "Цифра дня" с фоном и SVG ₽ */
 .figure-highlight {
+    font-family: 'Spectral', sans-serif;
     background-color: #fff5f5;
     height: 120px;
     position: relative;
@@ -57,12 +100,14 @@
 
 /* KPI карточки */
 .kpi-card {
+    font-family: 'Spectral', sans-serif;
     min-height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 .kpi-badge {
+    font-family: 'Spectral', sans-serif;
     background-color: #FFD54F;
     color: #2b2b2b;
     font-weight: 600;
@@ -73,8 +118,8 @@
     font-size: 0.875rem;
 }
 .crown-icon {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: auto;
 }
 
 /* Подписи к проценту и сумме */
@@ -149,4 +194,32 @@
     width: 40px;
     height: auto;
     object-fit: contain;
+}
+
+/*Лого по центру*/
+.central-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-logo {
+    height: 50px;
+    object-fit: contain;
+}
+
+.slogan {
+    font-family: 'Spectral', serif;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.dashboard-wrapper {
+    background-color: #FCFCFC;
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }

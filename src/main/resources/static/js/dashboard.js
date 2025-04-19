@@ -5,14 +5,23 @@ function formatCurrency(amount, withDecimals = true) {
     }).format(amount) + ' ₽';
 }
 
-fetch('/api/dashboard')
+// Получение ID из URL, если указан
+function getAdminIdFromUrl() {
+    const match = window.location.pathname.match(/^\/dashboard\/(\d+)$/);
+    return match ? match[1] : null;
+}
+
+const adminId = getAdminIdFromUrl();
+const url = adminId ? `/api/admins/${adminId}/dashboard` : '/api/dashboard';
+
+fetch(url)
     .then(res => res.json())
     .then(data => {
         const income = data.currentIncome;
         const remaining = Math.max(0, data.remainingToPlan);
         const plan = Math.round(data.locationPlan);
         const percent = data.planCompletionPercent;
-        const rawLocation = data.locationName
+        const rawLocation = data.locationName;
         const formattedLocation = rawLocation.charAt(0).toUpperCase() + rawLocation.slice(1).toLowerCase();
 
         // Шапка
@@ -38,18 +47,19 @@ fetch('/api/dashboard')
         // Блок Основная часть заработной платы
         document.getElementById("mainSalaryPart").innerText = formatCurrency(data.mainSalaryPart, false);
 
-        //Блок Личная Выручка
+        // Блок Личная Выручка
         document.getElementById("personalRevenue").innerText = formatCurrency(data.personalRevenue, false);
 
-        //Блок Максимальная дневная выручка
+        // Блок Максимальная дневная выручка
         document.getElementById("maxDailyRevenue").innerText = formatCurrency(data.maxDailyRevenue, false);
 
-        //Блок Средняя выручка за смену
+        // Блок Средняя выручка за смену
         document.getElementById("avgRevenuePerDay").innerText = formatCurrency(data.avgRevenuePerDay, false);
 
-        //Блок Конверсия
+        // Блок Конверсия
         document.getElementById("conversionRate").innerText = `${data.conversionRate.toFixed(1)}%`;
 
+        // Диаграмма
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {
             type: 'doughnut',
