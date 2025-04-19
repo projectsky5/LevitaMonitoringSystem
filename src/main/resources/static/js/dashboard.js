@@ -29,6 +29,9 @@ fetch('/api/dashboard')
         // Блок Бонусы дня
         document.getElementById("dayBonusesAmount").innerText = formatCurrency(data.dayBonuses, false);
 
+        // Блок Основная часть заработной платы
+        document.getElementById("mainSalaryPart").innerText = formatCurrency(data.mainSalaryPart, false);
+
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {
             type: 'doughnut',
