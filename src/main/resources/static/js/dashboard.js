@@ -19,6 +19,12 @@ fetch('/api/dashboard')
         document.getElementById('locationPlan').innerText = `План студии ${formatCurrency(plan, false)}`;
         document.getElementById('planPercent').innerText = `${percent.toFixed(1)}%`;
 
+        // Второй блок
+        document.getElementById('dailyFigure').innerText = formatCurrency(data.dailyFigure, false);
+        document.getElementById('locationPlanBlock').innerText = formatCurrency(data.locationPlan, false);
+        document.getElementById('actualIncome').innerText = formatCurrency(data.actualIncome, false);
+        document.getElementById('remainingBlock').innerText = formatCurrency(remaining, false);
+
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {
             type: 'doughnut',

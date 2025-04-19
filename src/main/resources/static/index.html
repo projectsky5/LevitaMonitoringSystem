@@ -9,39 +9,73 @@
 </head>
 <body>
 <div class="container my-5">
-    <div class="card shadow-sm rounded-4 p-4">
-        <div class="d-flex flex-column">
+    <div class="row gy-4">
 
-            <!-- ВЕРХ -->
-            <div class="d-flex justify-content-between align-items-start flex-wrap flex-md-nowrap mb-3">
-                <div>
-                    <div class="fs-5 fw-semibold">Текущий доход</div>
-                    <div class="fs-3 fw-bold" id="currentIncome">≈ … ₽</div>
-                </div>
-                <!-- Диаграмма -->
-                <div class="ms-3 d-flex align-items-start justify-content-end" style="min-width: 100px;">
-                    <div class="position-relative pie-wrapper">
-                        <canvas id="pieChart"></canvas>
-                        <img src="/assets/Mountain.svg" alt="icon" class="center-icon">
+        <!-- БЛОК 1: Текущий доход -->
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-4 p-4 h-100">
+                <div class="d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap flex-md-nowrap mb-3">
+                        <div>
+                            <div class="fs-5 fw-semibold">Текущий доход</div>
+                            <div class="fs-3 fw-bold" id="currentIncome">≈ … ₽</div>
+                        </div>
+                        <div class="ms-3 d-flex align-items-start justify-content-end" style="min-width: 100px;">
+                            <div class="position-relative pie-wrapper">
+                                <canvas id="pieChart"></canvas>
+                                <img src="/assets/Mountain.svg" alt="icon" class="center-icon">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between text-muted small align-items-center mb-1">
+                            <span id="remainingToPlan">… ₽ до цели</span>
+                            <span class="fw-semibold" id="planPercent">…%</span>
+                        </div>
+                        <div class="progress rounded-pill mb-1" style="height: 12px; background-color: #F4DA96;">
+                            <div id="yellowBar" class="progress-bar" style="width: 0%; background-color: #FFD54F;"></div>
+                        </div>
+                        <div class="d-flex justify-content-end small text-muted mt-1">
+                            <span id="locationPlan">План студии … ₽</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- НИЗ -->
-            <div>
-                <div class="d-flex justify-content-between text-muted small align-items-center mb-1">
-                    <span id="remainingToPlan">… ₽ до цели</span>
-                    <span class="fw-semibold" id="planPercent">…%</span>
-                </div>
-                <div class="progress rounded-pill mb-1" style="height: 12px; background-color: #F4DA96;">
-                    <div id="yellowBar" class="progress-bar" style="width: 0%; background-color: #FFD54F;"></div>
-                </div>
-                <div class="d-flex justify-content-end small text-muted mt-1">
-                    <span id="locationPlan">План студии … ₽</span>
-                </div>
-            </div>
-
         </div>
+
+        <!-- БЛОК 2: Цифра дня -->
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-4 p-4 h-100 d-flex flex-column justify-content-between">
+
+                <!-- ВЕРХ: Цифра дня с фоном и ₽ -->
+                <div class="figure-highlight position-relative rounded-3 mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <img src="/assets/Target.svg" alt="icon" style="width: 20px; height: 20px;" class="me-2">
+                        <span class="text-muted fw-medium">Цифра дня</span>
+                    </div>
+                    <div class="fs-5 fw-bold" id="dailyFigure">… ₽</div>
+                    <img src="/assets/ruble-bg.svg" alt="₽" class="ruble-background">
+                </div>
+
+                <!-- НИЗ: План / Выполнение / Осталось -->
+                <div class="row text-center">
+                    <div class="col">
+                        <div class="fw-medium text-muted">План</div>
+                        <div class="fw-bold" id="locationPlanBlock">… ₽</div>
+                    </div>
+                    <div class="col">
+                        <div class="fw-medium text-muted">Выполнение</div>
+                        <div class="fw-bold" id="actualIncome">… ₽</div>
+                    </div>
+                    <div class="col">
+                        <div class="fw-medium text-muted">Осталось</div>
+                        <div class="fw-bold" id="remainingBlock">… ₽</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
 

@@ -1,3 +1,4 @@
+/* Диаграмма */
 .pie-wrapper {
     width: 100px;
     height: 100px;
@@ -17,6 +18,38 @@
     pointer-events: none;
 }
 
+/* Блок "Цифра дня" с фоном и SVG ₽ */
+.figure-highlight {
+    background-color: #fff5f5;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+.ruble-background {
+    position: absolute;
+    top: -10px;
+    right: 30px;
+    width: 80px;
+    height: auto;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* Подписи к проценту и сумме */
+#planPercent,
+#remainingToPlan {
+    font-size: 0.875rem;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
+/* Адаптив */
 @media (max-width: 768px) {
     .pie-wrapper {
         width: 72px !important;
@@ -46,11 +79,4 @@
     .container {
         padding: 0 1rem !important;
     }
-}
-
-#planPercent, #remainingToPlan {
-    font-size: 0.875rem;
-    line-height: 1;
-    margin: 0;
-    padding: 0;
 }
