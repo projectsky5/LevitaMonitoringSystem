@@ -13,17 +13,21 @@ fetch('/api/dashboard')
         const plan = Math.round(data.locationPlan);
         const percent = data.planCompletionPercent;
 
+        // Блок текущий доход
         document.getElementById('currentIncome').innerText = `≈ ${formatCurrency(income)}`;
         document.getElementById('remainingToPlan').innerText = `${formatCurrency(remaining, false)} до цели`;
         document.getElementById('yellowBar').style.width = `${percent}%`;
         document.getElementById('locationPlan').innerText = `План студии ${formatCurrency(plan, false)}`;
         document.getElementById('planPercent').innerText = `${percent.toFixed(1)}%`;
 
-        // Второй блок
+        // Блок Цифра дня
         document.getElementById('dailyFigure').innerText = formatCurrency(data.dailyFigure, false);
         document.getElementById('locationPlanBlock').innerText = formatCurrency(data.locationPlan, false);
         document.getElementById('actualIncome').innerText = formatCurrency(data.actualIncome, false);
         document.getElementById('remainingBlock').innerText = formatCurrency(remaining, false);
+
+        // Блок Бонусы дня
+        document.getElementById("dayBonusesAmount").innerText = formatCurrency(data.dayBonuses, false);
 
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {

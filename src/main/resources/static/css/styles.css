@@ -40,6 +40,28 @@
     pointer-events: none;
 }
 
+/* KPI карточки */
+.kpi-card {
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.kpi-badge {
+    background-color: #FFD54F;
+    color: #2b2b2b;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+}
+.crown-icon {
+    width: 16px;
+    height: 16px;
+}
+
 /* Подписи к проценту и сумме */
 #planPercent,
 #remainingToPlan {
