@@ -11,6 +11,7 @@ logs/application.log
 logs/*.log
 /src/main/java/com/levita/levita_monitoring/security/CredentialsGenerator.java
 src/main/resources/static/assets/**
+src/main/resources/static/fonts/**
 
 ### STS ###
 .apt_generated

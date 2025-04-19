@@ -8,6 +8,23 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+
+<!-- Шапка -->
+<div class="header-wrapper">
+    <header class="header px-4 py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="/assets/Levita-white.svg" alt="Levita" class="levita-logo me-4">
+                <span class="location-name" id="locationName">…</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="user-name me-3" id="username">…</span>
+                <img src="/assets/User.svg" alt="User" class="user-icon">
+            </div>
+        </div>
+    </header>
+</div>
+
 <div class="container my-5">
     <div class="row gy-4">
 
@@ -115,6 +132,52 @@
             </div>
         </div>
 
+
+    </div>
+
+    <div class="row gy-4 mt-2">
+
+        <!-- KPI Блок 6: Максимальная дневная выручка -->
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
+                <div class="d-flex align-items-center justify-content-start mb-2">
+                    <div class="badge kpi-badge">
+                        <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1" />
+                        <span id="maxDailyRevenue">… ₽</span>
+                    </div>
+                </div>
+                <div class="fw-medium fs-6 mb-2">Максимальная дневная выручка</div>
+                <div class="text-muted small">Лучший результат за смену</div>
+            </div>
+        </div>
+
+        <!-- KPI БЛОК 7: Средняя выручка за смену -->
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
+                <div class="d-flex align-items-center justify-content-start mb-2">
+                    <div class="badge kpi-badge">
+                        <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1" />
+                        <span id="avgRevenuePerDay">… ₽</span>
+                    </div>
+                </div>
+                <div class="fw-medium fs-6 mb-2">Средняя выручка за смену</div>
+                <div class="text-muted small">В среднем за период</div>
+            </div>
+        </div>
+
+        <!-- KPI Блок 8: Конверсия -->
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
+                <div class="d-flex align-items-center justify-content-start mb-2">
+                    <div class="badge kpi-badge">
+                        <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1" />
+                        <span id="conversionRate">…%</span>
+                    </div>
+                </div>
+                <div class="fw-medium fs-6 mb-2">Конверсия</div>
+                <div class="text-muted small">Общий % эффективности</div>
+            </div>
+        </div>
 
     </div>
 </div>

@@ -1,3 +1,18 @@
+@font-face {
+    font-family: 'MyFont';
+    src: url('../fonts/My.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spectral';
+    src: url('../fonts/Spectral-Regular-Desktop.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 /* Диаграмма */
 .pie-wrapper {
     width: 100px;
@@ -101,4 +116,37 @@
     .container {
         padding: 0 1rem !important;
     }
+}
+
+/* FULL-WIDTH HEADER FIX */
+.header-wrapper {
+    width: 100vw; /* на всю ширину экрана */
+    background-color: rgba(16, 26, 37, 0.95); /* фон */
+    color: #F7F7F9;
+    border-radius: 0;
+    margin-bottom: 1rem;
+}
+
+.header {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.levita-logo {
+    height: 36px;
+}
+
+.location-name,
+.user-name {
+    color: #F7F7F9;
+    font-size: 1.75rem;
+    font-weight: 400;
+    font-family: 'MyFont', sans-serif;
+    white-space: nowrap;
+}
+
+.user-icon {
+    width: 40px;
+    height: auto;
+    object-fit: contain;
 }

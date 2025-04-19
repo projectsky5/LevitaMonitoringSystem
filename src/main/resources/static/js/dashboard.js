@@ -12,6 +12,12 @@ fetch('/api/dashboard')
         const remaining = Math.max(0, data.remainingToPlan);
         const plan = Math.round(data.locationPlan);
         const percent = data.planCompletionPercent;
+        const rawLocation = data.locationName
+        const formattedLocation = rawLocation.charAt(0).toUpperCase() + rawLocation.slice(1).toLowerCase();
+
+        // Шапка
+        document.getElementById('username').innerText = data.username;
+        document.getElementById('locationName').innerText = formattedLocation;
 
         // Блок текущий доход
         document.getElementById('currentIncome').innerText = `≈ ${formatCurrency(income)}`;
@@ -34,6 +40,15 @@ fetch('/api/dashboard')
 
         //Блок Личная Выручка
         document.getElementById("personalRevenue").innerText = formatCurrency(data.personalRevenue, false);
+
+        //Блок Максимальная дневная выручка
+        document.getElementById("maxDailyRevenue").innerText = formatCurrency(data.maxDailyRevenue, false);
+
+        //Блок Средняя выручка за смену
+        document.getElementById("avgRevenuePerDay").innerText = formatCurrency(data.avgRevenuePerDay, false);
+
+        //Блок Конверсия
+        document.getElementById("conversionRate").innerText = `${data.conversionRate.toFixed(1)}%`;
 
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {
