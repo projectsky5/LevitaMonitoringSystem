@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("Неверные учетные данные пользователя");
     }
 
-    // При фокусе на любом поле — убираем ошибку
+    // При фокусе на любом поле — убрать ошибку
     [usernameInput, passwordInput].forEach(input => {
         input.addEventListener("focus", () => {
             hideError();
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (hasError) {
         showError("Неверные учетные данные пользователя");
 
-        // Удаляем параметр `?error=true` из URL после показа ошибки
+        // Удаление параметра `?error=true` из URL после показа ошибки
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
     }

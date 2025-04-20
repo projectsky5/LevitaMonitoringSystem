@@ -32,46 +32,45 @@
 </div>
 
 <div class="dashboard-wrapper py-5">
-    <div class="container">
-        <div class="row gy-4">
+    <div class="container dashboard-container">
 
+        <!-- РЯД 1: Блоки 1–2 -->
+        <div class="row gy-4 gx-2">
             <!-- БЛОК 1: Текущий доход -->
-            <div class="col-md-6">
-                <div class="card shadow-sm rounded-4 kpi-card p-4 h-100">
-                    <div class="d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start flex-wrap flex-md-nowrap mb-3">
+            <div class="col-md-6 col-12 d-flex">
+                <div class="card shadow-sm rounded-4 kpi-card p-4 d-flex flex-column justify-content-between w-100">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start flex-wrap flex-md-nowrap mb-3 kpi-header-wrapper">
                             <div>
                                 <div class="kpi-title">Текущий доход</div>
                                 <div class="kpi-value" id="currentIncome">≈ … ₽</div>
                             </div>
-                            <div class="kpi-chart-container">
+                            <div class="kpi-chart-container d-none d-sm-flex">
                                 <div class="position-relative pie-wrapper" id="pieWrapper">
                                     <canvas id="pieChart"></canvas>
                                     <img src="/assets/Mountain.svg" alt="icon" class="center-icon" id="mountainIcon">
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <div class="d-flex justify-content-between kpi-subtext align-items-center mb-1">
-                                <span id="remainingToPlan">… ₽ до цели</span>
-                                <span class="fw-semibold" id="planPercent">…%</span>
-                            </div>
-                            <div class="progress rounded-pill mb-1 kpi-progress" id="progressBar">
-                                <div id="yellowBar" class="progress-bar" style="width: 0%;"></div>
-                            </div>
-                            <div class="d-flex justify-content-end kpi-subtext mt-1">
-                                <span id="locationPlan">План студии … ₽</span>
-                            </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between kpi-subtext align-items-center mb-1">
+                            <span id="remainingToPlan">… ₽ до цели</span>
+                            <span class="fw-semibold" id="planPercent">…%</span>
+                        </div>
+                        <div class="progress rounded-pill mb-1 kpi-progress" id="progressBar">
+                            <div id="yellowBar" class="progress-bar" style="width: 0%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-end kpi-subtext mt-1">
+                            <span id="locationPlan">План студии … ₽</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- БЛОК 2: Цифра дня -->
-            <div class="col-md-6">
-                <div class="card shadow-sm rounded-4 p-4 h-100 d-flex flex-column justify-content-between">
-
-                    <!-- ВЕРХ: Цифра дня с фоном и ₽ -->
+            <div class="col-md-6 col-12">
+                <div class="card shadow-sm rounded-4 kpi-card p-4 d-flex flex-column justify-content-between h-100">
                     <div class="figure-highlight position-relative rounded-3 mb-3">
                         <div class="d-flex align-items-center mb-2">
                             <img src="/assets/Target.svg" alt="icon" style="width: 20px; height: 20px;" class="me-2">
@@ -80,8 +79,6 @@
                         <div class="fs-5 fw-bold" id="dailyFigure">… ₽</div>
                         <img src="/assets/ruble-bg.svg" alt="₽" class="ruble-background">
                     </div>
-
-                    <!-- НИЗ: План / Выполнение / Осталось -->
                     <div class="row text-center">
                         <div class="col">
                             <div class="kpi-stats-label">План</div>
@@ -96,99 +93,130 @@
                             <div class="kpi-stats-value" id="remainingBlock">… ₽</div>
                         </div>
                     </div>
-
                 </div>
             </div>
-            <!-- БЛОК 3: Накоплено бонусов дня -->
-            <div class="col-md-4">
-                <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
-                    <div class="d-flex align-items-center justify-content-start mb-2">
+        </div>
+
+        <!-- РЯД 2: Блоки 3–5 -->
+        <div class="row gy-4 gx-2 mt-2">
+            <!-- БЛОК 3 Бонусы дня -->
+            <div class="col-md-4 col-6 d-flex order-1 order-md-1">
+                <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                    <!-- Верхняя часть -->
+                    <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                         <div class="badge kpi-badge">
                             <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1">
                             <span id="dayBonusesAmount">… ₽</span>
                         </div>
+                        <div class="fw-medium fs-6 kpi-heading">Накоплено бонусов дня</div>
                     </div>
-                    <div class="fw-medium fs-6 mb-2">Накоплено бонусов дня</div>
+
+                    <!-- Подпись -->
                     <div class="text-muted small">Выплачивается как то там</div>
+
                 </div>
             </div>
-            <!-- БЛОК 4: Основная часть заработной платы -->
-            <div class="col-md-4">
-                <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
-                    <div class="d-flex align-items-center justify-content-start mb-2">
+
+            <!-- БЛОК 4 Основная часть заработной платы -->
+            <div class="col-md-4 col-6 d-flex order-2 order-md-2">
+                <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                    <!-- Верхняя часть -->
+                    <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                         <div class="badge kpi-badge">
-                            <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1" />
+                            <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1">
                             <span id="mainSalaryPart">… ₽</span>
                         </div>
+                        <div class="fw-medium fs-6 kpi-heading">Основная часть заработной платы</div>
                     </div>
-                    <div class="fw-medium fs-6 mb-2">Основная часть заработной платы</div>
+
+                    <!-- Подпись -->
                     <div class="text-muted small">Выплачивается как то там</div>
+
                 </div>
             </div>
-            <!-- KPI Блок 5: Личная выручка -->
-            <div class="col-md-4">
-                <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
-                    <div class="d-flex align-items-center justify-content-start mb-2">
+
+            <!-- БЛОК 5 Личная выручка -->
+            <div class="col-md-4 col-6 d-flex order-3 order-md-3">
+                <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                    <!-- Верхняя часть -->
+                    <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                         <div class="badge kpi-badge">
                             <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1">
                             <span id="personalRevenue">… ₽</span>
                         </div>
+                        <div class="fw-medium fs-6 kpi-heading">Личная выручка</div>
                     </div>
-                    <div class="fw-medium fs-6 mb-2">Личная выручка</div>
+
+                    <!-- Подпись -->
                     <div class="text-muted small">Формируется по показателям</div>
+
                 </div>
             </div>
 
+        <!-- РЯД 3: Блоки 6–8 -->
+            <!-- БЛОК 6 Максимальная дневная выручка -->
+            <div class="col-md-4 col-6 d-flex order-4 order-md-6">
+                <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
 
-        </div>
-
-        <div class="row gy-4 mt-2">
-
-            <!-- KPI Блок 6: Максимальная дневная выручка -->
-            <div class="col-md-4">
-                <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
-                    <div class="d-flex align-items-center justify-content-start mb-2">
+                    <!-- Верхняя часть -->
+                    <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                         <div class="badge kpi-badge">
                             <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1" />
                             <span id="maxDailyRevenue">… ₽</span>
                         </div>
+                        <div class="fw-medium fs-6 kpi-heading">Максимальная дневная выручка</div>
                     </div>
-                    <div class="fw-medium fs-6 mb-2">Максимальная дневная выручка</div>
+
+                    <!-- Подпись -->
                     <div class="text-muted small">Лучший результат за смену</div>
+
                 </div>
             </div>
 
-            <!-- KPI БЛОК 7: Средняя выручка за смену -->
-            <div class="col-md-4">
-                <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
-                    <div class="d-flex align-items-center justify-content-start mb-2">
+            <!-- БЛОК 7 Средняя выручка за смену -->
+            <div class="col-md-4 col-6 d-flex order-6 order-md-4">
+                <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                    <!-- Верхняя часть -->
+                    <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                         <div class="badge kpi-badge">
                             <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1" />
                             <span id="avgRevenuePerDay">… ₽</span>
                         </div>
+                        <div class="fw-medium fs-6 kpi-heading">Средняя выручка за смену</div>
                     </div>
-                    <div class="fw-medium fs-6 mb-2">Средняя выручка за смену</div>
+
+                    <!-- Подпись -->
                     <div class="text-muted small">В среднем за период</div>
+
                 </div>
             </div>
 
-            <!-- KPI Блок 8: Конверсия -->
-            <div class="col-md-4">
-                <div class="card kpi-card shadow-sm rounded-4 p-3 h-100">
-                    <div class="d-flex align-items-center justify-content-start mb-2">
+            <!-- БЛОК 8 -->
+            <div class="col-md-4 col-6 d-flex order-5 order-md-5">
+                <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                    <!-- Верхняя часть: бейдж + заголовок KPI -->
+                    <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                         <div class="badge kpi-badge">
                             <img src="/assets/Crown.svg" alt="crown" class="crown-icon me-1" />
                             <span id="conversionRate">…%</span>
                         </div>
+                        <div class="fw-medium fs-6 kpi-heading">Конверсия</div>
                     </div>
-                    <div class="fw-medium fs-6 mb-2">Конверсия</div>
+
+                    <!-- Подпись -->
                     <div class="text-muted small">Общий % эффективности</div>
+
                 </div>
             </div>
-
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/js/dashboard.js"></script>

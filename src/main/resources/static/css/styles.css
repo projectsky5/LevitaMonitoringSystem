@@ -93,7 +93,7 @@
     pointer-events: none;
 }
 
-/* Блок "Цифра дня" с фоном и SVG ₽ */
+/* Блок "Цифра дня" с фоном и SVG */
 .figure-highlight {
     font-family: 'Spectral', sans-serif;
     background-color: #fff5f5;
@@ -140,7 +140,6 @@
     height: auto;
 }
 
-/* Подписи к проценту и сумме */
 #planPercent,
 #remainingToPlan {
     font-size: 0.875rem;
@@ -149,7 +148,6 @@
     padding: 0;
 }
 
-/* Адаптив */
 @media (max-width: 768px) {
     .pie-wrapper {
         width: 72px !important;
@@ -179,9 +177,32 @@
     .container {
         padding: 0 1rem !important;
     }
+
+    .col-md-4 {
+        flex: 0 0 auto;
+        width: 33.333333%;
+        max-width: 33.333333%;
+    }
+
+    .col-md-6 {
+        flex: 0 0 auto;
+        width: 50%;
+        max-width: 50%;
+    }
+
+    .dashboard-wrapper .row {
+        margin-left: -0.75rem !important;
+        margin-right: -0.75rem !important;
+    }
+
+    .dashboard-wrapper .col-md-4,
+    .dashboard-wrapper .col-md-6 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
 }
 
-/* FULL-WIDTH HEADER FIX */
 .header-wrapper {
     width: 100vw; /* на всю ширину экрана */
     background-color: rgba(16, 26, 37, 0.95); /* фон */
@@ -214,7 +235,6 @@
     object-fit: contain;
 }
 
-/*Лого по центру*/
 .central-logo {
     display: flex;
     flex-direction: column;
@@ -223,7 +243,7 @@
 }
 
 .main-logo {
-    height: 50px;
+    height: 70px;
     object-fit: contain;
 }
 
@@ -242,7 +262,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
-/* Если цель выполнена */
 .goal-achieved .progress-bar {
     background-color: #4ACA52 !important;
 }
@@ -251,12 +270,207 @@
     content:url("../assets/Mountain-done.svg");
 }
 
-/* Прогресс-бар — зелёный при достижении цели */
 .kpi-progress.goal-achieved .progress-bar {
     background-color: #4ACA52 !important;
 }
 
-/* Диаграмма — зелёная при достижении цели */
 .pie-wrapper.goal-achieved .center-icon {
     content: url("../assets/Mountain-done.svg");
+}
+.col-6 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+}
+
+@media (max-width: 576px) {
+
+    .header .d-flex.justify-content-between {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header .d-flex.align-items-center {
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .levita-logo {
+        height: 26px !important;
+    }
+
+    .location-name,
+    .user-name {
+        font-size: 0.85rem !important;
+    }
+
+    .user-icon {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .dashboard-wrapper {
+        padding: 1rem !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .dashboard-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .dashboard-wrapper .row {
+        flex-wrap: wrap !important;
+    }
+
+    .dashboard-wrapper .col-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+
+    }
+
+    .dashboard-wrapper .col-12 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    .kpi-card {
+        padding: 1rem !important;
+        min-height: 140px;
+    }
+
+    .card {
+        height: auto !important;
+    }
+
+    .kpi-card .d-flex.justify-content-between {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .kpi-title {
+        font-size: 0.85rem;
+    }
+
+    .kpi-value {
+        font-size: 1.25rem;
+    }
+
+    .kpi-subtext {
+        font-size: 0.75rem;
+    }
+
+    .kpi-chart-container {
+        display: none !important;
+    }
+
+    .pie-wrapper {
+        width: 64px !important;
+        height: 64px !important;
+    }
+
+    .center-icon {
+        width: 24px !important;
+    }
+
+    .kpi-badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+
+    .kpi-badge img,
+    .crown-icon {
+        width: 18px !important;
+    }
+
+    .fw-medium.fs-6 {
+        font-size: 0.9rem !important;
+    }
+
+    .text-muted.small {
+        font-size: 0.75rem !important;
+    }
+
+    .figure-highlight {
+        height: auto;
+        padding: 0.75rem;
+    }
+
+    .figure-highlight .fs-5 {
+        font-size: 1rem !important;
+    }
+
+    .figure-highlight .text-muted {
+        font-size: 0.85rem !important;
+    }
+
+    .ruble-background {
+        width: 60px;
+        top: 0;
+        right: 10px;
+    }
+
+    .kpi-top {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: start;
+        gap: 10px; /* Расстояние между бейджем и заголовком KPI */
+    }
+
+    .kpi-heading {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.2;
+    }
+}
+
+@media (min-width: 768px) {
+    .dashboard-wrapper .col-md-4 {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+    }
+
+    .dashboard-wrapper .col-md-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    .dashboard-wrapper .row {
+        margin-left: -0.75rem !important;
+        margin-right: -0.75rem !important;
+    }
+
+    .dashboard-wrapper .col-md-4,
+    .dashboard-wrapper .col-md-6 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    .kpi-top {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: start;
+        gap: 16px; /* Расстояние между бейджем и заголовком KPI */
+    }
+
+    .kpi-heading {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.2;
+    }
+
+
+
 }
