@@ -21,8 +21,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGeneric(Exception e) {
-        return ResponseEntity.internalServerError().body(Map.of("error", "Unexpected error ocured"));
-    }
 }

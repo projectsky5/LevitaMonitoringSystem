@@ -12,6 +12,16 @@ body {
     margin: 0;
 }
 
+body, div {
+    user-select: none;
+}
+body *:not(input):not(textarea):not(button):not(label) {
+    caret-color: transparent;
+}
+*:focus {
+    outline: none;
+}
+
 .login-page {
     background-color: rgba(16, 26, 37, 0.95);
     min-height: 100vh;
@@ -35,43 +45,24 @@ body {
     padding: 80px 48px 48px 48px;
     position: relative;
     flex: 1;
-}
-
-.form-label {
-    font-size: 0.9rem;
-    color: #333637;
-    margin-bottom: 4px;
-}
-
-.custom-input {
-    background-color: rgba(244, 218, 150, 0.7);
-    border: none;
-    border-radius: 4px;
-    height: 38px;
-    font-size: 1rem;
-    padding: 0.4rem 0.8rem;
-    color: #333637;
-    margin-top: 0;
-    width: 300px;
-    max-width: 100%;
-}
-
-.custom-input:focus {
-    outline: none;
-    box-shadow: none;
-    border: 1px solid #F6C956;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* ВЫРАВНИВАЕМ по центру */
+    text-align: center;
 }
 
 .login-btn {
     background-color: #F6C956;
     color: #333637;
     border: none;
-    border-radius: 20px;
+    border-radius: 999px;
     padding: 8px 22px;
     font-weight: 600;
     font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
 }
-
 .arrow-icon {
     width: 16px;
     height: auto;
@@ -102,61 +93,13 @@ body {
     height: 48px;
 }
 
-.error-box {
-    color: #CD171A;
-    border: 1px solid #CD171A;
-    background-color: #fce9ea;
-    border-radius: 12px;
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    min-height: 48px;
-    opacity: 0;
-    visibility: hidden;
-    transition: visibility 0.3s, opacity 0.3s;
+.form-side h2 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 64px;
+    margin-top: -20px;
 }
 
-.error-box.visible {
-    visibility: visible;
-    opacity: 1;
-}
-
-#errorMessage {
-    min-height: 40px;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    margin-top: 1rem;
-    color: #CD171A;
-    border: 1px solid #CD171A;
-    background-color: #fce9ea;
-    border-radius: 12px;
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-}
-#errorMessage.visible {
-    visibility: visible;
-    opacity: 1;
-}
-
-.is-invalid {
-    border: 2px solid #CD171A !important;
-}
-
-body, div {
-    user-select: none;
-}
-
-body *:not(input):not(textarea):not(button):not(label) {
-    caret-color: transparent;
-}
-
-*:focus {
-    outline: none;
-}
-
-/* Адаптация для мобильных */
 @media (max-width: 768px) {
     .right-side {
         display: none !important;
@@ -188,3 +131,4 @@ body *:not(input):not(textarea):not(button):not(label) {
         justify-content: center;
     }
 }
+
