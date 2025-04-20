@@ -45,9 +45,9 @@
                                 <div class="kpi-value" id="currentIncome">≈ … ₽</div>
                             </div>
                             <div class="kpi-chart-container">
-                                <div class="position-relative pie-wrapper">
+                                <div class="position-relative pie-wrapper" id="pieWrapper">
                                     <canvas id="pieChart"></canvas>
-                                    <img src="/assets/Mountain.svg" alt="icon" class="center-icon">
+                                    <img src="/assets/Mountain.svg" alt="icon" class="center-icon" id="mountainIcon">
                                 </div>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                                 <span id="remainingToPlan">… ₽ до цели</span>
                                 <span class="fw-semibold" id="planPercent">…%</span>
                             </div>
-                            <div class="progress rounded-pill mb-1 kpi-progress">
+                            <div class="progress rounded-pill mb-1 kpi-progress" id="progressBar">
                                 <div id="yellowBar" class="progress-bar" style="width: 0%;"></div>
                             </div>
                             <div class="d-flex justify-content-end kpi-subtext mt-1">
@@ -84,16 +84,16 @@
                     <!-- НИЗ: План / Выполнение / Осталось -->
                     <div class="row text-center">
                         <div class="col">
-                            <div class="fw-medium text-muted">План</div>
-                            <div class="fw-bold" id="locationPlanBlock">… ₽</div>
+                            <div class="kpi-stats-label">План</div>
+                            <div class="kpi-stats-value" id="locationPlanBlock">… ₽</div>
                         </div>
                         <div class="col">
-                            <div class="fw-medium text-muted">Выполнение</div>
-                            <div class="fw-bold" id="actualIncome">… ₽</div>
+                            <div class="kpi-stats-label">Выполнение</div>
+                            <div class="kpi-stats-value" id="actualIncome">… ₽</div>
                         </div>
                         <div class="col">
-                            <div class="fw-medium text-muted">Осталось</div>
-                            <div class="fw-bold" id="remainingBlock">… ₽</div>
+                            <div class="kpi-stats-label">Осталось</div>
+                            <div class="kpi-stats-value" id="remainingBlock">… ₽</div>
                         </div>
                     </div>
 

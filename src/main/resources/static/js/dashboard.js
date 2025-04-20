@@ -12,8 +12,7 @@ function getAdminIdFromUrl() {
 }
 
 const adminId = getAdminIdFromUrl();
-const url = adminId ? `/api/admins/${adminId}/dashboard` : '/api/dashboard';
-
+const url = adminId ? `/api/admins/${adminId}/dashboard` : `/api/dashboard`;
 fetch(url)
     .then(res => res.json())
     .then(data => {
@@ -34,6 +33,19 @@ fetch(url)
         document.getElementById('yellowBar').style.width = `${percent}%`;
         document.getElementById('locationPlan').innerText = `План студии ${formatCurrency(plan, false)}`;
         document.getElementById('planPercent').innerText = `${percent.toFixed(1)}%`;
+
+        // Если цель достигнута
+        const goalAchieved = remaining === 0;
+        let chartColors = ['#5C86F3', '#e5ecff']
+        if (goalAchieved) {
+            // меняем иконку
+            document.querySelector(".center-icon").src = "/assets/Mountain-done.svg";
+
+            // меняем цвет прогресс-бара
+            document.querySelector(".kpi-progress").classList.add("goal-achieved");
+
+            chartColors = ['#4ACA52', '#e5ecff']
+        }
 
         // Блок Цифра дня
         document.getElementById('dailyFigure').innerText = formatCurrency(data.dailyFigure, false);
@@ -65,8 +77,8 @@ fetch(url)
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [percent, Math.max(0, 100 - percent)],
-                    backgroundColor: ['#4a6cf7', '#e5ecff'],
+                    data: goalAchieved ? [100, 0] : [percent, Math.max(0, 100 - percent)],
+                    backgroundColor: chartColors,
                     borderWidth: 0
                 }]
             },

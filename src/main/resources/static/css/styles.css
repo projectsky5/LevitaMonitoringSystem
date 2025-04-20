@@ -34,6 +34,20 @@
     color: #000000;
 }
 
+.kpi-stats-label {
+    font-family: 'Spectral', sans-serif;
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.kpi-stats-value {
+    font-family: 'Spectral', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333637
+}
+
 /* Подписи под прогресс-блоком */
 .kpi-subtext {
     font-family: 'Spectral', sans-serif;
@@ -226,4 +240,23 @@
     padding: 2rem;
     margin: 2rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+}
+
+/* Если цель выполнена */
+.goal-achieved .progress-bar {
+    background-color: #4ACA52 !important;
+}
+
+.goal-achieved .center-icon {
+    content:url("../assets/Mountain-done.svg");
+}
+
+/* Прогресс-бар — зелёный при достижении цели */
+.kpi-progress.goal-achieved .progress-bar {
+    background-color: #4ACA52 !important;
+}
+
+/* Диаграмма — зелёная при достижении цели */
+.pie-wrapper.goal-achieved .center-icon {
+    content: url("../assets/Mountain-done.svg");
 }
