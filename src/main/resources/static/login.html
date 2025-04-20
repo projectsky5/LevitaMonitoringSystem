@@ -33,7 +33,9 @@
                 <button type="submit" class="btn login-btn">
                     LOGIN <img src="/assets/arrow-login.svg" alt="arrow" class="arrow-icon">
                 </button>
-                <div id="errorMessage" class="error-box d-none mt-3"></div>
+                <div id="errorMessage" class="error-box invisible mt-3">
+                    Неверные учетные данные пользователя
+                </div>
             </form>
         </div>
 
@@ -45,6 +47,17 @@
     </div>
 </div>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("error")) {
+        document.getElementById("errorMessage").classList.remove("d-none");
+        document.getElementById("username").classList.add("is-invalid");
+        document.getElementById("password").classList.add("is-invalid");
+    }
+});
+</script>
 <script src="/js/login.js"></script>
 </body>
 </html>

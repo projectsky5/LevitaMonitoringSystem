@@ -109,6 +109,35 @@ body {
     border-radius: 12px;
     padding: 8px 16px;
     font-size: 0.9rem;
+    min-height: 48px;
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0.3s, opacity 0.3s;
+}
+
+.error-box.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+#errorMessage {
+    min-height: 40px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    margin-top: 1rem;
+    color: #CD171A;
+    border: 1px solid #CD171A;
+    background-color: #fce9ea;
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+#errorMessage.visible {
+    visibility: visible;
+    opacity: 1;
 }
 
 .is-invalid {
