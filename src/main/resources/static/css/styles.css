@@ -14,6 +14,10 @@
     font-display: swap;
 }
 
+.card {
+    border: none !important;
+}
+
 /* Заголовок KPI */
 .kpi-title {
     font-family: 'Spectral', sans-serif;
@@ -217,7 +221,7 @@
 }
 
 .dashboard-wrapper {
-    background-color: #FCFCFC;
+    background-color: #F7F7F9;
     border-radius: 16px;
     padding: 2rem;
     margin: 2rem;
