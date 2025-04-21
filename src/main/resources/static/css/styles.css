@@ -18,6 +18,10 @@
     border: none !important;
 }
 
+body {
+    overflow-x: hidden;
+}
+
 /* Заголовок KPI */
 .kpi-title {
     font-family: 'Spectral', sans-serif;
@@ -102,7 +106,8 @@
     overflow: hidden;
     padding: 1rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     justify-content: start;
 }
 
@@ -114,6 +119,25 @@
     height: auto;
     opacity: 0.15;
     pointer-events: none;
+}
+
+.figure-label {
+    font-size: 24px;
+    font-weight: 500;
+    color: #A1A3A7;
+    line-height: 1.2;
+}
+
+.figure-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333637;
+    line-height: 1.2;
+    margin-left: 32px;
+}
+
+.target-icon {
+    width: 32px;
 }
 
 /* KPI карточки */
@@ -508,6 +532,18 @@
 
     .decorative-backgrounds {
         display: none;
+    }
+
+    .figure-label {
+        font-size: 16px;
+    }
+
+    .figure-value {
+        font-size: 18px;
+    }
+
+    .target-icon {
+        width: 18px;
     }
 }
 

@@ -5,7 +5,7 @@
     <title>LEVITA Monitoring</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 
@@ -14,12 +14,12 @@
     <header class="header px-4 py-2">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <img src="./assets/general/Levita-white.svg" alt="Levita" class="levita-logo me-4">
+                <img src="/assets/general/Levita-white.svg" alt="Levita" class="levita-logo me-4">
                 <span class="location-name" id="locationName">…</span>
             </div>
             <div class="d-flex align-items-center">
                 <span class="user-name me-3" id="username">…</span>
-                <img src="./assets/general/User.svg" alt="User" class="user-icon">
+                <img src="/assets/general/User.svg" alt="User" class="user-icon">
             </div>
         </div>
     </header>
@@ -27,7 +27,7 @@
 
 <!-- ЛОГО ПО ЦЕНТРУ -->
 <div class="central-logo text-center my-5">
-    <img src="./assets/general/Levita-black.svg" alt="LEVITA Logo" class="main-logo">
+    <img src="/assets/general/Levita-black.svg" alt="LEVITA Logo" class="main-logo">
     <div class="slogan mt-2">Студия растяжки и балета</div>
 </div>
 
@@ -48,7 +48,7 @@
                                 <div class="kpi-chart-container d-none d-sm-flex">
                                     <div class="position-relative pie-wrapper" id="pieWrapper">
                                         <canvas id="pieChart"></canvas>
-                                        <img src="./assets/dashboard/svg/Mountain.svg" alt="icon" class="center-icon" id="mountainIcon">
+                                        <img src="/assets/dashboard/svg/Mountain.svg" alt="icon" class="center-icon" id="mountainIcon">
                                     </div>
                                 </div>
                             </div>
@@ -71,13 +71,13 @@
                 <!-- БЛОК 2: Цифра дня -->
                 <div class="col-md-6 col-12">
                     <div class="card shadow-sm rounded-4 kpi-card p-4 d-flex flex-column justify-content-between h-100">
-                        <div class="figure-highlight position-relative rounded-3 mb-3">
-                            <div class="d-flex align-items-center mb-2">
-                                <img src="./assets/dashboard/svg/Target.svg" alt="icon" style="width: 20px; height: 20px;" class="me-2">
-                                <span class="text-muted fw-medium">Цифра дня</span>
+                        <div class="figure-highlight position-relative rounded-3 mb-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <img src="/assets/dashboard/svg/Target.svg" alt="icon" class="me-3 target-icon">
+                                <span class="figure-label">Цифра дня</span>
+                                <div class="figure-value" id="dailyFigure"></div>
                             </div>
-                            <div class="fs-5 fw-bold" id="dailyFigure">… ₽</div>
-                            <img src="./assets/dashboard/svg/ruble-bg.svg" alt="₽" class="ruble-background">
+                            <img src="/assets/dashboard/svg/ruble-bg.svg" alt="₽" class="ruble-background">
                         </div>
                         <div class="row text-center">
                             <div class="col">
@@ -106,7 +106,7 @@
                         <!-- Верхняя часть -->
                         <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                             <div class="badge kpi-badge">
-                                <img src="./assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
+                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
                                 <span id="dayBonusesAmount">… ₽</span>
                             </div>
                             <div class="fw-medium fs-6 kpi-heading">Накоплено бонусов дня</div>
@@ -125,7 +125,7 @@
                         <!-- Верхняя часть -->
                         <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                             <div class="badge kpi-badge">
-                                <img src="./assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
+                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
                                 <span id="mainSalaryPart">… ₽</span>
                             </div>
                             <div class="fw-medium fs-6 kpi-heading">Основная часть заработной платы</div>
@@ -144,7 +144,7 @@
                         <!-- Верхняя часть -->
                         <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                             <div class="badge kpi-badge">
-                                <img src="./assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
+                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
                                 <span id="personalRevenue">… ₽</span>
                             </div>
                             <div class="fw-medium fs-6 kpi-heading">Личная выручка</div>
@@ -164,7 +164,7 @@
                         <!-- Верхняя часть -->
                         <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                             <div class="badge kpi-badge">
-                                <img src="./assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
+                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
                                 <span id="maxDailyRevenue">… ₽</span>
                             </div>
                             <div class="fw-medium fs-6 kpi-heading">Максимальная дневная выручка</div>
@@ -183,7 +183,7 @@
                         <!-- Верхняя часть -->
                         <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                             <div class="badge kpi-badge">
-                                <img src="./assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
+                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
                                 <span id="avgRevenuePerDay">… ₽</span>
                             </div>
                             <div class="fw-medium fs-6 kpi-heading">Средняя выручка за смену</div>
@@ -202,7 +202,7 @@
                         <!-- Верхняя часть: бейдж + заголовок KPI -->
                         <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
                             <div class="badge kpi-badge">
-                                <img src="./assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
+                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
                                 <span id="conversionRate">…%</span>
                             </div>
                             <div class="fw-medium fs-6 kpi-heading">Конверсия</div>
@@ -218,18 +218,18 @@
     </div>
 
     <div class="decorative-backgrounds">
-        <img src="./assets/dashboard/svg/yellow-dot.svg" class="decor yellow-dot" alt="">
-        <img src="./assets/dashboard/svg/brown-dot.svg" class="decor brown-dot" alt="">
-        <img src="./assets/dashboard/svg/spring.svg" class="decor spring-1" alt="">
-        <img src="./assets/dashboard/svg/spring.svg" class="decor spring-2" alt="">
-        <img src="./assets/dashboard/png/yellow-ribbon.png" class="decor yellow-ribbon" alt="">
-        <img src="./assets/dashboard/png/green-ribbon.png" class="decor green-ribbon" alt="">
-        <img src="./assets/dashboard/svg/star.svg" class="decor star-levita" alt="">
+        <img src="/assets/dashboard/svg/yellow-dot.svg" class="decor yellow-dot" alt="">
+        <img src="/assets/dashboard/svg/brown-dot.svg" class="decor brown-dot" alt="">
+        <img src="/assets/dashboard/svg/spring.svg" class="decor spring-1" alt="">
+        <img src="/assets/dashboard/svg/spring.svg" class="decor spring-2" alt="">
+        <img src="/assets/dashboard/png/yellow-ribbon.png" class="decor yellow-ribbon" alt="">
+        <img src="/assets/dashboard/png/green-ribbon.png" class="decor green-ribbon" alt="">
+        <img src="/assets/dashboard/svg/star.svg" class="decor star-levita" alt="">
     </div>
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="./js/dashboard.js"></script>
+<script src="/js/dashboard.js"></script>
 </body>
 </html>

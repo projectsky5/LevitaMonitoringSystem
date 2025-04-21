@@ -39,7 +39,7 @@ fetch(url)
         let chartColors = ['#5C86F3', '#e5ecff']
         if (goalAchieved) {
             // меняем иконку
-            document.querySelector(".center-icon").src = "/assets/Mountain-done.svg";
+            document.querySelector(".center-icon").src = "/assets/dashboard/svg/Mountain-done.svg";
 
             // меняем цвет прогресс-бара
             document.querySelector(".kpi-progress").classList.add("goal-achieved");
