@@ -41,13 +41,10 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/dashboard/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler((req, resp, auth) -> {
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                        })
                         .permitAll()
                 )
                 .build();

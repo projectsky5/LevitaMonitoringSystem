@@ -255,11 +255,20 @@
 }
 
 .dashboard-wrapper {
-    background-color: #F7F7F9;
+    background-color: transparent;
     border-radius: 16px;
     padding: 2rem;
     margin: 2rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-content {
+    background-color: #F8F8F9;
+    max-width: 1240px;
+    width: 100%;
+    border-radius: 32px;
+    padding: 48px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
 }
 
 .goal-achieved .progress-bar {
@@ -267,7 +276,7 @@
 }
 
 .goal-achieved .center-icon {
-    content:url("../assets/Mountain-done.svg");
+    content:url("../assets/dashboard/svg/Mountain-done.svg");
 }
 
 .kpi-progress.goal-achieved .progress-bar {
@@ -275,7 +284,7 @@
 }
 
 .pie-wrapper.goal-achieved .center-icon {
-    content: url("../assets/Mountain-done.svg");
+    content: url("../assets/dashboard/svg/Mountain-done.svg");
 }
 .col-6 {
     flex: 0 0 50% !important;
@@ -432,6 +441,10 @@
         margin: 0 !important;
         padding: 0 !important;
         line-height: 1.2;
+    }
+
+    .decorative-backgrounds {
+        display: none;
     }
 }
 
