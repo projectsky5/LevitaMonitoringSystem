@@ -35,6 +35,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @OneToOne(mappedBy = "user")
+    private UserKpi userKpi;
+
     public Long getId() {
         return this.id;
     }
@@ -53,6 +56,10 @@ public class User {
 
     public Location getLocation() {
         return this.location;
+    }
+
+    public UserKpi getUserKpi() {
+        return this.userKpi;
     }
 
     public void setId(Long id) {

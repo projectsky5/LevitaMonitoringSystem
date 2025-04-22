@@ -12,7 +12,13 @@ import com.levita.levita_monitoring.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Service
 public class DashboardService {
@@ -20,6 +26,11 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final UserKpiRepository userKpiRepository;
     private final LocationKpiRepository locationKpiRepository;
+
+    private static final Map<String, BiFunction<String, String, Comparator<User>>> COMPARATOR_BUILDERS = Map.of(
+            "conversionRate", (sortField, order) -> buildComparator(user -> user.getUserKpi().getConversionRate(), order, Double::compareTo),
+            "personalRevenue", (sortField, order) -> buildComparator(user -> user.getUserKpi().getPersonalRevenue(), order, BigDecimal::compareTo)
+    );
 
     public DashboardService(UserRepository userRepository,
                             UserKpiRepository userKpiRepository,
@@ -74,9 +85,40 @@ public class DashboardService {
                 .build();
     }
 
+    @Transactional (readOnly = true)
     public List<AdminDto> getAllAdmins() {
         return userRepository.findAllByRole(Role.ADMIN).stream()
                 .map(AdminDto::new)
                 .toList();
+    }
+
+    @Transactional (readOnly = true)
+    public List<AdminDto> getAllAdminsSorted(String primarySort, String primaryOrder, String secondarySort, String secondaryOrder) {
+        List<User> admins = userRepository.findAllAdminsWithKpi(Role.ADMIN);
+
+        Comparator<User> comparator = Optional.ofNullable(COMPARATOR_BUILDERS.get(primarySort))
+                .map(builder -> builder.apply(primarySort, primaryOrder))
+                .orElse(null);
+
+        Comparator<User> secondaryComparator = Optional.ofNullable(COMPARATOR_BUILDERS.get(secondarySort))
+                .map(builder -> builder.apply(secondarySort, secondaryOrder))
+                .orElse(null);
+
+        if (comparator != null && secondaryComparator != null && !primarySort.equals(secondarySort)) {
+            comparator = comparator.thenComparing(secondaryComparator);
+        }
+
+        if(comparator != null){
+            admins.sort(comparator);
+        }
+
+        return admins.stream()
+                .map(AdminDto::new)
+                .toList();
+    }
+
+    private static <T> Comparator<User> buildComparator(Function<User, T> keyExtractor, String order, Comparator<T> valueComparator) {
+        Comparator<User> comparator = Comparator.comparing(keyExtractor, Comparator.nullsLast(valueComparator));
+        return "desс".equalsIgnoreCase(order) ? comparator.reversed() : comparator;
     }
 }
