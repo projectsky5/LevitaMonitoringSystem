@@ -67,7 +67,9 @@ body {
     pointer-events: none;
 }
 
-
+.hidden-owner {
+    display: none !important;
+}
 
 /* Заголовок KPI */
 .kpi-title {
@@ -310,6 +312,47 @@ body {
     height: auto;
     object-fit: contain;
 }
+
+.dropdown-menu-custom {
+    position: absolute;
+    right: 20px;
+    top: 60px;
+    background-color: #F6C956;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    padding: 12px 0;
+    z-index: 1000;
+    min-width: 160px;
+}
+
+.dropdown-item-custom {
+    width: 100%;
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Spectral', sans-serif;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item-custom:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.hidden {
+    display: none;
+}
+
 
 .central-logo {
     user-select: none;

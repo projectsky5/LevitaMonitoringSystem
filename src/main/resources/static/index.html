@@ -20,6 +20,27 @@
             <div class="d-flex align-items-center">
                 <span class="user-name me-3" id="username">…</span>
                 <img src="/assets/general/User.svg" alt="User" class="user-icon">
+                <div id="adminDropdown" class="dropdown-menu-custom hidden">
+                    <button class="dropdown-item-custom" id="logoutAdmin">
+                        <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
+                        Выйти
+                    </button>
+                </div>
+
+                <div id="ownerDropdown" class="dropdown-menu-custom hidden">
+                    <button class="dropdown-item-custom" id="logoutOwner">
+                        <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
+                        Выйти
+                    </button>
+                    <button class="dropdown-item-custom" id="refreshOwner">
+                        <img src="/assets/general/refresh.svg" class="menu-icon" alt="Refresh">
+                        Обновить
+                    </button>
+                    <button class="dropdown-item-custom" id="filterOwner">
+                        <img src="/assets/general/filter.svg" class="menu-icon" alt="Filter">
+                        Фильтры
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -32,7 +53,7 @@
 </div>
 
 <div class="dashboard-wrapper py-5 d-flex justify-content-center">
-    <div class="admin-navigation-wrapper owner-only" style="display: none;">
+    <div class="admin-navigation-wrapper owner-only">
         <button id="prevAdmin" class="admin-nav-button" aria-label="Предыдущий администратор">
             <img src="/assets/dashboard/svg/arrow-left.svg" alt="Предыдущий">
         </button>

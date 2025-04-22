@@ -1,6 +1,6 @@
 let admins = [];
 let currentAdminIndex = 0;
-let chartInstance = null; // Для сохранения и очистки диаграммы
+let chartInstance = null;
 
 // Получение данных о текущем пользователе
 fetch('/api/me')
@@ -13,7 +13,8 @@ fetch('/api/me')
             enableAdminFeatures();
             loadOwnDashboard();
         }
-    });
+    })
+    .catch(error => console.error('Ошибка при получении данных пользователя:', error));
 
 // Загружаем всех админов для OWNER
 function loadAdmins() {
@@ -23,7 +24,8 @@ function loadAdmins() {
             admins = data;
             updateNavigationButtons();
             loadAdminDashboard(admins[currentAdminIndex].id);
-        });
+        })
+        .catch(error => console.error('Ошибка при загрузке админов:', error));
 }
 
 // Загружаем дашборд одного админа
@@ -32,7 +34,8 @@ function loadAdminDashboard(adminId) {
         .then(response => response.json())
         .then(data => {
             renderDashboardData(data);
-        });
+        })
+        .catch(error => console.error('Ошибка при загрузке дашборда админа:', error));
 }
 
 // Для ADMIN — загружаем только свои данные
@@ -41,34 +44,42 @@ function loadOwnDashboard() {
         .then(response => response.json())
         .then(data => {
             renderDashboardData(data);
-        });
+        })
+        .catch(error => console.error('Ошибка при загрузке собственного дашборда:', error));
 }
 
-// Обновляем состояние кнопок (активна / неактивна)
+// Обновляем состояние кнопок
 function updateNavigationButtons() {
     const prevButton = document.getElementById('prevAdmin');
     const nextButton = document.getElementById('nextAdmin');
 
-    prevButton.classList.toggle('disabled', currentAdminIndex === 0);
-    nextButton.classList.toggle('disabled', currentAdminIndex === admins.length - 1);
+    if (prevButton && nextButton) {
+        prevButton.classList.toggle('disabled', currentAdminIndex === 0);
+        nextButton.classList.toggle('disabled', currentAdminIndex === admins.length - 1);
+    }
 }
 
 // События для стрелочек
-document.getElementById('prevAdmin').addEventListener('click', () => {
-    if (currentAdminIndex > 0) {
-        currentAdminIndex--;
-        loadAdminDashboard(admins[currentAdminIndex].id);
-        updateNavigationButtons();
-    }
-});
+const prevButton = document.getElementById('prevAdmin');
+const nextButton = document.getElementById('nextAdmin');
 
-document.getElementById('nextAdmin').addEventListener('click', () => {
-    if (currentAdminIndex < admins.length - 1) {
-        currentAdminIndex++;
-        loadAdminDashboard(admins[currentAdminIndex].id);
-        updateNavigationButtons();
-    }
-});
+if (prevButton && nextButton) {
+    prevButton.addEventListener('click', () => {
+        if (currentAdminIndex > 0) {
+            currentAdminIndex--;
+            loadAdminDashboard(admins[currentAdminIndex].id);
+            updateNavigationButtons();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentAdminIndex < admins.length - 1) {
+            currentAdminIndex++;
+            loadAdminDashboard(admins[currentAdminIndex].id);
+            updateNavigationButtons();
+        }
+    });
+}
 
 // Форматирование рублей
 function formatCurrency(amount, withDecimals = true) {
@@ -87,11 +98,11 @@ function renderDashboardData(data) {
     const rawLocation = data.locationName;
     const formattedLocation = rawLocation.charAt(0).toUpperCase() + rawLocation.slice(1).toLowerCase();
 
-    // Обновляем шапку
+    // Обновление шапки
     document.getElementById('username').innerText = data.username;
     document.getElementById('locationName').innerText = formattedLocation;
 
-    // Обновляем блок "Текущий доход"
+    // Обновление блока "Текущий доход"
     document.getElementById('currentIncome').innerText = `≈ ${formatCurrency(income)}`;
     document.getElementById('remainingToPlan').innerText = `${formatCurrency(remaining, false)} до цели`;
     document.getElementById('yellowBar').style.width = `${percent}%`;
@@ -102,12 +113,16 @@ function renderDashboardData(data) {
     let chartColors = ['#5C86F3', '#e5ecff'];
 
     if (goalAchieved) {
-        document.querySelector(".center-icon").src = "/assets/dashboard/svg/Mountain-done.svg";
-        document.querySelector(".kpi-progress").classList.add("goal-achieved");
+        const centerIcon = document.querySelector(".center-icon");
+        const kpiProgress = document.querySelector(".kpi-progress");
+        if (centerIcon) centerIcon.src = "/assets/dashboard/svg/Mountain-done.svg";
+        if (kpiProgress) kpiProgress.classList.add("goal-achieved");
         chartColors = ['#4ACA52', '#e5ecff'];
     } else {
-        document.querySelector(".center-icon").src = "/assets/dashboard/svg/Mountain.svg";
-        document.querySelector(".kpi-progress").classList.remove("goal-achieved");
+        const centerIcon = document.querySelector(".center-icon");
+        const kpiProgress = document.querySelector(".kpi-progress");
+        if (centerIcon) centerIcon.src = "/assets/dashboard/svg/Mountain.svg";
+        if (kpiProgress) kpiProgress.classList.remove("goal-achieved");
     }
 
     // Цифра дня
@@ -124,28 +139,105 @@ function renderDashboardData(data) {
     document.getElementById("avgRevenuePerDay").innerText = formatCurrency(data.avgRevenuePerDay, false);
     document.getElementById("conversionRate").innerText = `${data.conversionRate.toFixed(1)}%`;
 
-    // Обновляем диаграмму (пересоздаём Chart.js)
+    // Обновляем диаграмму
+    const pieChartCanvas = document.getElementById('pieChart');
     if (chartInstance !== null) {
         chartInstance.destroy();
     }
 
-    const ctx = document.getElementById('pieChart').getContext('2d');
-    chartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            datasets: [{
-                data: goalAchieved ? [100, 0] : [percent, Math.max(0, 100 - percent)],
-                backgroundColor: chartColors,
-                borderWidth: 0
-            }]
-        },
-        options: {
-            cutout: '60%',
-            responsive: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: false }
+    if (pieChartCanvas) {
+        const ctx = pieChartCanvas.getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: goalAchieved ? [100, 0] : [percent, Math.max(0, 100 - percent)],
+                    backgroundColor: chartColors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '60%',
+                responsive: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
             }
+        });
+    }
+}
+
+// Дропдаун
+document.addEventListener("DOMContentLoaded", function () {
+    const userIcon = document.querySelector(".user-icon");
+    const adminMenu = document.getElementById("adminDropdown");
+    const ownerMenu = document.getElementById("ownerDropdown");
+
+    let userRole = null;
+    let roleLoaded = false;
+
+    userIcon.style.pointerEvents = "none";
+    userIcon.style.opacity = "0.5";
+
+    fetch("/api/me")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка загрузки данных пользователя");
+            }
+            return response.json();
+        })
+        .then(data => {
+            userRole = data.role;
+            roleLoaded = true;
+            userIcon.style.pointerEvents = "auto";
+            userIcon.style.opacity = "1";
+            console.log("Роль пользователя:", userRole);
+        })
+        .catch(error => {
+            console.error("Ошибка при получении роли:", error);
+        });
+
+    function showMenu() {
+        if (!roleLoaded) return;
+
+        if (userRole === "ADMIN") {
+            adminMenu.classList.toggle("hidden");
+            ownerMenu.classList.add("hidden");
+        } else if (userRole === "OWNER") {
+            ownerMenu.classList.toggle("hidden");
+            adminMenu.classList.add("hidden");
+        }
+    }
+
+    userIcon.addEventListener("click", showMenu);
+
+    document.addEventListener("click", function (e) {
+        if (!userIcon.contains(e.target) && !adminMenu.contains(e.target) && !ownerMenu.contains(e.target)) {
+            adminMenu.classList.add("hidden");
+            ownerMenu.classList.add("hidden");
         }
     });
+
+    const logoutAdminBtn = document.getElementById("logoutAdmin");
+    const logoutOwnerBtn = document.getElementById("logoutOwner");
+    const refreshOwnerBtn = document.getElementById("refreshOwner");
+    const filterOwnerBtn = document.getElementById("filterOwner");
+
+    if (logoutAdminBtn) {
+        logoutAdminBtn.addEventListener("click", () => window.location.href = "/dashboard/logout");
+    }
+    if (logoutOwnerBtn) {
+        logoutOwnerBtn.addEventListener("click", () => window.location.href = "/dashboard/logout");
+    }
+    if (refreshOwnerBtn) {
+        refreshOwnerBtn.addEventListener("click", () => alert("Обновить: заглушка"));
+    }
+    if (filterOwnerBtn) {
+        filterOwnerBtn.addEventListener("click", () => window.location.href = "/dashboard/filter");
+    }
+});
+
+function enableAdminFeatures() {
+    document.querySelectorAll('.owner-only').forEach(el => el.classList.add('hidden-owner'));
 }
