@@ -16,7 +16,6 @@ public class ViewExceptionHandler {
             mav.setViewName("forward:/error.html");
             return mav;
         }
-
         throw new RuntimeException(e);
     }
 }

@@ -25,4 +25,13 @@ public class HomeController {
         }
         return "forward:/index.html";
     }
+
+    @GetMapping("/dashboard/filter")
+    public String filter(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails.getUser().getRole() != Role.OWNER) {
+            return "forward:/error.html";
+        }
+        return "forward:/filter.html";
+
+    }
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список администраторов - LEVITA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/filter.css">
+</head>
+<body>
+<div class="login-page d-flex align-items-center justify-content-center min-vh-100">
+    <div class="login-container d-flex flex-row rounded-5 shadow">
+
+        <!-- Левая часть: кнопки и список -->
+        <div class="form-side d-flex flex-column justify-content-center px-5 w-60 position-relative">
+
+            <!-- Логотип -->
+            <div class="logo-wrapper mb-4">
+                <img src="/assets/general/Levita-black.svg" alt="LEVITA" class="levita-logo-login">
+            </div>
+
+            <!-- Кнопки сортировки -->
+            <div class="sort-buttons mb-4 d-flex gap-5 justify-content-center">
+                <button class="sort-btn" data-sort="conversionRate">
+                    <img src="/assets/filter/svg/conversionRate.svg" alt="conversion rate" class="sort-icon">
+                </button>
+                <button class="sort-btn" data-sort="personalRevenue">
+                    <img src="/assets/filter/svg/personalRevenue.svg" alt="personal revenue" class="sort-icon">
+                </button>
+            </div>
+
+            <!-- Список админов -->
+            <div class="admin-list-container">
+                <ul class="admin-list list-group">
+                    <!-- Тут будут админы, пока пример: -->
+                    <li class="list-group-item">Арина - Лескова</li>
+                    <li class="list-group-item">Настя - Варварская</li>
+                    <li class="list-group-item">Оля - Чугунова</li>
+                    <li class="list-group-item">Админ - Локация</li>
+                    <li class="list-group-item">Админ - Локация</li>
+                    <li class="list-group-item">Админ - Локация</li>
+                    <li class="list-group-item">Админ - Локация</li>
+                    <li class="list-group-item">Админ - Локация</li>
+                    <li class="list-group-item">Админ - Локация</li>
+                    <li class="list-group-item">Админ - Локация</li>
+                    <li class="list-group-item">Админ - Локация</li>
+
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Правая часть: балерина -->
+        <div class="right-side w-40 d-flex align-items-center justify-content-center position-relative">
+            <img src="/assets/login/svg/ballerina.svg" alt="ballerina" class="ballerina-img">
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/filter-page.js"></script>
+</body>
+</html>
