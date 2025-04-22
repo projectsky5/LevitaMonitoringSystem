@@ -22,6 +22,53 @@ body {
     overflow-x: hidden;
 }
 
+.admin-navigation-wrapper {
+    position: absolute;
+    top: 250px;
+    left: 22%;
+    transform: translateX(-50%);
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 12px;
+    align-items: center;
+    z-index: 10;
+}
+
+/* Стили самих кнопок */
+.admin-nav-button {
+    background-color: #F6C956;
+    border: none;
+    border-radius: 12px;
+    box-sizing: border-box;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    user-select: none;
+}
+
+.admin-nav-button img {
+    width: 20px;
+    height: 20px;
+}
+
+.admin-nav-button:hover:not(.disabled) {
+    transform: scale(1.1);
+}
+
+.admin-nav-button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+
 /* Заголовок KPI */
 .kpi-title {
     font-family: 'Spectral', sans-serif;
@@ -119,6 +166,7 @@ body {
     height: auto;
     opacity: 0.15;
     pointer-events: none;
+    user-select: none;
 }
 
 .figure-label {
@@ -138,6 +186,7 @@ body {
 
 .target-icon {
     width: 32px;
+    user-select: none;
 }
 
 /* KPI карточки */
@@ -162,6 +211,7 @@ body {
 .crown-icon {
     width: 24px;
     height: auto;
+    user-select: none;
 }
 
 #planPercent,
@@ -229,18 +279,20 @@ body {
 
 .header-wrapper {
     width: 100vw;
-    background-color: rgba(16, 26, 37, 0.95); /* фон */
+    background-color: rgba(16, 26, 37, 0.95);
     color: #F7F7F9;
     border-radius: 0;
     margin-bottom: 1rem;
 }
 
 .header {
+    user-select: none;
     max-width: 100%;
     margin: 0 auto;
 }
 
 .levita-logo {
+    user-select: none;
     height: 36px;
 }
 
@@ -260,6 +312,7 @@ body {
 }
 
 .central-logo {
+    user-select: none;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -267,11 +320,13 @@ body {
 }
 
 .main-logo {
+    user-select: none;
     height: 70px;
     object-fit: contain;
 }
 
 .slogan {
+    user-select: none;
     font-family: 'Spectral', serif;
     font-size: 0.95rem;
     color: #1a1a1a;
@@ -301,6 +356,7 @@ body {
 
 .goal-achieved .center-icon {
     content:url("../assets/dashboard/svg/Mountain-done.svg");
+    user-select: none;
 }
 
 .kpi-progress.goal-achieved .progress-bar {
@@ -309,6 +365,7 @@ body {
 
 .pie-wrapper.goal-achieved .center-icon {
     content: url("../assets/dashboard/svg/Mountain-done.svg");
+    user-select: none;
 }
 .col-6 {
     flex: 0 0 50% !important;
@@ -316,11 +373,13 @@ body {
 }
 
 .decorative-backgrounds {
+    user-select: none;
     position: relative;
     z-index: 0;
 }
 
 .decor {
+    user-select: none;
     position: absolute;
     opacity: 1;
     width: 60px;
@@ -332,6 +391,7 @@ body {
     left: -850px;
     width: 70px;
     transform: rotate(-20deg);
+    user-select: none;
 }
 
 
@@ -340,6 +400,7 @@ body {
     left: 20px;
     width: 15px;
     transform: rotate(15deg);
+    user-select: none;
 }
 
 .brown-dot {
@@ -347,12 +408,14 @@ body {
     right: -200px;
     width: 15px;
     transform: rotate(-10deg);
+    user-select: none;
 }
 
 .spring-1 {
     top: -150px;
     left: -1400px;
     width: 110px;
+    user-select: none;
 }
 
 .spring-2 {
@@ -360,6 +423,7 @@ body {
     right: -200px;
     width: 110px;
     transform: rotate(90deg);
+    user-select: none;
 }
 
 .yellow-ribbon {
@@ -367,6 +431,7 @@ body {
     right: 1300px;
     width: 450px;
     transform: rotate(-11.5deg);
+    user-select: none;
 }
 
 .green-ribbon {
@@ -374,6 +439,7 @@ body {
     left: 150px;
     width: 300px;
     transform: rotate(-39.5deg);
+    user-select: none;
 }
 
 
@@ -544,6 +610,34 @@ body {
 
     .target-icon {
         width: 18px;
+    }
+
+    .admin-navigation-wrapper {
+        position: absolute;
+        top: 240px;
+        left: 22%;
+        gap: 12px;
+    }
+
+    .admin-nav-button {
+        all: unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 12px;
+        background-color: #F6C956;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .admin-nav-button img {
+        width: 10px;
+        height: 10px;
+        border-radius: 0 !important;
+        object-fit: contain;
     }
 }
 
