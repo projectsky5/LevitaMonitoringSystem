@@ -18,17 +18,31 @@ fetch('/api/me')
 
 // Загружаем всех админов для OWNER
 function loadAdmins() {
+    const urlParts = window.location.pathname.split('/');
+    const urlUserId = urlParts[urlParts.length - 1];
+
     fetch('/api/admins')
         .then(response => response.json())
         .then(data => {
             admins = data;
+
+            if (urlUserId) {
+                const foundIndex = admins.findIndex(admin => admin.id === Number(urlUserId));
+                if (foundIndex !== -1) {
+                    currentAdminIndex = foundIndex; // Если нашли — переключаемся на этого админа
+                } else {
+                    console.warn('Админ с таким userId не найден');
+                    currentAdminIndex = 0; // Фолбэк на первого
+                }
+            }
+
             updateNavigationButtons();
             loadAdminDashboard(admins[currentAdminIndex].id);
         })
         .catch(error => console.error('Ошибка при загрузке админов:', error));
 }
 
-// Загружаем дашборд одного админа
+//дашборд одного админа
 function loadAdminDashboard(adminId) {
     fetch(`/api/admins/${adminId}/dashboard`)
         .then(response => response.json())
@@ -38,7 +52,7 @@ function loadAdminDashboard(adminId) {
         .catch(error => console.error('Ошибка при загрузке дашборда админа:', error));
 }
 
-// Для ADMIN — загружаем только свои данные
+// Для ADMIN — загружаются только свои данные
 function loadOwnDashboard() {
     fetch('/api/dashboard')
         .then(response => response.json())

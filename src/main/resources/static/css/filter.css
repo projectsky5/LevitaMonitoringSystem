@@ -161,3 +161,22 @@ body *:not(input):not(textarea):not(button):not(label) {
         height: 40px;
     }
 }
+
+.admin-link {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333637;
+    text-decoration: none;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    user-select: none;
+    transition: color 0.3s;
+}
+
+.admin-link:hover {
+    color: #F6C956;
+}

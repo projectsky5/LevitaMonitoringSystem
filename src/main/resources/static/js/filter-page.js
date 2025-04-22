@@ -51,8 +51,15 @@ document.addEventListener('DOMContentLoaded', function () {
         admins.forEach(admin => {
             const li = document.createElement('li');
             li.className = 'list-group-item';
-            li.innerHTML = `<span>${admin.nameWithLocation}</span>`;
+            li.innerHTML = `<span class="admin-link" data-user-id="${admin.id}">${admin.nameWithLocation}</span>`;
             listContainer.appendChild(li);
+        });
+
+        document.querySelectorAll('.admin-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const userId = link.getAttribute('data-user-id');
+                window.location.href = `/dashboard/${userId}`;
+            });
         });
     }
 
