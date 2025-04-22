@@ -87,7 +87,7 @@ public class DashboardService {
 
     @Transactional (readOnly = true)
     public List<AdminDto> getAllAdmins() {
-        return userRepository.findAllByRole(Role.ADMIN).stream()
+        return userRepository.findAllAdminsWithKpi(Role.ADMIN).stream()
                 .map(AdminDto::new)
                 .toList();
     }
@@ -96,20 +96,33 @@ public class DashboardService {
     public List<AdminDto> getAllAdminsSorted(String primarySort, String primaryOrder, String secondarySort, String secondaryOrder) {
         List<User> admins = userRepository.findAllAdminsWithKpi(Role.ADMIN);
 
-        Comparator<User> comparator = Optional.ofNullable(COMPARATOR_BUILDERS.get(primarySort))
-                .map(builder -> builder.apply(primarySort, primaryOrder))
-                .orElse(null);
+        Comparator<User> primaryComparator = null;
+        Comparator<User> secondaryComparator = null;
 
-        Comparator<User> secondaryComparator = Optional.ofNullable(COMPARATOR_BUILDERS.get(secondarySort))
-                .map(builder -> builder.apply(secondarySort, secondaryOrder))
-                .orElse(null);
-
-        if (comparator != null && secondaryComparator != null && !primarySort.equals(secondarySort)) {
-            comparator = comparator.thenComparing(secondaryComparator);
+        if(primarySort != null && primaryOrder != null) {
+            primaryComparator = Optional.ofNullable(COMPARATOR_BUILDERS.get(primarySort))
+                    .map(builder -> builder.apply(primarySort, primaryOrder))
+                    .orElse(null);
         }
 
-        if(comparator != null){
-            admins.sort(comparator);
+        if (secondarySort != null && secondaryOrder != null && !secondarySort.equals(primarySort)) {
+            secondaryComparator = Optional.ofNullable(COMPARATOR_BUILDERS.get(secondarySort))
+                    .map(builder -> builder.apply(secondarySort, secondaryOrder))
+                    .orElse(null);
+        }
+
+        Comparator<User> finalComparator = null;
+
+        if (primaryComparator != null && secondaryComparator != null) {
+            finalComparator = primaryComparator.thenComparing(secondaryComparator);
+        } else if (primaryComparator != null) {
+            finalComparator = primaryComparator;
+        } else if (secondaryComparator != null) {
+            finalComparator = secondaryComparator;
+        }
+
+        if (finalComparator != null) {
+            admins.sort(finalComparator);
         }
 
         return admins.stream()
@@ -119,6 +132,6 @@ public class DashboardService {
 
     private static <T> Comparator<User> buildComparator(Function<User, T> keyExtractor, String order, Comparator<T> valueComparator) {
         Comparator<User> comparator = Comparator.comparing(keyExtractor, Comparator.nullsLast(valueComparator));
-        return "desс".equalsIgnoreCase(order) ? comparator.reversed() : comparator;
+        return "desc".equalsIgnoreCase(order) ? comparator.reversed() : comparator;
     }
 }

@@ -29,9 +29,11 @@ public class AdminController {
 
     @GetMapping("/sorted")
     public List<AdminDto> getAdminsSorted(
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String order
+            @RequestParam(required = false) String primarySort,
+            @RequestParam(required = false) String primaryOrder,
+            @RequestParam(required = false) String secondarySort,
+            @RequestParam(required = false) String secondaryOrder
     ) {
-        return dashboardService.getAllAdminsSorted(sort, order);
+        return dashboardService.getAllAdminsSorted(primarySort, primaryOrder, secondarySort, secondaryOrder);
     }
 }
