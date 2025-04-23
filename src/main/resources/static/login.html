@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - LEVITA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+<div class="login-page d-flex align-items-center justify-content-center min-vh-100">
+    <div class="login-container d-flex flex-row rounded-5 shadow">
+
+        <!-- Левая часть: форма + логотип -->
+        <div class="form-side d-flex flex-column justify-content-center px-5 w-60">
+
+            <!-- Логотип -->
+            <div class="logo-wrapper mb-4">
+                <img src="/assets/general/Levita-black.svg" alt="LEVITA" class="levita-logo-login">
+            </div>
+
+            <h2 class="mb-4 fw-bold">Log In</h2>
+
+            <form id="loginForm" method="post" action="/login" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label">login</label>
+                    <input type="text" class="form-control custom-input" id="username" name="username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">password</label>
+                    <input type="password" class="form-control custom-input" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn login-btn">
+                    LOGIN <img src="/assets/login/svg/arrow-login.svg" alt="arrow" class="arrow-icon">
+                </button>
+                <div id="errorMessage" class="error-box invisible mt-3">
+                    Неверные учетные данные пользователя
+                </div>
+            </form>
+        </div>
+
+        <!-- Правая часть: иллюстрация -->
+        <div class="right-side w-40 d-flex align-items-center justify-content-center position-relative">
+            <img src="/assets/login/svg/ballerina.svg" alt="ballerina" class="ballerina-img">
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("error")) {
+        document.getElementById("errorMessage").classList.remove("d-none");
+        document.getElementById("username").classList.add("is-invalid");
+        document.getElementById("password").classList.add("is-invalid");
+    }
+});
+</script>
+<script src="/js/login.js"></script>
+</body>
+</html>

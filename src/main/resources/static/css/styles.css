@@ -1,0 +1,725 @@
+@font-face {
+    font-family: 'MyFont';
+    src: url('../fonts/My.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Spectral';
+    src: url('../fonts/Spectral-Regular-Desktop.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.card {
+    border: none !important;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.admin-navigation-wrapper {
+    position: absolute;
+    top: 250px;
+    left: 22%;
+    transform: translateX(-50%);
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 12px;
+    align-items: center;
+    z-index: 10;
+}
+
+/* Стили самих кнопок */
+.admin-nav-button {
+    background-color: #F6C956;
+    border: none;
+    border-radius: 12px;
+    box-sizing: border-box;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    user-select: none;
+}
+
+.admin-nav-button img {
+    width: 20px;
+    height: 20px;
+}
+
+.admin-nav-button:hover:not(.disabled) {
+    transform: scale(1.1);
+}
+
+.admin-nav-button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.hidden-owner {
+    display: none !important;
+}
+
+/* Заголовок KPI */
+.kpi-title {
+    font-family: 'Spectral', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #3b3b3b;
+}
+
+/* Значение KPI */
+.kpi-value {
+    font-family: 'Spectral', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #000000;
+}
+
+.kpi-stats-label {
+    font-family: 'Spectral', sans-serif;
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.kpi-stats-value {
+    font-family: 'Spectral', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333637
+}
+
+/* Подписи под прогресс-блоком */
+.kpi-subtext {
+    font-family: 'Spectral', sans-serif;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Контейнер под диаграмму */
+.kpi-chart-container {
+    min-width: 100px;
+    display: flex;
+    align-items: start;
+    justify-content: end;
+}
+
+/* Прогресс-бар */
+.kpi-progress {
+    height: 12px;
+    background-color: #F4DA96;
+}
+
+.kpi-progress .progress-bar {
+    background-color: #F6C956;
+}
+
+/* Диаграмма */
+.pie-wrapper {
+    width: 100px;
+    height: 100px;
+}
+
+#pieChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.center-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 35%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* Блок "Цифра дня" с фоном и SVG */
+.figure-highlight {
+    font-family: 'Spectral', sans-serif;
+    background-color: #FCFCFC;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}
+
+.ruble-background {
+    position: absolute;
+    top: -10px;
+    right: 30px;
+    width: 80px;
+    height: auto;
+    opacity: 0.15;
+    pointer-events: none;
+    user-select: none;
+}
+
+.figure-label {
+    font-size: 24px;
+    font-weight: 500;
+    color: #A1A3A7;
+    line-height: 1.2;
+}
+
+.figure-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333637;
+    line-height: 1.2;
+    margin-left: 32px;
+}
+
+.target-icon {
+    width: 32px;
+    user-select: none;
+}
+
+/* KPI карточки */
+.kpi-card {
+    font-family: 'Spectral', sans-serif;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.kpi-badge {
+    font-family: 'Spectral', sans-serif;
+    background-color: #FFD54F;
+    color: #2b2b2b;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+}
+.crown-icon {
+    width: 24px;
+    height: auto;
+    user-select: none;
+}
+
+#planPercent,
+#remainingToPlan {
+    font-size: 0.875rem;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .pie-wrapper {
+        width: 72px !important;
+        height: 72px !important;
+    }
+
+    .progress {
+        height: 8px !important;
+    }
+
+    #yellowBar {
+        height: 8px !important;
+    }
+
+    .fs-3 {
+        font-size: 1.3rem !important;
+    }
+
+    .fs-5 {
+        font-size: 0.95rem !important;
+    }
+
+    .card {
+        padding: 1rem !important;
+    }
+
+    .container {
+        padding: 0 1rem !important;
+    }
+
+    .col-md-4 {
+        flex: 0 0 auto;
+        width: 33.333333%;
+        max-width: 33.333333%;
+    }
+
+    .col-md-6 {
+        flex: 0 0 auto;
+        width: 50%;
+        max-width: 50%;
+    }
+
+    .dashboard-wrapper .row {
+        margin-left: -0.75rem !important;
+        margin-right: -0.75rem !important;
+    }
+
+    .dashboard-wrapper .col-md-4,
+    .dashboard-wrapper .col-md-6 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+}
+
+.header-wrapper {
+    width: 100vw;
+    background-color: rgba(16, 26, 37, 0.95);
+    color: #F7F7F9;
+    border-radius: 0;
+    margin-bottom: 1rem;
+}
+
+.header {
+    user-select: none;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.levita-logo {
+    user-select: none;
+    height: 36px;
+}
+
+.location-name,
+.user-name {
+    color: #F7F7F9;
+    font-size: 1.75rem;
+    font-weight: 400;
+    font-family: 'MyFont', sans-serif;
+    white-space: nowrap;
+}
+
+.user-icon {
+    width: 40px;
+    height: auto;
+    object-fit: contain;
+}
+
+.dropdown-menu-custom {
+    position: absolute;
+    right: 20px;
+    top: 60px;
+    background-color: #F6C956;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    padding: 12px 0;
+    z-index: 1000;
+    min-width: 160px;
+}
+
+.dropdown-item-custom {
+    width: 100%;
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Spectral', sans-serif;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item-custom:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.hidden {
+    display: none;
+}
+
+
+.central-logo {
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-logo {
+    user-select: none;
+    height: 70px;
+    object-fit: contain;
+}
+
+.slogan {
+    user-select: none;
+    font-family: 'Spectral', serif;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.dashboard-wrapper {
+    background-color: transparent;
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-content {
+    background-color: #FCFCFC;
+    max-width: 1240px;
+    width: 100%;
+    border-radius: 32px;
+    padding: 48px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
+}
+
+.goal-achieved .progress-bar {
+    background-color: #4ACA52 !important;
+}
+
+.goal-achieved .center-icon {
+    content:url("../assets/dashboard/svg/Mountain-done.svg");
+    user-select: none;
+}
+
+.kpi-progress.goal-achieved .progress-bar {
+    background-color: #4ACA52 !important;
+}
+
+.pie-wrapper.goal-achieved .center-icon {
+    content: url("../assets/dashboard/svg/Mountain-done.svg");
+    user-select: none;
+}
+.col-6 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+}
+
+.decorative-backgrounds {
+    user-select: none;
+    position: relative;
+    z-index: 0;
+}
+
+.decor {
+    user-select: none;
+    position: absolute;
+    opacity: 1;
+    width: 60px;
+    transform: rotate(0deg);
+}
+
+.star-levita {
+    bottom: 620px;
+    left: -850px;
+    width: 70px;
+    transform: rotate(-20deg);
+    user-select: none;
+}
+
+
+.yellow-dot {
+    top: -200px;
+    left: 20px;
+    width: 15px;
+    transform: rotate(15deg);
+    user-select: none;
+}
+
+.brown-dot {
+    bottom: 120px;
+    right: -200px;
+    width: 15px;
+    transform: rotate(-10deg);
+    user-select: none;
+}
+
+.spring-1 {
+    top: -150px;
+    left: -1400px;
+    width: 110px;
+    user-select: none;
+}
+
+.spring-2 {
+    bottom: 360px;
+    right: -200px;
+    width: 110px;
+    transform: rotate(90deg);
+    user-select: none;
+}
+
+.yellow-ribbon {
+    top: -10px;
+    right: 1300px;
+    width: 450px;
+    transform: rotate(-11.5deg);
+    user-select: none;
+}
+
+.green-ribbon {
+    bottom: 400px;
+    left: 150px;
+    width: 300px;
+    transform: rotate(-39.5deg);
+    user-select: none;
+}
+
+
+
+@media (max-width: 576px) {
+
+    .header .d-flex.justify-content-between {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header .d-flex.align-items-center {
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .levita-logo {
+        height: 26px !important;
+    }
+
+    .location-name,
+    .user-name {
+        font-size: 0.85rem !important;
+    }
+
+    .user-icon {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .dashboard-wrapper {
+        padding: 1rem !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .dashboard-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .dashboard-wrapper .row {
+        flex-wrap: wrap !important;
+    }
+
+    .dashboard-wrapper .col-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+
+    }
+
+    .dashboard-wrapper .col-12 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    .kpi-card {
+        padding: 1rem !important;
+        min-height: 140px;
+    }
+
+    .card {
+        height: auto !important;
+    }
+
+    .kpi-card .d-flex.justify-content-between {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .kpi-title {
+        font-size: 0.85rem;
+    }
+
+    .kpi-value {
+        font-size: 1.25rem;
+    }
+
+    .kpi-subtext {
+        font-size: 0.75rem;
+    }
+
+    .kpi-chart-container {
+        display: none !important;
+    }
+
+    .pie-wrapper {
+        width: 64px !important;
+        height: 64px !important;
+    }
+
+    .center-icon {
+        width: 24px !important;
+    }
+
+    .kpi-badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+
+    .kpi-badge img,
+    .crown-icon {
+        width: 18px !important;
+    }
+
+    .fw-medium.fs-6 {
+        font-size: 0.9rem !important;
+    }
+
+    .text-muted.small {
+        font-size: 0.75rem !important;
+    }
+
+    .figure-highlight {
+        height: auto;
+        padding: 0.75rem;
+    }
+
+    .figure-highlight .fs-5 {
+        font-size: 1rem !important;
+    }
+
+    .figure-highlight .text-muted {
+        font-size: 0.85rem !important;
+    }
+
+    .ruble-background {
+        width: 60px;
+        top: 0;
+        right: 10px;
+    }
+
+    .kpi-top {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: start;
+        gap: 10px; /* Расстояние между бейджем и заголовком KPI */
+    }
+
+    .kpi-heading {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.2;
+    }
+
+    .decorative-backgrounds {
+        display: none;
+    }
+
+    .figure-label {
+        font-size: 16px;
+    }
+
+    .figure-value {
+        font-size: 18px;
+    }
+
+    .target-icon {
+        width: 18px;
+    }
+
+    .admin-navigation-wrapper {
+        position: absolute;
+        top: 240px;
+        left: 22%;
+        gap: 12px;
+    }
+
+    .admin-nav-button {
+        all: unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 12px;
+        background-color: #F6C956;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .admin-nav-button img {
+        width: 10px;
+        height: 10px;
+        border-radius: 0 !important;
+        object-fit: contain;
+    }
+}
+
+@media (min-width: 768px) {
+    .dashboard-wrapper .col-md-4 {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+    }
+
+    .dashboard-wrapper .col-md-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    .dashboard-wrapper .row {
+        margin-left: -0.75rem !important;
+        margin-right: -0.75rem !important;
+    }
+
+    .dashboard-wrapper .col-md-4,
+    .dashboard-wrapper .col-md-6 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    .kpi-top {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: start;
+        gap: 16px; /* Расстояние между бейджем и заголовком KPI */
+    }
+
+    .kpi-heading {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.2;
+    }
+
+
+
+}
