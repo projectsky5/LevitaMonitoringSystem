@@ -280,11 +280,13 @@ body {
 }
 
 .header-wrapper {
-    width: 100vw;
+    width: 100%; /* исправили vw на % */
+    max-width: 100%;
     background-color: rgba(16, 26, 37, 0.95);
     color: #F7F7F9;
     border-radius: 0;
     margin-bottom: 1rem;
+    overflow-x: hidden; /* гарантируем, что ничего не улетит */
 }
 
 .header {
@@ -379,8 +381,9 @@ body {
 .dashboard-wrapper {
     background-color: transparent;
     border-radius: 16px;
-    padding: 2rem;
-    margin: 2rem;
+    padding: 2rem; /* заменили margin на padding */
+    max-width: 1240px;
+    margin: 0 auto; /* центрируем контейнер */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
@@ -417,8 +420,13 @@ body {
 
 .decorative-backgrounds {
     user-select: none;
-    position: relative;
-    z-index: 0;
+    position: absolute; /* <-- вот ключевое изменение */
+    top: 0;
+    left: 0;
+    width: 100vw;        /* даём ширину на весь экран */
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
 }
 
 .decor {
@@ -463,7 +471,7 @@ body {
 
 .spring-2 {
     bottom: 360px;
-    right: -200px;
+    left: 500px;
     width: 110px;
     transform: rotate(90deg);
     user-select: none;
@@ -478,8 +486,8 @@ body {
 }
 
 .green-ribbon {
-    bottom: 400px;
-    left: 150px;
+    bottom: 300px;
+    left: 1325px;
     width: 300px;
     transform: rotate(-39.5deg);
     user-select: none;
@@ -722,4 +730,11 @@ body {
 
 
 
+}
+
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
