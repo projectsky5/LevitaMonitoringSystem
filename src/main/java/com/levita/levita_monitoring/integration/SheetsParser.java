@@ -40,26 +40,15 @@ public class SheetsParser {
     private final List<SpreadsheetConfig> spreadsheetsConfig;
     private final KpiDataService kpiDataService;
 
+    private final Sheets sheetsService;
+
     @Autowired
-    public SheetsParser(List<SpreadsheetConfig> spreadsheetsConfig, KpiDataService kpiDataService) {
+    public SheetsParser(List<SpreadsheetConfig> spreadsheetsConfig, KpiDataService kpiDataService, Sheets sheetsService) {
         this.spreadsheetsConfig = spreadsheetsConfig;
         this.kpiDataService = kpiDataService;
+        this.sheetsService = sheetsService;
+
     }
-
-    @PostConstruct
-    public void init(){
-        this.sheetsService = getSheetsService();
-    }
-
-    @Value("${application.name}")
-    private String applicationName;
-
-    @Value("${google.sheets.credentials.file.path}")
-    private String credentials;
-
-    private Sheets sheetsService;
-
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void scheduleDataParsing(){
@@ -173,22 +162,6 @@ public class SheetsParser {
             log.info("Завершена загрузка из таблицы [{}]", spreadsheetId);
 
             executor.shutdown();
-        }
-    }
-
-    public Sheets getSheetsService(){
-        try{
-            HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-
-            GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(credentials))
-                    .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS_READONLY));
-
-            return new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
-                    .setApplicationName(applicationName)
-                    .build();
-        } catch (GeneralSecurityException | IOException e) {
-            log.error("Ошибка при создании SheetsService для [{}]", credentials, e);
-            throw new RuntimeException("Ошибка при создании SheetsService для " + credentials, e);
         }
     }
 }
