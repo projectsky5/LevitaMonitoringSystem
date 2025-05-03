@@ -7,6 +7,7 @@ application-local.properties
 credentials.json
 src/main/resources/config/sheets-columns.yml
 src/main/resources/config/sheets-ranges.yml
+src/main/resources/config/sheets-names.yml
 sheets-ranges.yml
 logs/application.log
 logs/*.log
