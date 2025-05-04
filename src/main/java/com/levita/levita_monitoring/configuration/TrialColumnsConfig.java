@@ -9,13 +9,13 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "trial-columns")
 public class TrialColumnsConfig {
 
-    private Map<String, String> columns;
+    private Map<String, Map<String, String>> columns;
 
-    public Map<String, String> getColumns() {
+    public Map<String, Map<String, String>> getColumns() {
         return columns;
     }
 
-    public void setColumns(Map<String, String> columns) {
+    public void setColumns(Map<String, Map<String, String>> columns) {
         this.columns = columns;
     }
 }

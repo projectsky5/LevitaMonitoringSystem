@@ -3,20 +3,19 @@ package com.levita.levita_monitoring.configuration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "current-columns")
 public class CurrentColumnsConfig {
 
-    private Map<String, String> columns;
+    private Map<String, Map<String, String>> columns;
 
-    public Map<String, String> getColumns() {
+    public Map<String, Map<String, String>> getColumns() {
         return columns;
     }
 
-    public void setColumns(Map<String, String> columns) {
+    public void setColumns(Map<String, Map<String, String>> columns) {
         this.columns = columns;
     }
 }
