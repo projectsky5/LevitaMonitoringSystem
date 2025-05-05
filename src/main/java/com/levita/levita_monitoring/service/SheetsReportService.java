@@ -25,6 +25,7 @@ public class SheetsReportService {
     private static final Logger log = LoggerFactory.getLogger(SheetsReportService.class);
 
     private static final String VALUE_INPUT_OPTION = "USER-ENTERED";
+    private static final String EMPTY_CELL = "";
 
     private final Sheets sheets;
     private final ShiftColumnsConfig shiftColumnsConfig;
@@ -294,6 +295,32 @@ public class SheetsReportService {
         log.info("Откат изменений: Очищен раздел \"Текущие\" для [{} ({})]", admin, location);
     }
 
+    private void rollbackShiftReport(User user, String today) throws IOException {
+        String location = user.getLocation().getName();
+        String admin = user.getName();
+
+        String dateCol = shiftColumnsConfig.getColumns().get(location);
+        if (dateCol == null) {
+            log.warn("Не удалось откатить \"Касса в студии\": Неизвестная локация: [{}]", location);
+            throw new IllegalArgumentException("Неизвестная локация: " + location);
+        }
+
+        int row = findRowByDate(sheetNamesConfig.getShift(), dateCol, 3 , today);
+        String startCol = nextColumn(dateCol);
+
+        String range = String.format("'%s'!%s%d:%s%d",
+                sheetNamesConfig.getShift(),
+                startCol,
+                row,
+                nextColumn(nextColumn(startCol)),
+                row
+        );
+
+        List<Object> emptyRow = List.of(EMPTY_CELL, EMPTY_CELL, EMPTY_CELL);
+        updateRow(emptyRow, range);
+        log.info("Откат изменений: Очищен раздел \"Касса в студии\" для [{} ({})]", admin, location);
+    }
+
     private void updateRow(List<Object> row, String range) throws IOException {
         ValueRange body = new ValueRange().setValues(List.of(row));
 
@@ -409,7 +436,7 @@ public class SheetsReportService {
         String targetRange = String.format("'%s'!%s%d:%s%d", sheetName, startCol, row, endCol, row);
 
         int columnCount = columnCount(startCol, endCol);
-        List<Object> emptyRow = new ArrayList<>(Collections.nCopies(columnCount, ""));
+        List<Object> emptyRow = new ArrayList<>(Collections.nCopies(columnCount, EMPTY_CELL));
 
         updateRow(emptyRow, targetRange);
     }
