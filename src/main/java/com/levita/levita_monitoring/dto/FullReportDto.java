@@ -1,65 +1,71 @@
-package com.levita.levita_monitoring.dto.reportDto;
+package com.levita.levita_monitoring.dto;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public record FullReportDto(
-        ShiftReportDto shift,
-        TrialReportDto trial,
-        CurrentReportDto current,
-        List<OperationDto> operations
+        @Valid @NotNull ShiftReportDto shift,
+        @Valid @NotNull TrialReportDto trial,
+        @Valid @NotNull CurrentReportDto current,
+        @Valid List<@Valid OperationDto> operations
 ) {
     public record ShiftReportDto(
-            BigDecimal shiftStart,
-            BigDecimal shiftEnd
+            @NotNull @PositiveOrZero BigDecimal shiftStart,
+            @NotNull @PositiveOrZero BigDecimal shiftEnd
     ) {}
 
     public record TrialReportDto(
-            int trialCame,
+            @Min(0) int trialCame,
 
-            int trialBought,
-            BigDecimal trialBoughtAmount,
+            @Min(0) int trialBought,
+            @NotNull @PositiveOrZero BigDecimal trialBoughtAmount,
 
-            int trialPaid,
-            BigDecimal trialPaidAmount,
+            @Min(0) int trialPaid,
+            @NotNull @PositiveOrZero BigDecimal trialPaidAmount,
 
-            int prepayment,
-            BigDecimal prepaymentAmount,
+            @Min(0) int prepayment,
+            @NotNull @PositiveOrZero BigDecimal prepaymentAmount,
 
-            int surcharge,
-            BigDecimal surchargeAmount
+            @Min(0) int surcharge,
+            @NotNull @PositiveOrZero BigDecimal surchargeAmount
     ) {}
 
     public record CurrentReportDto(
-            int finished,
+            @Min(0) int finished,
 
-            int extended,
-            BigDecimal extendedAmount,
+            @Min(0) int extended,
+            @NotNull @PositiveOrZero BigDecimal extendedAmount,
 
-            int upgrades,
-            BigDecimal upgradeAmount,
+            @Min(0) int upgrades,
+            @NotNull @PositiveOrZero BigDecimal upgradeAmount,
 
-            int returned,
-            BigDecimal returnedAmount,
+            @Min(0) int returned,
+            @NotNull @PositiveOrZero BigDecimal returnedAmount,
 
-            int prepayment,
-            BigDecimal prepaymentAmount,
+            @Min(0) int prepayment,
+            @NotNull @PositiveOrZero BigDecimal prepaymentAmount,
 
-            int surcharge,
-            BigDecimal surchargeAmount,
+            @Min(0) int surcharge,
+            @NotNull @PositiveOrZero BigDecimal surchargeAmount,
 
-            int individual,
-            BigDecimal individualAmount,
+            @Min(0) int individual,
+            @NotNull @PositiveOrZero BigDecimal individualAmount,
 
-            int singleVisits,
-            BigDecimal singleVisitAmount
+            @Min(0) int singleVisits,
+            @NotNull @PositiveOrZero BigDecimal singleVisitAmount
     ) {}
 
     public record OperationDto(
-            String type,
-            BigDecimal amount,
-            String cashType,
-            String category,
+            @NotBlank String type,
+            @NotNull BigDecimal amount,
+            @NotBlank String cashType,
+            @NotBlank String category,
             String comment
     ) {}
 }
