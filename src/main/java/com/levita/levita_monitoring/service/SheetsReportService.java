@@ -17,10 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SheetsReportService {
@@ -267,6 +264,33 @@ public class SheetsReportService {
         log.info("Загружен раздел \"Текущие\" для пользователя [{} ({})]", admin, location);
     }
 
+    private void rollbackTrialReport(User user, String today) throws IOException {
+        String admin = user.getName();
+        String location = user.getLocation().getName();
+        String key = String.format("%s (%s)", admin, location);
+
+        Map<String, String> entry = trialColumnsConfig.getColumns().get(key);
+        if(entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
+            log.warn("Не удалось откатить изменения: Не найден конфиг для [{}]", key);
+            throw new IllegalArgumentException("Конфиг пробных не найден для: " + key);
+        }
+
+        String sheetName = entry.get("sheet");
+        String[] range = entry.get("range").split(":");
+        String startCol = range[0];
+        String endCol = range[1];
+
+        int row = findRowByDate(sheetName, "C", 8, today);
+
+        String targetRange = String.format("'%s'!%s%d:%s%d", sheetName, startCol, row, endCol, row);
+
+        int columnCount = columnCount(startCol, endCol);
+        List<Object> emptyRow = new ArrayList<>(Collections.nCopies(columnCount, ""));
+
+        updateRow(emptyRow, targetRange);
+        log.info("Откат изменений: Очищен раздел \"Пробные\" для [{} ({})]", admin, location);
+    }
+
     private void updateRow(List<Object> row, String range) throws IOException {
         ValueRange body = new ValueRange().setValues(List.of(row));
 
@@ -328,6 +352,18 @@ public class SheetsReportService {
         }
 
         return "A" + new String(chars);
+    }
+
+    private int columnCount(String startCol, String endCol){
+        return columnToIndex(endCol) - columnToIndex(startCol) + 1;
+    }
+
+    private int columnToIndex(String col) {
+        int result = 0;
+        for (char c : col.toUpperCase().toCharArray()) {
+            result = result * 26 + (c - 'A' + 1);
+        }
+        return result;
     }
 
     private Object formatAmount(BigDecimal amount) {
