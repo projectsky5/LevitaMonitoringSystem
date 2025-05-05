@@ -116,6 +116,21 @@ public class SheetsReportService {
         log.info("Загрузка данных за дату {} завершена за {} мс", today, duration.toMillis());
     }
 
+    public void rollbackFullReport(User user) throws IOException {
+        String today = LocalDate.now().format(dateFormatter);
+        log.info("{} - Начало полного отката данных", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        Instant start = Instant.now();
+        rollbackShiftReport(user, today);
+        rollbackTrialReport(user, today);
+        rollbackCurrentReport(user, today);
+        rollbackOperations(user, today);
+        Instant end = Instant.now();
+
+        Duration duration = Duration.between(start, end);
+        log.info("Полный откат данных за дату {} завершен за {} мс", today, duration.toMillis());
+    }
+
     private void saveOperationsForDate(List<FullReportDto.OperationDto> operations, User user, String today) throws IOException {
         String location = user.getLocation().getName();
         String admin = user.getName();
@@ -199,7 +214,7 @@ public class SheetsReportService {
         log.info("Загружен раздел \"Пробные\" для пользователя [{} ({})]", admin, location);
     }
 
-    public void updateShiftReport(FullReportDto.ShiftReportDto dto, User user, String today) throws IOException {
+    private void updateShiftReport(FullReportDto.ShiftReportDto dto, User user, String today) throws IOException {
         String location = user.getLocation().getName();
         String admin = user.getName();
 
@@ -224,7 +239,7 @@ public class SheetsReportService {
         log.info("Загружен раздел \"Касса в студии\" для пользователя [{} ({})]", admin, location);
     }
 
-    public void updateCurrentReport(FullReportDto.CurrentReportDto dto, User user, String today) throws IOException {
+    private void updateCurrentReport(FullReportDto.CurrentReportDto dto, User user, String today) throws IOException {
         String admin = user.getName();
         String location = user.getLocation().getName();
         String key = String.format("%s (%s)", admin, location);
