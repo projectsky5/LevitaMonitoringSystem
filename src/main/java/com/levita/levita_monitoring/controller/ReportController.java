@@ -40,4 +40,14 @@ public class ReportController {
         sheetsReportService.updateFullReport(dto, user);
         return ResponseEntity.ok("Отчет успешно загружен");
     }
+
+    @PostMapping("/rollback")
+    public ResponseEntity<?> rollbackReport(@AuthenticationPrincipal User user) throws IOException {
+        log.info("Запрос на откат отчета от пользователя [{}] в локации [{}]",
+                user.getName(),
+                user.getLocation().getName());
+
+        sheetsReportService.rollbackFullReport(user);
+        return ResponseEntity.ok("Откат данных выполнен успешно");
+    }
 }

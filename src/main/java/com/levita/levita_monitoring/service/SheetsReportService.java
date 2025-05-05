@@ -1,7 +1,7 @@
 package com.levita.levita_monitoring.service;
 
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.*;
 import com.levita.levita_monitoring.configuration.sheet_reports.*;
 import com.levita.levita_monitoring.dto.FullReportDto;
 import com.levita.levita_monitoring.model.User;
@@ -17,10 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SheetsReportService {
@@ -28,6 +25,7 @@ public class SheetsReportService {
     private static final Logger log = LoggerFactory.getLogger(SheetsReportService.class);
 
     private static final String VALUE_INPUT_OPTION = "USER-ENTERED";
+    private static final String EMPTY_CELL = "";
 
     private final Sheets sheets;
     private final ShiftColumnsConfig shiftColumnsConfig;
@@ -118,6 +116,21 @@ public class SheetsReportService {
         log.info("Загрузка данных за дату {} завершена за {} мс", today, duration.toMillis());
     }
 
+    public void rollbackFullReport(User user) throws IOException {
+        String today = LocalDate.now().format(dateFormatter);
+        log.info("{} - Начало полного отката данных", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        Instant start = Instant.now();
+        rollbackShiftReport(user, today);
+        rollbackTrialReport(user, today);
+        rollbackCurrentReport(user, today);
+        rollbackOperations(user, today);
+        Instant end = Instant.now();
+
+        Duration duration = Duration.between(start, end);
+        log.info("Полный откат данных за дату {} завершен за {} мс", today, duration.toMillis());
+    }
+
     private void saveOperationsForDate(List<FullReportDto.OperationDto> operations, User user, String today) throws IOException {
         String location = user.getLocation().getName();
         String admin = user.getName();
@@ -201,7 +214,7 @@ public class SheetsReportService {
         log.info("Загружен раздел \"Пробные\" для пользователя [{} ({})]", admin, location);
     }
 
-    public void updateShiftReport(FullReportDto.ShiftReportDto dto, User user, String today) throws IOException {
+    private void updateShiftReport(FullReportDto.ShiftReportDto dto, User user, String today) throws IOException {
         String location = user.getLocation().getName();
         String admin = user.getName();
 
@@ -226,7 +239,7 @@ public class SheetsReportService {
         log.info("Загружен раздел \"Касса в студии\" для пользователя [{} ({})]", admin, location);
     }
 
-    public void updateCurrentReport(FullReportDto.CurrentReportDto dto, User user, String today) throws IOException {
+    private void updateCurrentReport(FullReportDto.CurrentReportDto dto, User user, String today) throws IOException {
         String admin = user.getName();
         String location = user.getLocation().getName();
         String key = String.format("%s (%s)", admin, location);
@@ -267,6 +280,91 @@ public class SheetsReportService {
         log.info("Загружен раздел \"Текущие\" для пользователя [{} ({})]", admin, location);
     }
 
+    private void rollbackTrialReport(User user, String today) throws IOException {
+        String admin = user.getName();
+        String location = user.getLocation().getName();
+        String key = String.format("%s (%s)", admin, location);
+
+        Map<String, String> entry = trialColumnsConfig.getColumns().get(key);
+        if(entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
+            log.warn("Не удалось откатить изменения: Не найден конфиг для [{}]", key);
+            throw new IllegalArgumentException("Конфиг пробных не найден для: " + key);
+        }
+
+        clearRowByDate(entry, "C", 8, today);
+        log.info("Откат изменений: Очищен раздел \"Пробные\" для [{} ({})]", admin, location);
+    }
+
+    private void rollbackCurrentReport(User user, String today) throws IOException {
+        String admin = user.getName();
+        String location = user.getLocation().getName();
+        String key = String.format("%s (%s)", admin, location);
+
+        Map<String, String> entry = currentColumnsConfig.getColumns().get(key);
+        if(entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
+            log.warn("Не удалось откатить изменения: Не найден конфиг для текущего отчета [{}]", key);
+            throw new IllegalArgumentException("Конфиг текущих не найден для: " + key);
+        }
+
+        clearRowByDate(entry, "A", 6, today);
+        log.info("Откат изменений: Очищен раздел \"Текущие\" для [{} ({})]", admin, location);
+    }
+
+    private void rollbackShiftReport(User user, String today) throws IOException {
+        String location = user.getLocation().getName();
+        String admin = user.getName();
+
+        String dateCol = shiftColumnsConfig.getColumns().get(location);
+        if (dateCol == null) {
+            log.warn("Не удалось откатить \"Касса в студии\": Неизвестная локация: [{}]", location);
+            throw new IllegalArgumentException("Неизвестная локация: " + location);
+        }
+
+        int row = findRowByDate(sheetNamesConfig.getShift(), dateCol, 3 , today);
+        String startCol = nextColumn(dateCol);
+
+        String range = String.format("'%s'!%s%d:%s%d",
+                sheetNamesConfig.getShift(),
+                startCol,
+                row,
+                nextColumn(nextColumn(startCol)),
+                row
+        );
+
+        List<Object> emptyRow = emptyRow(3); // TODO: unify
+        updateRow(emptyRow, range);
+        log.info("Откат изменений: Очищен раздел \"Касса в студии\" для [{} ({})]", admin, location); // TODO: config
+    }
+
+    private void rollbackOperations(User user, String today) throws IOException {
+        String location = user.getLocation().getName();
+        String admin = user.getName();
+
+        String sheetName = sheetNamesConfig.getOperations().get(location);
+        if (sheetName == null) {
+            log.warn("Откат операций невозможен: не найден лист для локации [{}]", location);
+            throw new IllegalArgumentException("Не найден лист операций для локации: " + location);
+        }
+
+        String dateCol = dateColumnsConfig.getColumns().get(sheetName);
+        if (dateCol == null) {
+            log.warn("Откат операций невозможен: не найдена колонка с датами для [{}]", sheetName);
+            throw new IllegalArgumentException("Не найдена колонка с датами для листа: " + sheetName);
+        }
+
+        int startRow = 2;
+        List<Integer> rowsToDelete = findRowsByDate(sheetName, dateCol, startRow, today);
+
+        if(rowsToDelete.isEmpty()) {
+            log.info("Откат операций: строк за дату [{}] не найдено", today);
+            return;
+        }
+
+        deleteRows(sheetName, rowsToDelete);
+        log.info("Откат операций: удалено {} строк за дату [{}] для [{} ({})]",
+                rowsToDelete.size(), today, admin, location);
+    }
+
     private void updateRow(List<Object> row, String range) throws IOException {
         ValueRange body = new ValueRange().setValues(List.of(row));
 
@@ -302,6 +400,26 @@ public class SheetsReportService {
         throw new IllegalArgumentException("Дата не найдена: " + date);
     }
 
+    private List<Integer> findRowsByDate(String sheetName, String column, int startRow, String date) throws IOException {
+        String range = String.format("'%s'!%s%d:%s", sheetName, column, startRow, column);
+        ValueRange response = sheets.spreadsheets().values()
+                .get(spreadsheetId, range)
+                .execute();
+
+        List<List<Object>> rows = response.getValues();
+        List<Integer> matchedRows = new ArrayList<>();
+
+        if (rows == null) return matchedRows;
+
+        for (int i = 0; i < rows.size(); i++) {
+            List<Object> row = rows.get(i);
+            if(!row.isEmpty() && date.equals(row.getFirst().toString())) {
+                matchedRows.add(startRow + i);
+            }
+        }
+        return matchedRows;
+    }
+
     private int findFirstEmptyRow(String sheetName, String column, int startRow) throws IOException {
         String range = String.format("'%s'!%s%d:%s", sheetName, column, startRow, column);
         ValueRange response = sheets.spreadsheets().values()
@@ -328,6 +446,18 @@ public class SheetsReportService {
         }
 
         return "A" + new String(chars);
+    }
+
+    private int columnCount(String startCol, String endCol){
+        return columnToIndex(endCol) - columnToIndex(startCol) + 1;
+    }
+
+    private int columnToIndex(String col) {
+        int result = 0;
+        for (char c : col.toUpperCase().toCharArray()) {
+            result = result * 26 + (c - 'A' + 1);
+        }
+        return result;
     }
 
     private Object formatAmount(BigDecimal amount) {
@@ -357,5 +487,58 @@ public class SheetsReportService {
 
     private String buildCellRange(String sheetName, String column, int row) {
         return String.format("'%s'!%s%d", sheetName, column, row);
+    }
+
+    private void clearRowByDate(Map<String, String> entry, String column, int startRow, String today) throws IOException {
+        String sheetName = entry.get("sheet");
+        String[] range = entry.get("range").split(":");
+        String startCol = range[0];
+        String endCol = range[1];
+
+        int row = findRowByDate(sheetName, column, startRow, today);
+
+        clearRange(sheetName, startCol, endCol, row);
+    }
+
+    private void clearRange(String sheetName, String startCol, String endCol, int row) throws IOException {
+        String range = String.format("'%s'!%s%d:%s%d", sheetName, startCol, row, endCol, row);
+        int columnCount = columnCount(startCol, endCol);
+        List<Object> emptyRow = emptyRow(columnCount);
+        updateRow(emptyRow, range);
+    }
+
+    private void deleteRows(String sheetName, List<Integer> rowsToDelete) throws IOException {
+        Integer sheetId = getSheetIdByName(sheetName);
+
+        rowsToDelete.sort(Comparator.reverseOrder());
+
+        List<Request> requests = new ArrayList<>();
+        for (Integer row : rowsToDelete) {
+            requests.add(new Request().setDeleteDimension(new DeleteDimensionRequest()
+                    .setRange(new DimensionRange()
+                            .setSheetId(sheetId)
+                            .setDimension("ROWS")
+                            .setStartIndex(row - 1)
+                            .setEndIndex(row)
+                    )
+            ));
+        }
+
+        BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+        sheets.spreadsheets().batchUpdate(spreadsheetId, body).execute();
+    }
+
+//    Метод получения идентификатора листа для DeleteDimensionRequest
+    private Integer getSheetIdByName(String sheetName) throws IOException {
+        Spreadsheet spreadsheet = sheets.spreadsheets().get(spreadsheetId).execute();
+        return spreadsheet.getSheets().stream()
+                .filter(s -> sheetName.equals(s.getProperties().getTitle()))
+                .findFirst()
+                .map(s -> s.getProperties().getSheetId())
+                .orElseThrow(() -> new IllegalArgumentException("Идентификатор листа не найден: " + sheetName));
+    }
+
+    private List<Object> emptyRow(int size){
+        return new ArrayList<>(Collections.nCopies(size, EMPTY_CELL));
     }
 }
