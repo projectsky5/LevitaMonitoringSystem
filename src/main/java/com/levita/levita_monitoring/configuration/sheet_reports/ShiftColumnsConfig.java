@@ -1,4 +1,4 @@
-package com.levita.levita_monitoring.configuration;
+package com.levita.levita_monitoring.configuration.sheet_reports;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
