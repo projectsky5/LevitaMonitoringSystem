@@ -275,20 +275,23 @@ public class SheetsReportService {
             throw new IllegalArgumentException("Конфиг пробных не найден для: " + key);
         }
 
-        String sheetName = entry.get("sheet");
-        String[] range = entry.get("range").split(":");
-        String startCol = range[0];
-        String endCol = range[1];
-
-        int row = findRowByDate(sheetName, "C", 8, today);
-
-        String targetRange = String.format("'%s'!%s%d:%s%d", sheetName, startCol, row, endCol, row);
-
-        int columnCount = columnCount(startCol, endCol);
-        List<Object> emptyRow = new ArrayList<>(Collections.nCopies(columnCount, ""));
-
-        updateRow(emptyRow, targetRange);
+        clearRowByDate(entry, "C", 8, today);
         log.info("Откат изменений: Очищен раздел \"Пробные\" для [{} ({})]", admin, location);
+    }
+
+    private void rollbackCurrentReport(User user, String today) throws IOException {
+        String admin = user.getName();
+        String location = user.getLocation().getName();
+        String key = String.format("%s (%s)", admin, location);
+
+        Map<String, String> entry = currentColumnsConfig.getColumns().get(key);
+        if(entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
+            log.warn("Не удалось откатить изменения: Не найден конфиг для текущего отчета [{}]", key);
+            throw new IllegalArgumentException("Конфиг текущих не найден для: " + key);
+        }
+
+        clearRowByDate(entry, "A", 6, today);
+        log.info("Откат изменений: Очищен раздел \"Текущие\" для [{} ({})]", admin, location);
     }
 
     private void updateRow(List<Object> row, String range) throws IOException {
@@ -393,5 +396,21 @@ public class SheetsReportService {
 
     private String buildCellRange(String sheetName, String column, int row) {
         return String.format("'%s'!%s%d", sheetName, column, row);
+    }
+
+    private void clearRowByDate(Map<String, String> entry, String column, int startRow, String today) throws IOException {
+        String sheetName = entry.get("sheet");
+        String[] range = entry.get("range").split(":");
+        String startCol = range[0];
+        String endCol = range[1];
+
+        int row = findRowByDate(sheetName, column, startRow, today);
+
+        String targetRange = String.format("'%s'!%s%d:%s%d", sheetName, startCol, row, endCol, row);
+
+        int columnCount = columnCount(startCol, endCol);
+        List<Object> emptyRow = new ArrayList<>(Collections.nCopies(columnCount, ""));
+
+        updateRow(emptyRow, targetRange);
     }
 }
