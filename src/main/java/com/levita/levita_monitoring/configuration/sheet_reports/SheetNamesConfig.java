@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-@ConfigurationProperties(prefix = "sheet-names")
+@ConfigurationProperties(prefix = "sheets-names")
 public class SheetNamesConfig {
 
     private String shift;

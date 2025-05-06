@@ -19,6 +19,42 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
         errorMessage.classList.remove('d-none');
         return;
     }
+
+    e.preventDefault(); // Остановка дефолт отправки
+
+    // Получение CSRF
+    const csrfCookieName = "XSRF-TOKEN";
+    const getCookie = name => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    };
+
+    const csrfToken = getCookie(csrfCookieName);
+
+    const formData = new URLSearchParams();
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+
+    // отправка fetch
+    fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-XSRF-TOKEN": csrfToken
+        },
+        body: formData
+    })
+        .then(res => {
+            if (res.redirected) {
+                window.location.href = res.url;
+            } else {
+                showError("Неверные учетные данные пользователя");
+            }
+        })
+        .catch(() => {
+            showError("Ошибка авторизации. Попробуйте позже.");
+        });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -42,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Обработка сабмита формы (валидация полей)
+    // Валидация через DOMContentLoaded — проверка полей, если они пустые
     loginForm.addEventListener("submit", (e) => {
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
