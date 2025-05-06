@@ -46,18 +46,6 @@
 
     </div>
 </div>
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const params = new URLSearchParams(window.location.search);
-    if (params.has("error")) {
-        document.getElementById("errorMessage").classList.remove("d-none");
-        document.getElementById("username").classList.add("is-invalid");
-        document.getElementById("password").classList.add("is-invalid");
-    }
-});
-</script>
 <script src="/js/login.js"></script>
 </body>
 </html>
