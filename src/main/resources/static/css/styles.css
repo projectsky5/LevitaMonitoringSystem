@@ -738,3 +738,79 @@ html, body {
     padding: 0;
     width: 100%;
 }
+
+/*reportVIEW*/
+
+.report-block {
+    background-color: #fff;
+    border-radius: 24px;
+    font-family: 'Spectral', sans-serif;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333637;
+    margin-bottom: 1rem;
+}
+
+.help-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.yellow-input {
+    background-color: #F6E5A8;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.yellow-input:focus {
+    background-color: #F6E5A8;
+    box-shadow: none;
+    outline: none;
+}
+
+.report-header {
+    font-family: 'Spectral', sans-serif;
+    font-weight: 600;
+    font-size: 1.75rem;
+    color: #1a1a1a;
+}
+
+/* Для выравнивания блока Операции по нижнему краю */
+#reportView .report-block.operations-block {
+    display: flex;
+    flex-direction: column;
+}
+
+ /*Отступ между Комментарием и кнопкой */
+#operationComment {
+    margin-bottom: 0.75rem;
+}
+
+/* Уменьшаем вертикальные отступы в Текущих */
+#reportView .current-section .row.g-3 {
+    row-gap: 0.75rem; /* вместо 1rem или 1.5rem */
+}
+
+/* Блок "Операции": приклеить кнопку к низу */
+.operations-block {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Уменьшаем вертикальные отступы между строками в "Текущие" */
+.current-section .row.g-3 {
+    row-gap: 0.5rem !important; /* было 1.5rem или 1rem, мы уменьшили */
+}
+
+/* Общая высота всех трёх колонок */
+.report-container .col-d-flex {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}

@@ -255,3 +255,17 @@ document.addEventListener("DOMContentLoaded", function () {
 function enableAdminFeatures() {
     document.querySelectorAll('.owner-only').forEach(el => el.classList.add('hidden-owner'));
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("toggleView");
+    const kpiView = document.getElementById("kpiView");
+    const reportView = document.getElementById("reportView");
+
+    if (toggleBtn && kpiView && reportView) {
+        toggleBtn.addEventListener("click", () => {
+            const isKpiVisible = kpiView.style.display !== "none";
+            kpiView.style.display = isKpiVisible ? "none" : "block";
+            reportView.style.display = isKpiVisible ? "block" : "none";
+        });
+    }
+});
