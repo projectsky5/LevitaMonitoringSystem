@@ -251,16 +251,30 @@
         <!-- отчетность — плейсхолдер -->
         <div id="reportView" style="display: none;">
             <div class="container report-container">
-                <h2 class="report-header mb-4 text-center">Отчетность</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+                    <!-- Пустой блок слева (имитирует ширину кнопки справа) -->
+                    <div style="width: 140px;"></div>
 
+                    <!-- Центрированный заголовок -->
+                    <h2 class="report-header text-center m-0 position-absolute start-50 translate-middle-x">
+                        Отчетность
+                    </h2>
+
+                    <!-- Кнопка справа -->
+                    <button class="btn btn-upload fw-semibold px-4 py-2" style="width: 140px;">
+                        Загрузить
+                    </button>
+                </div>
                 <div class="row g-4 row-cols-1 row-cols-lg-3">
                     <!-- Левая колонка: Касса + Пробные -->
                     <div class="col d-flex flex-column gap-4 h-100">
                         <!-- Блок "Касса в студии" -->
                         <div class="card shadow-sm rounded-4 p-4 report-block">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h4 class="section-title">Касса в студии</h4>
-                                <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Касса в студии</h4>
+                                <button class="help-button" type="button" data-section="Касса в студии">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
                             </div>
 
                             <div class="row g-3">
@@ -277,9 +291,11 @@
 
                         <!-- Блок "Пробные" -->
                         <div class="card shadow-sm rounded-4 p-4 report-block">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <h4 class="section-title">Пробные</h4>
-                                <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Пробные</h4>
+                                <button class="help-button" type="button" data-section="Пробные">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
                             </div>
 
                             <div class="mb-3">
@@ -331,9 +347,11 @@
                     <div class="col d-flex flex-column gap-4 h-100">
                         <!-- Блок "Текущие" -->
                         <div class="card shadow-sm rounded-4 p-4 report-block current-section">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <h4 class="section-title">Текущие</h4>
-                                <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Текущие</h4>
+                                <button class="help-button" type="button" data-section="Текущие">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
                             </div>
 
                             <div class="mb-3">
@@ -413,7 +431,7 @@
 
                         <!-- БЛОК: Информация -->
                         <div class="card shadow-sm rounded-4 p-4 report-block">
-                            <!-- Дата — по центру и крупнее -->
+                            <!-- Дата -->
                             <div class="text-center fs-5 fw-semibold mb-3" id="infoDate">03.05 - ср</div>
 
                             <!-- Локация -->
@@ -431,9 +449,18 @@
 
                         <!-- БЛОК: Операции -->
                         <div class="card shadow-sm rounded-4 pt-4 px-4 pb-0 report-block operations-block d-flex flex-column">                            <!-- Заголовок -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="section-title">Операции</h4>
-                                <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Операции</h4>
+                                <button class="help-button" type="button" data-section="Операции">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
+                            </div>
+
+                            <div id="operationCounter" class="operation-counter d-none">0</div>
+
+                            <!-- ВСПЛЫВАЮЩЕЕ ОКНО -->
+                            <div id="operationPopup" class="operation-popup d-none">
+                                <ul id="operationList" class="list-unstyled mb-0 px-3 py-2"></ul>
                             </div>
 
                             <!-- Поля -->
@@ -441,8 +468,8 @@
                                 <label class="form-label fw-semibold">Тип</label>
                                 <select class="form-select yellow-input" id="operationType">
                                     <option value="" selected disabled>Выберите</option>
-                                    <option value="приход">Приход</option>
-                                    <option value="расход">Расход</option>
+                                    <option value="Приход">Приход</option>
+                                    <option value="Расход">Расход</option>
                                 </select>
                             </div>
 
@@ -455,8 +482,19 @@
                                 <label class="form-label fw-semibold">Касса \ РС</label>
                                 <select class="form-select yellow-input" id="operationTypeAccount">
                                     <option value="" selected disabled>Выберите</option>
-                                    <option value="касса">Касса</option>
-                                    <option value="рс">РС</option>
+                                    <option value="Наличный">Наличный</option>
+                                    <option value="Перевод">Перевод</option>
+                                    <option value="QR - Код">QR - Код</option>
+                                    <option value="Сбербанк рассрочка терминал - безналичный">Сбербанк рассрочка терминал - безналичный</option>
+                                    <option value="Тинькофф рассрочка - безналичный">Тинькофф рассрочка - безналичный</option>
+                                    <option value="Сбербанк терминал (оплата картой) - безналичный">Сбербанк терминал (оплата картой) - безналичный</option>
+                                    <option value="Мoneycare - безналичный">Мoneycare - безналичный</option>
+                                    <option value="Тинькофф Долями - безналичный">Тинькофф Долями - безналичный</option>
+                                    <option value="Сбербанк рассрочка по ссылке - безналичный">Сбербанк рассрочка по ссылке - безналичный</option>
+                                    <option value="ОТП рассрочка - безналичный">ОТП рассрочка - безналичный</option>
+                                    <option value="Яндекс Сплит - безналичный">Яндекс Сплит - безналичный</option>
+                                    <option value="Юкасса интернет-эквайринг - безналичный">Юкасса интернет-эквайринг - безналичный</option>
+                                    <option value="Плати частями Сбербанк - безналичный">Плати частями Сбербанк - безналичный</option>
                                 </select>
                             </div>
 
@@ -464,9 +502,25 @@
                                 <label class="form-label fw-semibold">Статья</label>
                                 <select class="form-select yellow-input" id="operationCategory">
                                     <option value="" selected disabled>Выберите</option>
-                                    <option value="аренда">Аренда</option>
-                                    <option value="зарплата">Зарплата</option>
-                                    <option value="прочее">Прочее</option>
+                                    <option value="Приход - Апгрейд">Приход - Апгрейд</option>
+                                    <option value="Приход - Оплата пробного зан-я">Приход - Оплата пробного зан-я</option>
+                                    <option value="Приход - Оплата разового занятия">Приход - Оплата разового занятия</option>
+                                    <option value="Приход - Предоплата (новый клиент)">Приход - Предоплата (новый клиент)</option>
+                                    <option value="Приход - Предоплата (пост. клиент)">Приход - Предоплата (пост. клиент)</option>
+                                    <option value="Приход - Покупка 1-го абонемента">Приход - Покупка 1-го абонемента</option>
+                                    <option value="Приход - Покупка абонемента (пост. клиент)">Приход - Покупка абонемента (пост. клиент)</option>
+                                    <option value="Приход - Доплата до полной стоимости (новый клиент)">Приход - Доплата до полной стоимости (новый клиент)</option>
+                                    <option value="Приход - Доплата до полной стоимости (пост. клиент)">Приход - Доплата до полной стоимости (пост. клиент)</option>
+                                    <option value="Приход - Покупка инд. занятий (новый клиент)">Приход - Покупка инд. занятий (новый клиент)</option>
+                                    <option value="Приход - Покупка инд. занятий (пост. клиент)">Приход - Покупка инд. занятий (пост. клиент)</option>
+                                    <option value="Расход - Покупка быт.химии">Расход - Покупка быт.химии</option>
+                                    <option value="Расход - Покупка бумаги">Расход - Покупка бумаги</option>
+                                    <option value="Расход - Оплата ЗП уборщицы">Расход - Оплата ЗП уборщицы</option>
+                                    <option value="Расход - ЗП администратора">Расход - ЗП администратора</option>
+                                    <option value="Расход - Оплата воды">Расход - Оплата воды</option>
+                                    <option value="Расход - ЗП педагогов">Расход - ЗП педагогов</option>
+                                    <option value="Расход - Административные расходы (укажи комментарий)">Расход - Административные расходы (укажи комментарий)</option>
+                                    <option value="Расход - Возврат">Расход - Возврат</option>
                                 </select>
                             </div>
 
@@ -478,7 +532,7 @@
                         <!-- Кнопка -->
                         <div class="mt-3">
                             <button class="btn btn-warning w-100 fw-semibold" id="addOperationBtn" type="button">
-                                Добавить
+                                Добавить операцию
                             </button>
                         </div>
                     </div>
@@ -506,5 +560,6 @@
         style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
     Переключить вид
 </button>
+<script src="/js/report.js"></script>
 </body>
 </html>

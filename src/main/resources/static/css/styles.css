@@ -759,6 +759,12 @@ html, body {
     height: 24px;
 }
 
+.yellow-input::-webkit-inner-spin-button,
+.yellow-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .yellow-input {
     background-color: #F6E5A8;
     border: none;
@@ -781,36 +787,122 @@ html, body {
     color: #1a1a1a;
 }
 
-/* Для выравнивания блока Операции по нижнему краю */
 #reportView .report-block.operations-block {
     display: flex;
     flex-direction: column;
 }
 
- /*Отступ между Комментарием и кнопкой */
 #operationComment {
     margin-bottom: 0.75rem;
 }
 
-/* Уменьшаем вертикальные отступы в Текущих */
 #reportView .current-section .row.g-3 {
-    row-gap: 0.75rem; /* вместо 1rem или 1.5rem */
+    row-gap: 0.75rem;
 }
 
-/* Блок "Операции": приклеить кнопку к низу */
 .operations-block {
     display: flex;
     flex-direction: column;
 }
 
-/* Уменьшаем вертикальные отступы между строками в "Текущие" */
 .current-section .row.g-3 {
-    row-gap: 0.5rem !important; /* было 1.5rem или 1rem, мы уменьшили */
+    row-gap: 0.5rem !important;
 }
 
-/* Общая высота всех трёх колонок */
 .report-container .col-d-flex {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
+
+.btn-upload {
+    background-color: #F6C956;
+    border: none;
+    border-radius: 40px;
+    font-family: 'Spectral', serif;
+    font-size: 1.25rem;
+    color: #1a1a1a;
+    transition: background-color 0.3s ease;
+}
+
+.btn-upload:hover {
+    background-color: #eebd47;
+}
+
+.help-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+
+.help-button .help-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.operations-block .operation-counter {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background-color: #F6C956;
+    color: #000;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    z-index: 2;
+}
+
+.operation-popup {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    width: 320px;
+}
+
+.operation-popup strong {
+    font-weight: 600;
+}
+
+.operation-popup button {
+    background: none;
+    border: none;
+    color: #c00;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.d-none {
+    display: none !important;
+}
+
+.btn-close-operation {
+    background: none;
+    border: none;
+    color: #c00;
+    font-size: 1.25rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    align-self: center;
+}
+
+

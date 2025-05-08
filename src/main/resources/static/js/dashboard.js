@@ -180,6 +180,22 @@ function renderDashboardData(data) {
             }
         });
     }
+
+    // 👇 Также обновляем блок "Информация"
+    const infoName = document.getElementById('infoName');
+    const infoLocation = document.getElementById('infoLocation');
+    const infoDate = document.getElementById('infoDate');
+
+    if (infoName) infoName.innerText = data.username;
+    if (infoLocation) infoLocation.innerText = formattedLocation;
+    if (infoDate) {
+        const now = new Date();
+        const day = now.getDate().toString().padStart(2, '0');
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const weekdays = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+        const weekday = weekdays[now.getDay()];
+        infoDate.innerText = `${day}.${month} - ${weekday}`;
+    }
 }
 
 // Дропдаун
