@@ -1,6 +1,7 @@
 let admins = [];
 let currentAdminIndex = 0;
 let chartInstance = null;
+let isKpiVisible = true; // глобальное состояние текущего режима
 
 // Получение данных о текущем пользователе
 fetch('/api/me')
@@ -16,7 +17,6 @@ fetch('/api/me')
     })
     .catch(error => console.error('Ошибка при получении данных пользователя:', error));
 
-// Загружаем всех админов для OWNER
 function loadAdmins() {
     const urlParts = window.location.pathname.split('/');
     const urlUserId = urlParts[urlParts.length - 1];
@@ -28,12 +28,7 @@ function loadAdmins() {
 
             if (urlUserId) {
                 const foundIndex = admins.findIndex(admin => admin.id === Number(urlUserId));
-                if (foundIndex !== -1) {
-                    currentAdminIndex = foundIndex; // Если нашли — переключаемся на этого админа
-                } else {
-                    console.warn('Админ с таким userId не найден');
-                    currentAdminIndex = 0; // Фолбэк на первого
-                }
+                currentAdminIndex = foundIndex !== -1 ? foundIndex : 0;
             }
 
             updateNavigationButtons();
@@ -42,7 +37,6 @@ function loadAdmins() {
         .catch(error => console.error('Ошибка при загрузке админов:', error));
 }
 
-//дашборд одного админа
 function loadAdminDashboard(adminId) {
     fetch(`/api/admins/${adminId}/dashboard`)
         .then(response => response.json())
@@ -52,7 +46,6 @@ function loadAdminDashboard(adminId) {
         .catch(error => console.error('Ошибка при загрузке дашборда админа:', error));
 }
 
-// Для ADMIN — загружаются только свои данные
 function loadOwnDashboard() {
     fetch('/api/dashboard')
         .then(response => response.json())
@@ -62,7 +55,6 @@ function loadOwnDashboard() {
         .catch(error => console.error('Ошибка при загрузке собственного дашборда:', error));
 }
 
-// Обновляем состояние кнопок
 function updateNavigationButtons() {
     const prevButton = document.getElementById('prevAdmin');
     const nextButton = document.getElementById('nextAdmin');
@@ -73,7 +65,6 @@ function updateNavigationButtons() {
     }
 }
 
-// События для стрелочек
 const prevButton = document.getElementById('prevAdmin');
 const nextButton = document.getElementById('nextAdmin');
 
@@ -95,7 +86,6 @@ if (prevButton && nextButton) {
     });
 }
 
-// Форматирование рублей
 function formatCurrency(amount, withDecimals = true) {
     return new Intl.NumberFormat('ru-RU', {
         minimumFractionDigits: withDecimals ? 2 : 0,
@@ -105,31 +95,20 @@ function formatCurrency(amount, withDecimals = true) {
 
 function renderPieChart(percent, goalAchieved) {
     const pieChartCanvas = document.getElementById('pieChart');
-
-    if (!pieChartCanvas) {
-        console.warn('canvas не найден');
-        return;
-    }
+    if (!pieChartCanvas) return;
 
     const ctx = pieChartCanvas.getContext('2d');
-    if (!ctx) {
-        console.warn('canvas context = null (возможно, блок скрыт)');
-        return;
-    }
+    if (!ctx) return;
 
-    if (chartInstance && typeof chartInstance.destroy === 'function') {
-        chartInstance.destroy();
-    }
+    if (chartInstance?.destroy) chartInstance.destroy();
 
-    const chartColors = goalAchieved
-        ? ['#4ACA52', '#e5ecff']
-        : ['#5C86F3', '#e5ecff'];
+    const chartColors = goalAchieved ? ['#4ACA52', '#e5ecff'] : ['#5C86F3', '#e5ecff'];
 
     chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
             datasets: [{
-                data: goalAchieved ? [100, 0] : [percent, Math.max(0, 100 - percent)],
+                data: goalAchieved ? [100, 0] : [percent, 100 - percent],
                 backgroundColor: chartColors,
                 borderWidth: 0
             }]
@@ -145,20 +124,16 @@ function renderPieChart(percent, goalAchieved) {
     });
 }
 
-// Рендер данных дашборда
 function renderDashboardData(data) {
     const income = data.currentIncome;
     const remaining = Math.max(0, data.remainingToPlan);
     const plan = Math.round(data.locationPlan);
     const percent = data.planCompletionPercent;
-    const rawLocation = data.locationName;
-    const formattedLocation = rawLocation.charAt(0).toUpperCase() + rawLocation.slice(1).toLowerCase();
+    const formattedLocation = data.locationName.charAt(0).toUpperCase() + data.locationName.slice(1).toLowerCase();
 
-    // Обновление шапки
     document.getElementById('username').innerText = data.username;
     document.getElementById('locationName').innerText = formattedLocation;
 
-    // Обновление блока "Текущий доход"
     document.getElementById('currentIncome').innerText = `≈ ${formatCurrency(income)}`;
     document.getElementById('remainingToPlan').innerText = `${formatCurrency(remaining, false)} до цели`;
     document.getElementById('yellowBar').style.width = `${percent}%`;
@@ -166,28 +141,17 @@ function renderDashboardData(data) {
     document.getElementById('planPercent').innerText = `${percent.toFixed(1)}%`;
 
     const goalAchieved = remaining === 0;
-    let chartColors = ['#5C86F3', '#e5ecff'];
+    const centerIcon = document.querySelector(".center-icon");
+    const kpiProgress = document.querySelector(".kpi-progress");
 
-    if (goalAchieved) {
-        const centerIcon = document.querySelector(".center-icon");
-        const kpiProgress = document.querySelector(".kpi-progress");
-        if (centerIcon) centerIcon.src = "/assets/dashboard/svg/Mountain-done.svg";
-        if (kpiProgress) kpiProgress.classList.add("goal-achieved");
-        chartColors = ['#4ACA52', '#e5ecff'];
-    } else {
-        const centerIcon = document.querySelector(".center-icon");
-        const kpiProgress = document.querySelector(".kpi-progress");
-        if (centerIcon) centerIcon.src = "/assets/dashboard/svg/Mountain.svg";
-        if (kpiProgress) kpiProgress.classList.remove("goal-achieved");
-    }
+    if (centerIcon) centerIcon.src = goalAchieved ? "/assets/dashboard/svg/Mountain-done.svg" : "/assets/dashboard/svg/Mountain.svg";
+    if (kpiProgress) kpiProgress.classList.toggle("goal-achieved", goalAchieved);
 
-    // Цифра дня
     document.getElementById('dailyFigure').innerText = formatCurrency(data.dailyFigure, false);
     document.getElementById('locationPlanBlock').innerText = formatCurrency(data.locationPlan, false);
     document.getElementById('actualIncome').innerText = formatCurrency(data.actualIncome, false);
     document.getElementById('remainingBlock').innerText = formatCurrency(remaining, false);
 
-    // Остальные KPI
     document.getElementById("dayBonusesAmount").innerText = formatCurrency(data.dayBonuses, false);
     document.getElementById("mainSalaryPart").innerText = formatCurrency(data.mainSalaryPart, false);
     document.getElementById("personalRevenue").innerText = formatCurrency(data.personalRevenue, false);
@@ -195,59 +159,72 @@ function renderDashboardData(data) {
     document.getElementById("avgRevenuePerDay").innerText = formatCurrency(data.avgRevenuePerDay, false);
     document.getElementById("conversionRate").innerText = `${data.conversionRate.toFixed(1)}%`;
 
-    // Обновляем диаграмму
+    document.getElementById('infoName').innerText = data.username;
+    document.getElementById('infoLocation').innerText = formattedLocation;
 
-    // 👇 Также обновляем блок "Информация"
-    const infoName = document.getElementById('infoName');
-    const infoLocation = document.getElementById('infoLocation');
-    const infoDate = document.getElementById('infoDate');
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const weekday = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'][now.getDay()];
+    document.getElementById('infoDate').innerText = `${day}.${month} - ${weekday}`;
 
-    if (infoName) infoName.innerText = data.username;
-    if (infoLocation) infoLocation.innerText = formattedLocation;
-    if (infoDate) {
-        const now = new Date();
-        const day = now.getDate().toString().padStart(2, '0');
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const weekdays = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
-        const weekday = weekdays[now.getDay()];
-        infoDate.innerText = `${day}.${month} - ${weekday}`;
-    }
-
-    setTimeout(() => {
-        renderPieChart(percent, goalAchieved);
-    }, 50);
+    setTimeout(() => renderPieChart(percent, goalAchieved), 50);
 }
 
-// Дропдаун
-document.addEventListener("DOMContentLoaded", function () {
-    const userIcon = document.querySelector(".user-icon");
+function enableAdminFeatures() {
+    document.querySelectorAll('.owner-only').forEach(el => el.classList.add('hidden-owner'));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const kpiView = document.getElementById("kpiView");
+    const reportView = document.getElementById("reportView");
     const adminMenu = document.getElementById("adminDropdown");
     const ownerMenu = document.getElementById("ownerDropdown");
+    const userIcon = document.querySelector(".user-icon");
+    const toggleButtons = [
+        document.getElementById("toggleModeAdmin"),
+        document.getElementById("toggleModeOwner")
+    ];
+
+    // true default
+    let isKpiVisible = localStorage.getItem("isKpiVisible") !== "false";
 
     let userRole = null;
     let roleLoaded = false;
 
-    userIcon.style.pointerEvents = "none";
-    userIcon.style.opacity = "0.5";
+    // Установка начального состояния отображения
+    kpiView.style.display = isKpiVisible ? "block" : "none";
+    reportView.style.display = isKpiVisible ? "none" : "block";
 
-    fetch("/api/me")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Ошибка загрузки данных пользователя");
-            }
-            return response.json();
-        })
-        .then(data => {
-            userRole = data.role;
-            roleLoaded = true;
-            userIcon.style.pointerEvents = "auto";
-            userIcon.style.opacity = "1";
-            console.log("Роль пользователя:", userRole);
-        })
-        .catch(error => {
-            console.error("Ошибка при получении роли:", error);
+    function updateToggleButtons() {
+        toggleButtons.forEach(btn => {
+            if (!btn) return;
+            const img = btn.querySelector("img");
+            const span = btn.querySelector("span");
+            if (img) img.src = isKpiVisible ? "/assets/dashboard/svg/report.svg" : "/assets/dashboard/svg/dashboard.svg";
+            if (span) span.textContent = isKpiVisible ? "Отчет" : "Дашборд";
         });
+    }
 
+    function toggleMode() {
+        isKpiVisible = !isKpiVisible;
+        localStorage.setItem("isKpiVisible", isKpiVisible); // сохраняем
+        kpiView.style.display = isKpiVisible ? "block" : "none";
+        reportView.style.display = isKpiVisible ? "none" : "block";
+        updateToggleButtons();
+
+        if (adminMenu) adminMenu.classList.add("hidden");
+        if (ownerMenu) ownerMenu.classList.add("hidden");
+    }
+
+    // обработчики кнопок
+    toggleButtons.forEach(btn => {
+        if (btn) {
+            btn.addEventListener("click", toggleMode);
+        }
+    });
+
+    // клик по иконке юзера
     function showMenu() {
         if (!roleLoaded) return;
 
@@ -260,8 +237,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    userIcon.addEventListener("click", showMenu);
+    if (userIcon) {
+        userIcon.addEventListener("click", showMenu);
+    }
 
+    // закрыть дропдаун извне
     document.addEventListener("click", function (e) {
         if (!userIcon.contains(e.target) && !adminMenu.contains(e.target) && !ownerMenu.contains(e.target)) {
             adminMenu.classList.add("hidden");
@@ -269,6 +249,24 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Загрузка роли
+    userIcon.style.pointerEvents = "none";
+    userIcon.style.opacity = "0.5";
+
+    fetch("/api/me")
+        .then(response => response.json())
+        .then(data => {
+            userRole = data.role;
+            roleLoaded = true;
+            userIcon.style.pointerEvents = "auto";
+            userIcon.style.opacity = "1";
+            updateToggleButtons();
+        })
+        .catch(error => {
+            console.error("Ошибка при получении роли:", error);
+        });
+
+    // Выход, фильтр, обновление
     const logoutAdminBtn = document.getElementById("logoutAdmin");
     const logoutOwnerBtn = document.getElementById("logoutOwner");
     const refreshOwnerBtn = document.getElementById("refreshOwner");
@@ -285,23 +283,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (filterOwnerBtn) {
         filterOwnerBtn.addEventListener("click", () => window.location.href = "/dashboard/filter");
-    }
-});
-
-function enableAdminFeatures() {
-    document.querySelectorAll('.owner-only').forEach(el => el.classList.add('hidden-owner'));
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    const toggleBtn = document.getElementById("toggleView");
-    const kpiView = document.getElementById("kpiView");
-    const reportView = document.getElementById("reportView");
-
-    if (toggleBtn && kpiView && reportView) {
-        toggleBtn.addEventListener("click", () => {
-            const isKpiVisible = kpiView.style.display !== "none";
-            kpiView.style.display = isKpiVisible ? "none" : "block";
-            reportView.style.display = isKpiVisible ? "block" : "none";
-        });
     }
 });

@@ -21,6 +21,10 @@
                 <span class="user-name me-3" id="username">…</span>
                 <img src="/assets/general/User.svg" alt="User" class="user-icon">
                 <div id="adminDropdown" class="dropdown-menu-custom hidden">
+                    <button class="dropdown-item-custom" id="toggleModeAdmin">
+                        <img src="/assets/dashboard/svg/report.svg" class="menu-icon" alt="Toggle">
+                        <span>Отчет</span>
+                    </button>
                     <button class="dropdown-item-custom" id="logoutAdmin">
                         <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
                         Выйти
@@ -28,9 +32,9 @@
                 </div>
 
                 <div id="ownerDropdown" class="dropdown-menu-custom hidden">
-                    <button class="dropdown-item-custom" id="logoutOwner">
-                        <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
-                        Выйти
+                    <button class="dropdown-item-custom" id="toggleModeOwner">
+                        <img src="/assets/dashboard/svg/report.svg" class="menu-icon" alt="Toggle">
+                        <span>Отчет</span>
                     </button>
                     <button class="dropdown-item-custom" id="refreshOwner">
                         <img src="/assets/general/refresh.svg" class="menu-icon" alt="Refresh">
@@ -39,6 +43,10 @@
                     <button class="dropdown-item-custom" id="filterOwner">
                         <img src="/assets/general/filter.svg" class="menu-icon" alt="Filter">
                         Фильтры
+                    </button>
+                    <button class="dropdown-item-custom" id="logoutOwner">
+                        <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
+                        Выйти
                     </button>
                 </div>
             </div>
@@ -555,11 +563,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/js/dashboard.js"></script>
-<!-- Временная кнопка переключения -->
-<button id="toggleView" class="btn btn-warning"
-        style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
-    Переключить вид
-</button>
 <script src="/js/report.js"></script>
 </body>
 </html>
