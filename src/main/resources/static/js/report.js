@@ -279,14 +279,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (location) document.getElementById('infoLocation').textContent = location;
 
     function isUploadAllowed() {
-        const nowUTC = new Date();
-        const mskOffset = 3 * 60; // МСК = UTC+3
-        const mskTime = new Date(nowUTC.getTime() + mskOffset * 60 * 1000);
+        const now = new Date();
 
-        const hours = mskTime.getHours();
-        const minutes = mskTime.getMinutes();
+        const mskParts = new Intl.DateTimeFormat('ru-RU', {
+            timeZone: 'Europe/Moscow',
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit'
+        }).formatToParts(now).reduce((acc, part) => {
+            if (part.type !== 'literal') acc[part.type] = parseInt(part.value, 10);
+            return acc;
+        }, {});
 
-        // true, если загрузка разрешена
+        const hours = mskParts.hour;
+        const minutes = mskParts.minute;
+
         const after9am = hours > 9 || (hours === 9 && minutes >= 0);
         const before2355 = hours < 23 || (hours === 23 && minutes < 55);
 

@@ -63,7 +63,7 @@
     </div>
     <div class="dashboard-content p-4 rounded-4 shadow-sm">
 
-        <div id="kpiView">
+        <div id="kpiView" style="display: block;">
             <div class="container dashboard-container">
                 <!-- РЯД 1: Блоки 1–2 -->
                 <div class="row gy-4 gx-2">
@@ -76,7 +76,7 @@
                                         <div class="kpi-title">Текущий доход</div>
                                         <div class="kpi-value" id="currentIncome">≈ … ₽</div>
                                     </div>
-                                    <div class="kpi-chart-container d-none d-sm-flex">
+                                    <div class="kpi-chart-container d-sm-flex">
                                         <div class="position-relative pie-wrapper" id="pieWrapper">
                                             <canvas id="pieChart"></canvas>
                                             <img src="/assets/dashboard/svg/Mountain.svg" alt="icon" class="center-icon" id="mountainIcon">
@@ -261,7 +261,7 @@
                     </h2>
 
                     <!-- Кнопка справа -->
-                    <button class="btn btn-upload fw-semibold px-4 py-2" style="width: 140px;">
+                    <button class="btn text-center btn-upload fw-semibold px-4 py-2" style="width: 140px;">
                         Загрузить
                     </button>
                 </div>

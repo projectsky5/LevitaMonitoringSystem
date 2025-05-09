@@ -103,6 +103,48 @@ function formatCurrency(amount, withDecimals = true) {
     }).format(amount) + ' ₽';
 }
 
+function renderPieChart(percent, goalAchieved) {
+    const pieChartCanvas = document.getElementById('pieChart');
+
+    if (!pieChartCanvas) {
+        console.warn('canvas не найден');
+        return;
+    }
+
+    const ctx = pieChartCanvas.getContext('2d');
+    if (!ctx) {
+        console.warn('canvas context = null (возможно, блок скрыт)');
+        return;
+    }
+
+    if (chartInstance && typeof chartInstance.destroy === 'function') {
+        chartInstance.destroy();
+    }
+
+    const chartColors = goalAchieved
+        ? ['#4ACA52', '#e5ecff']
+        : ['#5C86F3', '#e5ecff'];
+
+    chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: goalAchieved ? [100, 0] : [percent, Math.max(0, 100 - percent)],
+                backgroundColor: chartColors,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            cutout: '60%',
+            responsive: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    });
+}
+
 // Рендер данных дашборда
 function renderDashboardData(data) {
     const income = data.currentIncome;
@@ -154,32 +196,6 @@ function renderDashboardData(data) {
     document.getElementById("conversionRate").innerText = `${data.conversionRate.toFixed(1)}%`;
 
     // Обновляем диаграмму
-    const pieChartCanvas = document.getElementById('pieChart');
-    if (chartInstance !== null) {
-        chartInstance.destroy();
-    }
-
-    if (pieChartCanvas) {
-        const ctx = pieChartCanvas.getContext('2d');
-        chartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: goalAchieved ? [100, 0] : [percent, Math.max(0, 100 - percent)],
-                    backgroundColor: chartColors,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                cutout: '60%',
-                responsive: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
-                }
-            }
-        });
-    }
 
     // 👇 Также обновляем блок "Информация"
     const infoName = document.getElementById('infoName');
@@ -196,6 +212,10 @@ function renderDashboardData(data) {
         const weekday = weekdays[now.getDay()];
         infoDate.innerText = `${day}.${month} - ${weekday}`;
     }
+
+    setTimeout(() => {
+        renderPieChart(percent, goalAchieved);
+    }, 50);
 }
 
 // Дропдаун
