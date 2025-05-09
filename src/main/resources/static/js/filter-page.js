@@ -1,10 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const sortButtons = document.querySelectorAll('.sort-btn');
-    let sortStates = {
-        conversionRate: 'NONE',
-        personalRevenue: 'NONE'
-    };
-    let sortOrder = [];
+    const sortTypeBtn = document.querySelector('.btn-filter-type');
+    const sortToggleBtn = document.getElementById('sortToggleBtn');
+    const sortTypeMenu = document.getElementById('sortTypeMenu');
+    const sortIcon = sortToggleBtn.querySelector('img');
+
+    let currentSortType = null;
+    let currentSortOrder = null;
+
+    // init
+    sortIcon.src = '/assets/filter/svg/sort-off.svg';
+    sortIcon.style.width = '28px';
+    sortIcon.style.height = '28px';
+    sortTypeBtn.textContent = 'Выберите';
 
     function loadAdmins(primarySort = null, primaryOrder = null, secondarySort = null, secondaryOrder = null) {
         let url = '/api/admins';
@@ -15,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
             params.append('primarySort', primarySort);
             params.append('primaryOrder', primaryOrder);
         }
+
         if (secondarySort && secondaryOrder) {
             params.append('secondarySort', secondarySort);
             params.append('secondaryOrder', secondaryOrder);
@@ -63,48 +71,60 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function getSortParams() {
-        const activeSorts = sortOrder
-            .filter(sortType => sortStates[sortType] !== 'NONE')
-            .map(sortType => ({
-                sort: sortType,
-                order: sortStates[sortType].toLowerCase()
-            }));
+    // цикличное переключение
+    sortToggleBtn.addEventListener('click', () => {
+        if (!currentSortType) return;
 
-        const primary = activeSorts[0] || {};
-        const secondary = activeSorts[1] || {};
+        if (currentSortOrder === null) {
+            currentSortOrder = 'asc';
+        } else if (currentSortOrder === 'asc') {
+            currentSortOrder = 'desc';
+        } else {
+            currentSortOrder = null;
+        }
 
-        return {
-            primarySort: primary.sort,
-            primaryOrder: primary.order,
-            secondarySort: secondary.sort,
-            secondaryOrder: secondary.order
-        };
+        updateSortIcon();
+
+        if (currentSortOrder === null) {
+            loadAdmins(); // сброс сортировки
+        } else {
+            loadAdmins(currentSortType, currentSortOrder);
+        }
+    });
+
+    // установка иконок
+    function updateSortIcon() {
+        if (!currentSortType) {
+            sortIcon.src = '/assets/filter/svg/sort-off.svg';
+        } else if (currentSortOrder === null) {
+            sortIcon.src = '/assets/filter/svg/sort-default.svg';
+        } else if (currentSortOrder === 'asc') {
+            sortIcon.src = '/assets/filter/svg/sort-asc.svg';
+        } else if (currentSortOrder === 'desc') {
+            sortIcon.src = '/assets/filter/svg/sort-desc.svg';
+        }
     }
 
-    sortButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const sortType = button.getAttribute('data-sort');
+    // дропдаун
+    sortTypeBtn.addEventListener('click', () => {
+        sortTypeMenu.classList.toggle('hidden');
+    });
 
-            if (sortStates[sortType] === 'NONE') {
-                sortStates[sortType] = 'DESC';
-                button.classList.add('asc');
-                button.classList.remove('desc');
-                if (!sortOrder.includes(sortType)) {
-                    sortOrder.push(sortType);
-                }
-            } else if (sortStates[sortType] === 'DESC') {
-                sortStates[sortType] = 'ASC';
-                button.classList.add('desc');
-                button.classList.remove('asc');
-            } else {
-                sortStates[sortType] = 'NONE';
-                button.classList.remove('asc', 'desc');
-                sortOrder = sortOrder.filter(type => type !== sortType);
-            }
+    document.addEventListener('click', (e) => {
+        const isClickInside = sortTypeBtn.contains(e.target) || sortTypeMenu.contains(e.target);
+        if (!isClickInside) {
+            sortTypeMenu.classList.add('hidden');
+        }
+    });
 
-            const { primarySort, primaryOrder, secondarySort, secondaryOrder } = getSortParams();
-            loadAdmins(primarySort, primaryOrder, secondarySort, secondaryOrder);
+    document.querySelectorAll('.dropdown-item-custom').forEach(item => {
+        item.addEventListener('click', () => {
+            currentSortType = item.dataset.sort;
+            sortTypeBtn.textContent = item.textContent;
+            currentSortOrder = null;
+            sortTypeMenu.classList.add('hidden');
+            updateSortIcon();
+            loadAdmins();
         });
     });
 
