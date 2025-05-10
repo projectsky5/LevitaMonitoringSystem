@@ -24,7 +24,7 @@ public class SheetsReportService {
 
     private static final Logger log = LoggerFactory.getLogger(SheetsReportService.class);
 
-    private static final String VALUE_INPUT_OPTION = "USER-ENTERED";
+    private static final String VALUE_INPUT_OPTION = "USER_ENTERED";
     private static final String EMPTY_CELL = "";
 
     private final Sheets sheets;
@@ -106,14 +106,26 @@ public class SheetsReportService {
         log.info("{} - Начало загрузки данных", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         Instant start = Instant.now();
-        updateShiftReport(dto.shift(), user, today);
-        updateTrialReport(dto.trial(), user, today);
-        updateCurrentReport(dto.current(), user, today);
-        saveOperationsForDate(dto.operations(), user, today);
-        Instant end = Instant.now();
 
-        Duration duration = Duration.between(start, end);
-        log.info("Загрузка данных за дату {} завершена за {} мс", today, duration.toMillis());
+        List<ValueRange> batchRanges = new ArrayList<>();
+        batchRanges.add(buildShiftValueRange(dto.shift(), user, today));
+        batchRanges.add(buildTrialValueRange(dto.trial(), user, today));
+        batchRanges.add(buildCurrentValueRange(dto.current(), user, today));
+
+        if (!batchRanges.isEmpty()) {
+            BatchUpdateValuesRequest batchBody = new BatchUpdateValuesRequest()
+                    .setValueInputOption(VALUE_INPUT_OPTION)
+                    .setData(batchRanges);
+            sheets.spreadsheets().values()
+                    .batchUpdate(spreadsheetId, batchBody)
+                    .execute();
+        }
+
+        saveOperationsForDate(dto.operations(), user, today);
+
+        Instant end = Instant.now();
+        log.info("Загрузка данных за дату {} завершена за {} мс", today,
+                Duration.between(start, end).toMillis());
     }
 
     public void rollbackFullReport(User user) throws IOException {
@@ -121,14 +133,26 @@ public class SheetsReportService {
         log.info("{} - Начало полного отката данных", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         Instant start = Instant.now();
-        rollbackShiftReport(user, today);
-        rollbackTrialReport(user, today);
-        rollbackCurrentReport(user, today);
-        rollbackOperations(user, today);
-        Instant end = Instant.now();
 
-        Duration duration = Duration.between(start, end);
-        log.info("Полный откат данных за дату {} завершен за {} мс", today, duration.toMillis());
+        List<ValueRange> clearRanges = new ArrayList<>();
+        clearRanges.add(buildClearShiftValueRange(user, today));
+        clearRanges.add(buildClearTrialValueRange(user, today));
+        clearRanges.add(buildClearCurrentValueRange(user, today));
+
+        if(!clearRanges.isEmpty()) {
+            BatchUpdateValuesRequest batchBody = new BatchUpdateValuesRequest()
+                    .setValueInputOption(VALUE_INPUT_OPTION)
+                    .setData(clearRanges);
+            sheets.spreadsheets().values()
+                    .batchUpdate(spreadsheetId, batchBody)
+                    .execute();
+        }
+
+        rollbackOperations(user, today);
+
+        Instant end = Instant.now();
+        log.info("Полный откат данных за дату {} завершен за {} мс", today,
+                Duration.between(start, end).toMillis());
     }
 
     private void saveOperationsForDate(List<FullReportDto.OperationDto> operations, User user, String today) throws IOException {
@@ -179,161 +203,50 @@ public class SheetsReportService {
         log.info("Загружено {} операций для пользователя [{} ({})]", operations.size(), admin, location);
     }
 
-    private void updateTrialReport(FullReportDto.TrialReportDto dto, User user, String today) throws IOException {
-        String admin = user.getName();
-        String location = user.getLocation().getName();
-        String key = String.format("%s (%s)", admin, location);
-
-        Map<String, String> entry = trialColumnsConfig.getColumns().get(key);
-        if (entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
-            log.warn("Неверный конфиг для пробного отчета пользователя: [{}]", key);
-            throw new IllegalArgumentException("Неверный конфиг для пробного отчета пользователя : " + key);
-        }
-
-        String sheetName = entry.get("sheet");
-        String[] range = entry.get("range").split(":");
-        String startCol = range[0];
-        String endCol = range[1];
-
-        int row = findRowByDate(sheetName, "C", 8, today);
-
-        List<Object> rowData = List.of(
-                dto.trialCame(),
-                dto.trialBought(),
-                dto.trialBoughtAmount(),
-                dto.trialPaid(),
-                dto.trialPaidAmount(),
-                dto.prepayment(),
-                dto.prepaymentAmount(),
-                dto.surcharge(),
-                dto.surchargeAmount()
+    private ValueRange buildTrialValueRange(FullReportDto.TrialReportDto dto, User user, String today) throws IOException {
+        String key = String.format("%s (%s)", user.getName(), user.getLocation().getName());
+        Map<String, String> config = trialColumnsConfig.getColumns().get(key);
+        String sheet = config.get("sheet");
+        String[] cols = config.get("range").split(":");
+        int row = findRowByDate(sheet, "C", 8, today);
+        List<Object> data = List.of(
+                dto.trialCame(), dto.trialBought(), dto.trialBoughtAmount(),
+                dto.trialPaid(), dto.trialPaidAmount(), dto.prepayment(),
+                dto.prepaymentAmount(), dto.surcharge(), dto.surchargeAmount()
         );
-
-        String targetRange = String.format("'%s'!%s%d:%s%d", sheetName, startCol, row, endCol, row);
-        updateRow(rowData, targetRange);
-        log.info("Загружен раздел \"Пробные\" для пользователя [{} ({})]", admin, location);
+        String range = String.format("'%s'!%s%d:%s%d", sheet, cols[0], row, cols[1], row);
+        return new ValueRange().setRange(range).setValues(List.of(data));
     }
 
-    private void updateShiftReport(FullReportDto.ShiftReportDto dto, User user, String today) throws IOException {
+    private ValueRange buildShiftValueRange(FullReportDto.ShiftReportDto dto, User user, String today) throws IOException {
         String location = user.getLocation().getName();
-        String admin = user.getName();
-
         String dateCol = shiftColumnsConfig.getColumns().get(location);
-        if (dateCol == null) {
-            log.warn("Неизвестная локация: [{}]", location);
-            throw new IllegalArgumentException("Неизвестная локация: " + location);
-        }
-
         int row = findRowByDate(sheetNamesConfig.getShift(), dateCol, 3 , today);
-
         String startCol = nextColumn(dateCol);
-        List<Object> rowData = List.of(
+        String endCol = nextColumn(startCol);
+        List<Object> data = List.of(
                 dto.shiftStart(),
                 dto.shiftEnd(),
-                admin
+                user.getName()
         );
-
-        String sheetName = sheetNamesConfig.getShift();
-        String range = String.format("'%s'!%s%d:", sheetName, startCol, row);
-        updateRow(rowData, range);
-        log.info("Загружен раздел \"Касса в студии\" для пользователя [{} ({})]", admin, location);
+        String range = String.format("'%s'!%s%d:%s%d", sheetNamesConfig.getShift(), startCol, row, endCol, row);
+        return new ValueRange().setRange(range).setValues(List.of(data));
     }
 
-    private void updateCurrentReport(FullReportDto.CurrentReportDto dto, User user, String today) throws IOException {
-        String admin = user.getName();
-        String location = user.getLocation().getName();
-        String key = String.format("%s (%s)", admin, location);
-
-        Map<String, String> entry = currentColumnsConfig.getColumns().get(key);
-        if (entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
-            log.warn("Неверный конфиг для текущего отчета пользователя: [{}]", key);
-            throw new IllegalArgumentException("Неверный конфиг для текущего отчета пользователя: " + key);
-        }
-
-        String sheetName = entry.get("sheet");
-        String[] range = entry.get("range").split(":");
-        String startCol = range[0];
-        String endCol = range[1];
-
-        int row = findRowByDate(sheetName, "A", 6, today);
-
-        List<Object> rowData = List.of(
-                dto.finished(),
-                dto.extended(),
-                dto.extendedAmount(),
-                dto.upgrades(),
-                dto.upgradeAmount(),
-                dto.returned(),
-                dto.returnedAmount(),
-                dto.prepayment(),
-                dto.prepaymentAmount(),
-                dto.surcharge(),
-                dto.surchargeAmount(),
-                dto.individual(),
-                dto.individualAmount(),
-                dto.singleVisits(),
-                dto.singleVisitAmount()
+    private ValueRange buildCurrentValueRange(FullReportDto.CurrentReportDto dto, User user, String today) throws IOException {
+        String key = String.format("%s (%s)", user.getName(), user.getLocation().getName());
+        Map<String, String> config = currentColumnsConfig.getColumns().get(key);
+        String sheet = config.get("sheet");
+        String[] cols = config.get("range").split(":");
+        int row = findRowByDate(sheet, "A", 6, today);
+        List<Object> data = List.of(
+                dto.finished(), dto.extended(), dto.extendedAmount(),
+                dto.upgrades(), dto.upgradeAmount(), dto.returned(), dto.returnedAmount(),
+                dto.prepayment(), dto.prepaymentAmount(), dto.surcharge(), dto.surchargeAmount(),
+                dto.individual(), dto.individualAmount(), dto.singleVisits(), dto.singleVisitAmount()
         );
-
-        String targetRange = String.format("'%s'!%s%d:%s%d", sheetName, startCol, row, endCol, row);
-        updateRow(rowData, targetRange);
-        log.info("Загружен раздел \"Текущие\" для пользователя [{} ({})]", admin, location);
-    }
-
-    private void rollbackTrialReport(User user, String today) throws IOException {
-        String admin = user.getName();
-        String location = user.getLocation().getName();
-        String key = String.format("%s (%s)", admin, location);
-
-        Map<String, String> entry = trialColumnsConfig.getColumns().get(key);
-        if(entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
-            log.warn("Не удалось откатить изменения: Не найден конфиг для [{}]", key);
-            throw new IllegalArgumentException("Конфиг пробных не найден для: " + key);
-        }
-
-        clearRowByDate(entry, "C", 8, today);
-        log.info("Откат изменений: Очищен раздел \"Пробные\" для [{} ({})]", admin, location);
-    }
-
-    private void rollbackCurrentReport(User user, String today) throws IOException {
-        String admin = user.getName();
-        String location = user.getLocation().getName();
-        String key = String.format("%s (%s)", admin, location);
-
-        Map<String, String> entry = currentColumnsConfig.getColumns().get(key);
-        if(entry == null || !entry.containsKey("sheet") || !entry.containsKey("range")) {
-            log.warn("Не удалось откатить изменения: Не найден конфиг для текущего отчета [{}]", key);
-            throw new IllegalArgumentException("Конфиг текущих не найден для: " + key);
-        }
-
-        clearRowByDate(entry, "A", 6, today);
-        log.info("Откат изменений: Очищен раздел \"Текущие\" для [{} ({})]", admin, location);
-    }
-
-    private void rollbackShiftReport(User user, String today) throws IOException {
-        String location = user.getLocation().getName();
-        String admin = user.getName();
-
-        String dateCol = shiftColumnsConfig.getColumns().get(location);
-        if (dateCol == null) {
-            log.warn("Не удалось откатить \"Касса в студии\": Неизвестная локация: [{}]", location);
-            throw new IllegalArgumentException("Неизвестная локация: " + location);
-        }
-
-        int row = findRowByDate(sheetNamesConfig.getShift(), dateCol, 3 , today);
-        String startCol = nextColumn(dateCol);
-
-        String range = String.format("'%s'!%s%d:%s%d",
-                sheetNamesConfig.getShift(),
-                startCol,
-                row,
-                nextColumn(nextColumn(startCol)),
-                row
-        );
-
-        List<Object> emptyRow = emptyRow(3); // TODO: unify
-        updateRow(emptyRow, range);
-        log.info("Откат изменений: Очищен раздел \"Касса в студии\" для [{} ({})]", admin, location); // TODO: config
+        String range = String.format("'%s'!%s%d:%s%d", sheet, cols[0], row, cols[1], row);
+        return new ValueRange().setRange(range).setValues(List.of(data));
     }
 
     private void rollbackOperations(User user, String today) throws IOException {
@@ -363,6 +276,42 @@ public class SheetsReportService {
         deleteRows(sheetName, rowsToDelete);
         log.info("Откат операций: удалено {} строк за дату [{}] для [{} ({})]",
                 rowsToDelete.size(), today, admin, location);
+    }
+
+    private ValueRange buildClearTrialValueRange(User user, String today) throws IOException {
+        String key = String.format("%s (%s)", user.getName(), user.getLocation().getName());
+        Map<String,String> config = trialColumnsConfig.getColumns().get(key);
+        String sheet = config.get("sheet");
+        String[] cols = config.get("range").split(":");
+        int row = findRowByDate(sheet, "C", 8, today);
+        int count = columnToIndex(cols[1]) - columnToIndex(cols[0]) + 1;
+        List<Object> empty = Collections.nCopies(count, EMPTY_CELL);
+        String range = String.format("'%s'!%s%d:%s%d", sheet, cols[0], row, cols[1], row);
+        return new ValueRange().setRange(range).setValues(List.of(empty));
+    }
+
+    private ValueRange buildClearShiftValueRange(User user, String today) throws IOException {
+        String location = user.getLocation().getName();
+        String dateCol = shiftColumnsConfig.getColumns().get(location);
+        int row = findRowByDate(sheetNamesConfig.getShift(), dateCol, 3, today);
+        String startCol = nextColumn(dateCol);
+        String endCol = nextColumn(startCol);
+        int count = columnToIndex(endCol) - columnToIndex(startCol) + 1;
+        List<Object> empty = Collections.nCopies(count, EMPTY_CELL);
+        String range = String.format("'%s'!%s%d:%s%d", sheetNamesConfig.getShift(), startCol, row, endCol, row);
+        return new ValueRange().setRange(range).setValues(List.of(empty));
+    }
+
+    private ValueRange buildClearCurrentValueRange(User user, String today) throws IOException {
+        String key = String.format("%s (%s)", user.getName(), user.getLocation().getName());
+        Map<String,String> config = currentColumnsConfig.getColumns().get(key);
+        String sheet = config.get("sheet");
+        String[] cols = config.get("range").split(":");
+        int row = findRowByDate(sheet, "A", 6, today);
+        int count = columnToIndex(cols[1]) - columnToIndex(cols[0]) + 1;
+        List<Object> empty = Collections.nCopies(count, EMPTY_CELL);
+        String range = String.format("'%s'!%s%d:%s%d", sheet, cols[0], row, cols[1], row);
+        return new ValueRange().setRange(range).setValues(List.of(empty));
     }
 
     private void updateRow(List<Object> row, String range) throws IOException {
@@ -487,17 +436,6 @@ public class SheetsReportService {
 
     private String buildCellRange(String sheetName, String column, int row) {
         return String.format("'%s'!%s%d", sheetName, column, row);
-    }
-
-    private void clearRowByDate(Map<String, String> entry, String column, int startRow, String today) throws IOException {
-        String sheetName = entry.get("sheet");
-        String[] range = entry.get("range").split(":");
-        String startCol = range[0];
-        String endCol = range[1];
-
-        int row = findRowByDate(sheetName, column, startRow, today);
-
-        clearRange(sheetName, startCol, endCol, row);
     }
 
     private void clearRange(String sheetName, String startCol, String endCol, int row) throws IOException {

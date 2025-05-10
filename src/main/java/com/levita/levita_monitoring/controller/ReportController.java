@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/report")
@@ -40,7 +41,7 @@ public class ReportController {
 
         sheetsReportService.updateFullReport(dto, user);
         reportSubmissionService.submitReport(user.getId());
-        return ResponseEntity.ok("Отчет успешно загружен");
+        return ResponseEntity.ok(Map.of("message", "Отчет успешно загружен"));
     }
 
     @PostMapping("/rollback")
@@ -51,7 +52,7 @@ public class ReportController {
 
         sheetsReportService.rollbackFullReport(user);
         reportSubmissionService.rollbackReport(user.getId());
-        return ResponseEntity.ok("Откат данных выполнен успешно");
+        return ResponseEntity.ok(Map.of("message", "Откат данных выполнен успешно"));
     }
 
     @GetMapping("/status")
