@@ -32,6 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/csrf").permitAll()
                         .requestMatchers("/login", "/login.html", "/css/**", "/js/**", "/fonts/**", "/assets/**").permitAll()
                         .requestMatchers("/api/admins/**").hasRole("OWNER")
+                        .requestMatchers("/api/report/status").authenticated()
+                        .requestMatchers("/api/report", "/api/report/rollback").authenticated()
                         .requestMatchers("/dashboard/filter").hasRole("OWNER")
                         .requestMatchers("/api/dashboard/**").hasAnyRole("OWNER", "ADMIN")
                         .requestMatchers("/api/me").authenticated()
