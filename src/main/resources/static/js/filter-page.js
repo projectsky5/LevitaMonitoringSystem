@@ -1,50 +1,48 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const sortTypeBtn = document.querySelector('.btn-filter-type');
-    const sortToggleBtn = document.getElementById('sortToggleBtn');
-    const sortTypeMenu = document.getElementById('sortTypeMenu');
-    const sortIcon = sortToggleBtn.querySelector('img');
+import { csrfFetch } from './csrf.js';
 
-    let currentSortType = null;
+document.addEventListener('DOMContentLoaded', function () {
+    const sortTypeBtn   = document.querySelector('.btn-filter-type');
+    const sortToggleBtn = document.getElementById('sortToggleBtn');
+    const sortTypeMenu  = document.getElementById('sortTypeMenu');
+    const sortIcon      = sortToggleBtn.querySelector('img');
+
+    let currentSortType  = null;
     let currentSortOrder = null;
 
     // init
     sortIcon.src = '/assets/filter/svg/sort-off.svg';
-    sortIcon.style.width = '28px';
+    sortIcon.style.width  = '28px';
     sortIcon.style.height = '28px';
     sortTypeBtn.textContent = 'Выберите';
 
     function loadAdmins(primarySort = null, primaryOrder = null, secondarySort = null, secondaryOrder = null) {
-        let url = '/api/admins';
-        const params = new URLSearchParams();
+        let url    = '/api/admins';
+        const qs  = new URLSearchParams();
 
         if (primarySort && primaryOrder) {
             url = '/api/admins/sorted';
-            params.append('primarySort', primarySort);
-            params.append('primaryOrder', primaryOrder);
+            qs.append('primarySort', primarySort);
+            qs.append('primaryOrder', primaryOrder);
         }
 
         if (secondarySort && secondaryOrder) {
-            params.append('secondarySort', secondarySort);
-            params.append('secondaryOrder', secondaryOrder);
+            qs.append('secondarySort', secondarySort);
+            qs.append('secondaryOrder', secondaryOrder);
         }
 
-        if (params.toString()) {
-            url += `?${params.toString()}`;
+        if (qs.toString()) {
+            url += `?${qs.toString()}`;
         }
 
-        fetch(url)
+        csrfFetch(url)                      // <-- здесь
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Ошибка загрузки админов');
                 }
                 return response.json();
             })
-            .then(data => {
-                renderAdmins(data);
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-            });
+            .then(data => renderAdmins(data))
+            .catch(error => console.error('Ошибка:', error));
     }
 
     function renderAdmins(admins) {
@@ -71,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // цикличное переключение
+    // цикличное переключение order
     sortToggleBtn.addEventListener('click', () => {
         if (!currentSortType) return;
 
@@ -86,13 +84,12 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSortIcon();
 
         if (currentSortOrder === null) {
-            loadAdmins(); // сброс сортировки
+            loadAdmins(); // сброс
         } else {
             loadAdmins(currentSortType, currentSortOrder);
         }
     });
 
-    // установка иконок
     function updateSortIcon() {
         if (!currentSortType) {
             sortIcon.src = '/assets/filter/svg/sort-off.svg';
@@ -100,19 +97,17 @@ document.addEventListener('DOMContentLoaded', function () {
             sortIcon.src = '/assets/filter/svg/sort-default.svg';
         } else if (currentSortOrder === 'asc') {
             sortIcon.src = '/assets/filter/svg/sort-asc.svg';
-        } else if (currentSortOrder === 'desc') {
+        } else {
             sortIcon.src = '/assets/filter/svg/sort-desc.svg';
         }
     }
 
-    // дропдаун
+    // dropdown выбора поля сортировки
     sortTypeBtn.addEventListener('click', () => {
         sortTypeMenu.classList.toggle('hidden');
     });
-
-    document.addEventListener('click', (e) => {
-        const isClickInside = sortTypeBtn.contains(e.target) || sortTypeMenu.contains(e.target);
-        if (!isClickInside) {
+    document.addEventListener('click', e => {
+        if (!sortTypeBtn.contains(e.target) && !sortTypeMenu.contains(e.target)) {
             sortTypeMenu.classList.add('hidden');
         }
     });
@@ -124,9 +119,10 @@ document.addEventListener('DOMContentLoaded', function () {
             currentSortOrder = null;
             sortTypeMenu.classList.add('hidden');
             updateSortIcon();
-            loadAdmins();
+            loadAdmins();  // при смене поля сразу грузим с новым primarySort
         });
     });
 
+    // первичная загрузка
     loadAdmins();
 });

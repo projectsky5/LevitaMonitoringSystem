@@ -27,9 +27,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/login", "/api/**"))
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/csrf").permitAll()
                         .requestMatchers("/login", "/login.html", "/css/**", "/js/**", "/fonts/**", "/assets/**").permitAll()
                         .requestMatchers("/api/admins/**").hasRole("OWNER")
                         .requestMatchers("/dashboard/filter").hasRole("OWNER")

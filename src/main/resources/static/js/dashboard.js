@@ -1,10 +1,10 @@
+import {csrfFetch} from "./csrf.js";
+
 let admins = [];
 let currentAdminIndex = 0;
 let chartInstance = null;
-let isKpiVisible = true; // глобальное состояние текущего режима
-
 // Получение данных о текущем пользователе
-fetch('/api/me')
+csrfFetch('/api/me')
     .then(response => response.json())
     .then(user => {
         if (user.role === 'OWNER') {
@@ -21,7 +21,7 @@ function loadAdmins() {
     const urlParts = window.location.pathname.split('/');
     const urlUserId = urlParts[urlParts.length - 1];
 
-    fetch('/api/admins')
+    csrfFetch('/api/admins')
         .then(response => response.json())
         .then(data => {
             admins = data;
@@ -38,7 +38,7 @@ function loadAdmins() {
 }
 
 function loadAdminDashboard(adminId) {
-    fetch(`/api/admins/${adminId}/dashboard`)
+    csrfFetch(`/api/admins/${adminId}/dashboard`)
         .then(response => response.json())
         .then(data => {
             renderDashboardData(data);
@@ -47,7 +47,7 @@ function loadAdminDashboard(adminId) {
 }
 
 function loadOwnDashboard() {
-    fetch('/api/dashboard')
+    csrfFetch('/api/dashboard')
         .then(response => response.json())
         .then(data => {
             renderDashboardData(data);
@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function toggleMode() {
         isKpiVisible = !isKpiVisible;
-        localStorage.setItem("isKpiVisible", isKpiVisible); // сохраняем
+        localStorage.setItem("isKpiVisible", isKpiVisible);
         kpiView.style.display = isKpiVisible ? "block" : "none";
         reportView.style.display = isKpiVisible ? "none" : "block";
         updateToggleButtons();
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     userIcon.style.pointerEvents = "none";
     userIcon.style.opacity = "0.5";
 
-    fetch("/api/me")
+    csrfFetch("/api/me")
         .then(response => response.json())
         .then(data => {
             userRole = data.role;
@@ -273,15 +273,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const filterOwnerBtn = document.getElementById("filterOwner");
 
     if (logoutAdminBtn) {
-        logoutAdminBtn.addEventListener("click", () => window.location.href = "/dashboard/logout");
+        logoutAdminBtn.addEventListener('click', async () => {
+            await csrfFetch('/dashboard/logout', { method: 'POST' });
+            window.location.href = '/login?logout=true';
+        });
     }
     if (logoutOwnerBtn) {
-        logoutOwnerBtn.addEventListener("click", () => window.location.href = "/dashboard/logout");
+        logoutOwnerBtn.addEventListener('click', async () => {
+            await csrfFetch('/dashboard/logout', { method: 'POST' });
+            window.location.href = '/login?logout=true';
+        });
     }
     if (refreshOwnerBtn) {
-        refreshOwnerBtn.addEventListener("click", () => alert("Обновить: заглушка"));
+        refreshOwnerBtn.addEventListener('click', () => alert("Обновить: заглушка"));
     }
     if (filterOwnerBtn) {
-        filterOwnerBtn.addEventListener("click", () => window.location.href = "/dashboard/filter");
+        filterOwnerBtn.addEventListener('click', () => window.location.href = "/dashboard/filter");
     }
 });
