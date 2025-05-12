@@ -13,7 +13,9 @@ public record FullReportDto(
         @Valid @NotNull ShiftReportDto shift,
         @Valid @NotNull TrialReportDto trial,
         @Valid @NotNull CurrentReportDto current,
-        @Valid List<@Valid OperationDto> operations
+        @Valid List<@Valid OperationDto> operations,
+
+        @NotBlank String reportDate
 ) {
     public record ShiftReportDto(
             @NotNull @PositiveOrZero BigDecimal shiftStart,

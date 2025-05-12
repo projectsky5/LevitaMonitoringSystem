@@ -13,7 +13,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByLogin(String login);
-    List<User> findAllByRole(Role role);
 
     @Query("""
         SELECT 
@@ -24,4 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         WHERE u.role = :role
     """)
     List<User> findAllAdminsWithKpi(@Param("role") Role role);
+
+    Optional<User> findByNameIgnoreCaseAndLocation_NameIgnoreCase(String name, String locationName);
+    boolean existsByNameIgnoreCaseAndLocation_NameIgnoreCase(String name, String locationName);
 }

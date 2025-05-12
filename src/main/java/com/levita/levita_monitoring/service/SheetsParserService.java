@@ -4,7 +4,6 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.levita.levita_monitoring.configuration.SpreadsheetConfig;
-import com.levita.levita_monitoring.integration.SheetsParser;
 import com.levita.levita_monitoring.integration.model.RangeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

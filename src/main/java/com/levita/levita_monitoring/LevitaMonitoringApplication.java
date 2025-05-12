@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan("com.levita.levita_monitoring.configuration.sheet_reports")
 @EnableScheduling
 @EnableAsync
 public class LevitaMonitoringApplication {

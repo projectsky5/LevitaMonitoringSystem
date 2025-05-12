@@ -27,11 +27,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/login", "/api/**"))
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/csrf").permitAll()
                         .requestMatchers("/login", "/login.html", "/css/**", "/js/**", "/fonts/**", "/assets/**").permitAll()
                         .requestMatchers("/api/admins/**").hasRole("OWNER")
+                        .requestMatchers("/api/report/status").authenticated()
+                        .requestMatchers("/api/report", "/api/report/rollback").authenticated()
                         .requestMatchers("/dashboard/filter").hasRole("OWNER")
                         .requestMatchers("/api/dashboard/**").hasAnyRole("OWNER", "ADMIN")
                         .requestMatchers("/api/me").authenticated()

@@ -11,6 +11,7 @@ import com.levita.levita_monitoring.repository.LocationRepository;
 import com.levita.levita_monitoring.repository.UserKpiRepository;
 import com.levita.levita_monitoring.repository.UserRepository;
 import com.levita.levita_monitoring.security.CredentialsGenerator;
+import com.levita.levita_monitoring.util.SanitizationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -85,39 +87,46 @@ public class KpiDataService {
             return;
         }
 
-        Location location = locationRepository.findAll().stream()
-                .filter( loc -> loc.getName().equalsIgnoreCase(locationName))
-                .findFirst()
-                .orElseGet( () -> {
+        Location location = locationRepository
+                .findByNameIgnoreCase(locationName)
+                .orElseGet(() -> {
                     Location loc = new Location();
                     loc.setName(locationName);
                     return locationRepository.save(loc);
                 });
 
-        boolean exists = userRepository.findAll().stream()
-                .anyMatch( user -> user.getName().equalsIgnoreCase(name)
-                        && user.getLocation() != null
-                        && user.getLocation().getName().equalsIgnoreCase(locationName));
+        boolean exists = userRepository
+                .existsByNameIgnoreCaseAndLocation_NameIgnoreCase(name, locationName);
+
         if(!exists){
-            User user = new User();
-            user.setName(name);
-            user.setLogin(CredentialsGenerator.generateLogin(name, locationName));
-            user.setPassword(String.valueOf(passwordEncoder.encode(CredentialsGenerator.generatePassword(name, locationName))));
-            user.setLocation(location);
-            user.setRole(Role.ADMIN);
-            userRepository.save(user);
-            log.info("Создан пользователь [{} ({})]", name, locationName);
+            createUser(name, location, locationName);
         }
     }
 
+    private void createUser(String name, Location location, String locationName){
+        Map<String, String> credentials = CredentialsGenerator.generateCredentials(name, locationName);
+        String login = credentials.get("login");
+        String rawPassword = credentials.get("password");
+
+        User user = new User();
+        user.setName(name);
+        user.setLogin(login);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setLocation(location);
+        user.setRole(Role.ADMIN);
+        userRepository.save(user);
+        log.info("Создан пользователь [{} ({})]", name, locationName);
+
+
+    }
+
     private void handleLocationCreation(String value) {
-        String sanitizedName = sanitizeNumericString(value);
+        String sanitizedName = SanitizationUtils.sanitizeNumeric(value);
         if(sanitizedName.isBlank()){
             return;
         }
 
-        boolean exists = locationRepository.findAll().stream()
-                .anyMatch(location -> location.getName().equals(sanitizedName));
+        boolean exists = locationRepository.existsByNameIgnoreCase(sanitizedName);
 
         if(!exists){
             Location location = new Location();
@@ -152,14 +161,14 @@ public class KpiDataService {
 
         try{
             switch(category){
-                case "CONVERSION_RATE" -> userKpi.setConversionRate(Double.valueOf(sanitizeNumericString(value)));
-                case "MAIN_SALARY_PART" -> userKpi.setMainSalaryPart(new BigDecimal(sanitizeNumericString(value)));
-                case "PERSONAL_REVENUE" -> userKpi.setPersonalRevenue(new BigDecimal(sanitizeNumericString(value)));
-                case "CURRENT_INCOME" -> userKpi.setCurrentIncome(new BigDecimal(sanitizeNumericString(value)));
-                case "DAY_BONUSES" -> userKpi.setDayBonuses(new BigDecimal(sanitizeNumericString(value)));
+                case "CONVERSION_RATE" -> userKpi.setConversionRate(Double.valueOf(SanitizationUtils.sanitizeNumeric(value)));
+                case "MAIN_SALARY_PART" -> userKpi.setMainSalaryPart(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "PERSONAL_REVENUE" -> userKpi.setPersonalRevenue(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "CURRENT_INCOME" -> userKpi.setCurrentIncome(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "DAY_BONUSES" -> userKpi.setDayBonuses(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
             }
             userKpiRepository.save(userKpi);
-            log.info("Сохранено [{}}] для пользователя [{}]: {}", category, rawUser, value);
+            log.info("Сохранено [{}] для пользователя [{}]: {}", category, rawUser, value);
         } catch (NumberFormatException e){
             log.error("Ошибка парсинга [{}] для [{}]: {}", category, rawUser, value);
         }
@@ -170,16 +179,14 @@ public class KpiDataService {
         String name = nameAndLocation[0];
         String location = nameAndLocation[1];
 
-        return userRepository.findAll().stream()
-                .filter( user -> user.getName().equalsIgnoreCase(name)
-                        && user.getLocation() != null
-                        && user.getLocation().getName().equalsIgnoreCase(location))
-                .findFirst()
-                .map( user -> userKpiRepository.findById(user.getId()).orElseGet( () -> {
-                    UserKpi newKpi = new UserKpi();
-                    newKpi.setUser(user);
-                    return userKpiRepository.save(newKpi);
-                }));
+        return userRepository
+                .findByNameIgnoreCaseAndLocation_NameIgnoreCase(name, location)
+                .map(user -> userKpiRepository.findById(user.getId())
+                        .orElseGet(() -> {
+                            UserKpi newKpi = new UserKpi();
+                            newKpi.setUser(user);
+                            return userKpiRepository.save(newKpi);
+                        }));
     }
 
     private void handleLocationKpiByName(String category, String rawLocation, String value){
@@ -199,13 +206,13 @@ public class KpiDataService {
 
         try{
             switch(category){
-                case "ACTUAL_INCOME" -> locationKpi.setActualIncome(new BigDecimal(sanitizeNumericString(value)));
-                case "LOCATION_PLAN" -> locationKpi.setLocationPlan(new BigDecimal(sanitizeNumericString(value)));
-                case "MAX_DAILY_REVENUE" -> locationKpi.setMaxDailyRevenue(new BigDecimal(sanitizeNumericString(value)));
-                case "PLAN_COMPLETION_PERCENT" -> locationKpi.setPlanCompletionPercent(Double.valueOf(sanitizeNumericString(value)));
-                case "REMAINING_TO_PLAN" -> locationKpi.setLocationRemainingToPlan(new BigDecimal(sanitizeNumericString(value)));
-                case "DAILY_FIGURE" -> locationKpi.setDailyFigure(new BigDecimal(sanitizeNumericString(value)));
-                case "AVG_REVENUE_PER_DAY" -> locationKpi.setAvgRevenuePerDay(new BigDecimal(sanitizeNumericString(value)));
+                case "ACTUAL_INCOME" -> locationKpi.setActualIncome(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "LOCATION_PLAN" -> locationKpi.setLocationPlan(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "MAX_DAILY_REVENUE" -> locationKpi.setMaxDailyRevenue(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "PLAN_COMPLETION_PERCENT" -> locationKpi.setPlanCompletionPercent(Double.valueOf(SanitizationUtils.sanitizeNumeric(value)));
+                case "REMAINING_TO_PLAN" -> locationKpi.setLocationRemainingToPlan(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "DAILY_FIGURE" -> locationKpi.setDailyFigure(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
+                case "AVG_REVENUE_PER_DAY" -> locationKpi.setAvgRevenuePerDay(new BigDecimal(SanitizationUtils.sanitizeNumeric(value)));
             }
             locationKpiRepository.save(locationKpi);
             log.info("Сохранено [{}] для локации [{}]: {}", category, rawLocation, value);
@@ -215,11 +222,9 @@ public class KpiDataService {
     }
 
     private Optional<LocationKpi> getLocationKpiByName(String locationName){
-        return locationRepository.findAll().stream()
-                .filter( location -> location.getName().equalsIgnoreCase(locationName))
-                .findFirst()
-                .map( location -> locationKpiRepository.findById(location.getId())
-                        .orElseGet( () -> {
+        return locationRepository.findByNameIgnoreCase(locationName)
+                .map(location -> locationKpiRepository.findById(location.getId())
+                        .orElseGet(() -> {
                             LocationKpi newKpi = new LocationKpi();
                             newKpi.setLocation(location);
                             return locationKpiRepository.save(newKpi);
@@ -235,14 +240,5 @@ public class KpiDataService {
         } else {
             return new String[]{cleaned, ""};
         }
-    }
-
-    private String sanitizeNumericString(String value) {
-        return value.replace("\u00A0", "")
-                .replace(" ", "")
-                .replace(",", ".")
-                .replace("%", "")
-                .replace("₽", "")
-                .trim();
     }
 }

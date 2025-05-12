@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 application-local.properties
 credentials.json
+credentials.csv
 src/main/resources/config/**
 sheets-ranges.yml
 logs/application.log

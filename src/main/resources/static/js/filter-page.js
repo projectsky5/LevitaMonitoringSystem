@@ -1,42 +1,48 @@
+import { csrfFetch } from './csrf.js';
+
 document.addEventListener('DOMContentLoaded', function () {
-    const sortButtons = document.querySelectorAll('.sort-btn');
-    let sortStates = {
-        conversionRate: 'NONE',
-        personalRevenue: 'NONE'
-    };
-    let sortOrder = [];
+    const sortTypeBtn   = document.querySelector('.btn-filter-type');
+    const sortToggleBtn = document.getElementById('sortToggleBtn');
+    const sortTypeMenu  = document.getElementById('sortTypeMenu');
+    const sortIcon      = sortToggleBtn.querySelector('img');
+
+    let currentSortType  = null;
+    let currentSortOrder = null;
+
+    // init
+    sortIcon.src = '/assets/filter/svg/sort-off.svg';
+    sortIcon.style.width  = '28px';
+    sortIcon.style.height = '28px';
+    sortTypeBtn.textContent = 'Выберите';
 
     function loadAdmins(primarySort = null, primaryOrder = null, secondarySort = null, secondaryOrder = null) {
-        let url = '/api/admins';
-        const params = new URLSearchParams();
+        let url    = '/api/admins';
+        const qs  = new URLSearchParams();
 
         if (primarySort && primaryOrder) {
             url = '/api/admins/sorted';
-            params.append('primarySort', primarySort);
-            params.append('primaryOrder', primaryOrder);
+            qs.append('primarySort', primarySort);
+            qs.append('primaryOrder', primaryOrder);
         }
+
         if (secondarySort && secondaryOrder) {
-            params.append('secondarySort', secondarySort);
-            params.append('secondaryOrder', secondaryOrder);
+            qs.append('secondarySort', secondarySort);
+            qs.append('secondaryOrder', secondaryOrder);
         }
 
-        if (params.toString()) {
-            url += `?${params.toString()}`;
+        if (qs.toString()) {
+            url += `?${qs.toString()}`;
         }
 
-        fetch(url)
+        csrfFetch(url)                      // <-- здесь
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Ошибка загрузки админов');
                 }
                 return response.json();
             })
-            .then(data => {
-                renderAdmins(data);
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-            });
+            .then(data => renderAdmins(data))
+            .catch(error => console.error('Ошибка:', error));
     }
 
     function renderAdmins(admins) {
@@ -63,50 +69,60 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function getSortParams() {
-        const activeSorts = sortOrder
-            .filter(sortType => sortStates[sortType] !== 'NONE')
-            .map(sortType => ({
-                sort: sortType,
-                order: sortStates[sortType].toLowerCase()
-            }));
+    // цикличное переключение order
+    sortToggleBtn.addEventListener('click', () => {
+        if (!currentSortType) return;
 
-        const primary = activeSorts[0] || {};
-        const secondary = activeSorts[1] || {};
+        if (currentSortOrder === null) {
+            currentSortOrder = 'asc';
+        } else if (currentSortOrder === 'asc') {
+            currentSortOrder = 'desc';
+        } else {
+            currentSortOrder = null;
+        }
 
-        return {
-            primarySort: primary.sort,
-            primaryOrder: primary.order,
-            secondarySort: secondary.sort,
-            secondaryOrder: secondary.order
-        };
+        updateSortIcon();
+
+        if (currentSortOrder === null) {
+            loadAdmins(); // сброс
+        } else {
+            loadAdmins(currentSortType, currentSortOrder);
+        }
+    });
+
+    function updateSortIcon() {
+        if (!currentSortType) {
+            sortIcon.src = '/assets/filter/svg/sort-off.svg';
+        } else if (currentSortOrder === null) {
+            sortIcon.src = '/assets/filter/svg/sort-default.svg';
+        } else if (currentSortOrder === 'asc') {
+            sortIcon.src = '/assets/filter/svg/sort-asc.svg';
+        } else {
+            sortIcon.src = '/assets/filter/svg/sort-desc.svg';
+        }
     }
 
-    sortButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const sortType = button.getAttribute('data-sort');
+    // dropdown выбора поля сортировки
+    sortTypeBtn.addEventListener('click', () => {
+        sortTypeMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', e => {
+        if (!sortTypeBtn.contains(e.target) && !sortTypeMenu.contains(e.target)) {
+            sortTypeMenu.classList.add('hidden');
+        }
+    });
 
-            if (sortStates[sortType] === 'NONE') {
-                sortStates[sortType] = 'DESC';
-                button.classList.add('asc');
-                button.classList.remove('desc');
-                if (!sortOrder.includes(sortType)) {
-                    sortOrder.push(sortType);
-                }
-            } else if (sortStates[sortType] === 'DESC') {
-                sortStates[sortType] = 'ASC';
-                button.classList.add('desc');
-                button.classList.remove('asc');
-            } else {
-                sortStates[sortType] = 'NONE';
-                button.classList.remove('asc', 'desc');
-                sortOrder = sortOrder.filter(type => type !== sortType);
-            }
-
-            const { primarySort, primaryOrder, secondarySort, secondaryOrder } = getSortParams();
-            loadAdmins(primarySort, primaryOrder, secondarySort, secondaryOrder);
+    document.querySelectorAll('.dropdown-item-custom').forEach(item => {
+        item.addEventListener('click', () => {
+            currentSortType = item.dataset.sort;
+            sortTypeBtn.textContent = item.textContent;
+            currentSortOrder = null;
+            sortTypeMenu.classList.add('hidden');
+            updateSortIcon();
+            loadAdmins();  // при смене поля сразу грузим с новым primarySort
         });
     });
 
+    // первичная загрузка
     loadAdmins();
 });

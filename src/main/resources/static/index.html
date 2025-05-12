@@ -21,6 +21,10 @@
                 <span class="user-name me-3" id="username">…</span>
                 <img src="/assets/general/User.svg" alt="User" class="user-icon">
                 <div id="adminDropdown" class="dropdown-menu-custom hidden">
+                    <button class="dropdown-item-custom" id="toggleModeAdmin">
+                        <img src="/assets/dashboard/svg/report.svg" class="menu-icon" alt="Toggle">
+                        <span>Отчет</span>
+                    </button>
                     <button class="dropdown-item-custom" id="logoutAdmin">
                         <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
                         Выйти
@@ -28,9 +32,9 @@
                 </div>
 
                 <div id="ownerDropdown" class="dropdown-menu-custom hidden">
-                    <button class="dropdown-item-custom" id="logoutOwner">
-                        <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
-                        Выйти
+                    <button class="dropdown-item-custom" id="toggleModeOwner">
+                        <img src="/assets/dashboard/svg/report.svg" class="menu-icon" alt="Toggle">
+                        <span>Отчет</span>
                     </button>
                     <button class="dropdown-item-custom" id="refreshOwner">
                         <img src="/assets/general/refresh.svg" class="menu-icon" alt="Refresh">
@@ -39,6 +43,10 @@
                     <button class="dropdown-item-custom" id="filterOwner">
                         <img src="/assets/general/filter.svg" class="menu-icon" alt="Filter">
                         Фильтры
+                    </button>
+                    <button class="dropdown-item-custom" id="logoutOwner">
+                        <img src="/assets/general/logout.svg" class="menu-icon" alt="Logout">
+                        Выйти
                     </button>
                 </div>
             </div>
@@ -62,184 +70,479 @@
         </button>
     </div>
     <div class="dashboard-content p-4 rounded-4 shadow-sm">
-        <div class="container dashboard-container">
-            <!-- РЯД 1: Блоки 1–2 -->
-            <div class="row gy-4 gx-2">
-                <!-- БЛОК 1: Текущий доход -->
-                <div class="col-md-6 col-12 d-flex">
-                    <div class="card shadow-sm rounded-4 kpi-card p-4 d-flex flex-column justify-content-between w-100">
-                        <div>
-                            <div class="d-flex justify-content-between align-items-start flex-wrap flex-md-nowrap mb-3 kpi-header-wrapper">
-                                <div>
-                                    <div class="kpi-title">Текущий доход</div>
-                                    <div class="kpi-value" id="currentIncome">≈ … ₽</div>
-                                </div>
-                                <div class="kpi-chart-container d-none d-sm-flex">
-                                    <div class="position-relative pie-wrapper" id="pieWrapper">
-                                        <canvas id="pieChart"></canvas>
-                                        <img src="/assets/dashboard/svg/Mountain.svg" alt="icon" class="center-icon" id="mountainIcon">
+
+        <div id="kpiView" style="display: block;">
+            <div class="container dashboard-container">
+                <!-- РЯД 1: Блоки 1–2 -->
+                <div class="row gy-4 gx-2">
+                    <!-- БЛОК 1: Текущий доход -->
+                    <div class="col-md-6 col-12 d-flex">
+                        <div class="card shadow-sm rounded-4 kpi-card p-4 d-flex flex-column justify-content-between w-100">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start flex-wrap flex-md-nowrap mb-3 kpi-header-wrapper">
+                                    <div>
+                                        <div class="kpi-title">Текущий доход</div>
+                                        <div class="kpi-value" id="currentIncome">≈ … ₽</div>
+                                    </div>
+                                    <div class="kpi-chart-container d-sm-flex">
+                                        <div class="position-relative pie-wrapper" id="pieWrapper">
+                                            <canvas id="pieChart"></canvas>
+                                            <img src="/assets/dashboard/svg/Mountain.svg" alt="icon" class="center-icon" id="mountainIcon">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between kpi-subtext align-items-center mb-1">
+                                    <span id="remainingToPlan">… ₽ до цели</span>
+                                    <span class="fw-semibold" id="planPercent">…%</span>
+                                </div>
+                                <div class="progress rounded-pill mb-1 kpi-progress" id="progressBar">
+                                    <div id="yellowBar" class="progress-bar" style="width: 0%;"></div>
+                                </div>
+                                <div class="d-flex justify-content-end kpi-subtext mt-1">
+                                    <span id="locationPlan">План студии … ₽</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between kpi-subtext align-items-center mb-1">
-                                <span id="remainingToPlan">… ₽ до цели</span>
-                                <span class="fw-semibold" id="planPercent">…%</span>
+                    </div>
+
+                    <!-- БЛОК 2: Цифра дня -->
+                    <div class="col-md-6 col-12">
+                        <div class="card shadow-sm rounded-4 kpi-card p-4 d-flex flex-column justify-content-between h-100">
+                            <div class="figure-highlight position-relative rounded-3 mb-3 d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <img src="/assets/dashboard/svg/Target.svg" alt="icon" class="me-3 target-icon">
+                                    <span class="figure-label">Цифра дня</span>
+                                    <div class="figure-value" id="dailyFigure"></div>
+                                </div>
+                                <img src="/assets/dashboard/svg/ruble-bg.svg" alt="₽" class="ruble-background">
                             </div>
-                            <div class="progress rounded-pill mb-1 kpi-progress" id="progressBar">
-                                <div id="yellowBar" class="progress-bar" style="width: 0%;"></div>
-                            </div>
-                            <div class="d-flex justify-content-end kpi-subtext mt-1">
-                                <span id="locationPlan">План студии … ₽</span>
+                            <div class="row text-center">
+                                <div class="col">
+                                    <div class="kpi-stats-label">План</div>
+                                    <div class="kpi-stats-value" id="locationPlanBlock">… ₽</div>
+                                </div>
+                                <div class="col">
+                                    <div class="kpi-stats-label">Выполнение</div>
+                                    <div class="kpi-stats-value" id="actualIncome">… ₽</div>
+                                </div>
+                                <div class="col">
+                                    <div class="kpi-stats-label">Осталось</div>
+                                    <div class="kpi-stats-value" id="remainingBlock">… ₽</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- БЛОК 2: Цифра дня -->
-                <div class="col-md-6 col-12">
-                    <div class="card shadow-sm rounded-4 kpi-card p-4 d-flex flex-column justify-content-between h-100">
-                        <div class="figure-highlight position-relative rounded-3 mb-3 d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <img src="/assets/dashboard/svg/Target.svg" alt="icon" class="me-3 target-icon">
-                                <span class="figure-label">Цифра дня</span>
-                                <div class="figure-value" id="dailyFigure"></div>
+                <!-- РЯД 2: Блоки 3–5 -->
+                <div class="row gy-4 gx-2 mt-2">
+                    <!-- БЛОК 3 Бонусы дня -->
+                    <div class="col-md-4 col-6 d-flex order-1 order-md-1">
+                        <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                            <!-- Верхняя часть -->
+                            <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
+                                <div class="badge kpi-badge">
+                                    <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
+                                    <span id="dayBonusesAmount">… ₽</span>
+                                </div>
+                                <div class="fw-medium fs-6 kpi-heading">Накоплено бонусов дня</div>
                             </div>
-                            <img src="/assets/dashboard/svg/ruble-bg.svg" alt="₽" class="ruble-background">
+
+                            <!-- Подпись -->
+                            <div class="text-muted small">Выплачивается как то там</div>
+
                         </div>
-                        <div class="row text-center">
-                            <div class="col">
-                                <div class="kpi-stats-label">План</div>
-                                <div class="kpi-stats-value" id="locationPlanBlock">… ₽</div>
+                    </div>
+
+                    <!-- БЛОК 4 Основная часть заработной платы -->
+                    <div class="col-md-4 col-6 d-flex order-2 order-md-2">
+                        <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                            <!-- Верхняя часть -->
+                            <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
+                                <div class="badge kpi-badge">
+                                    <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
+                                    <span id="mainSalaryPart">… ₽</span>
+                                </div>
+                                <div class="fw-medium fs-6 kpi-heading">Основная часть заработной платы</div>
                             </div>
-                            <div class="col">
-                                <div class="kpi-stats-label">Выполнение</div>
-                                <div class="kpi-stats-value" id="actualIncome">… ₽</div>
+
+                            <!-- Подпись -->
+                            <div class="text-muted small">Выплачивается как то там</div>
+
+                        </div>
+                    </div>
+
+                    <!-- БЛОК 5 Личная выручка -->
+                    <div class="col-md-4 col-6 d-flex order-3 order-md-3">
+                        <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                            <!-- Верхняя часть -->
+                            <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
+                                <div class="badge kpi-badge">
+                                    <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
+                                    <span id="personalRevenue">… ₽</span>
+                                </div>
+                                <div class="fw-medium fs-6 kpi-heading">Личная выручка</div>
                             </div>
-                            <div class="col">
-                                <div class="kpi-stats-label">Осталось</div>
-                                <div class="kpi-stats-value" id="remainingBlock">… ₽</div>
+
+                            <!-- Подпись -->
+                            <div class="text-muted small">Формируется по показателям</div>
+
+                        </div>
+                    </div>
+
+                    <!-- РЯД 3: Блоки 6–8 -->
+                    <!-- БЛОК 6 Максимальная дневная выручка -->
+                    <div class="col-md-4 col-6 d-flex order-4 order-md-6">
+                        <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                            <!-- Верхняя часть -->
+                            <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
+                                <div class="badge kpi-badge">
+                                    <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
+                                    <span id="maxDailyRevenue">… ₽</span>
+                                </div>
+                                <div class="fw-medium fs-6 kpi-heading">Максимальная дневная выручка</div>
                             </div>
+
+                            <!-- Подпись -->
+                            <div class="text-muted small">Лучший результат за смену</div>
+
+                        </div>
+                    </div>
+
+                    <!-- БЛОК 7 Средняя выручка за смену -->
+                    <div class="col-md-4 col-6 d-flex order-6 order-md-4">
+                        <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                            <!-- Верхняя часть -->
+                            <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
+                                <div class="badge kpi-badge">
+                                    <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
+                                    <span id="avgRevenuePerDay">… ₽</span>
+                                </div>
+                                <div class="fw-medium fs-6 kpi-heading">Средняя выручка за смену</div>
+                            </div>
+
+                            <!-- Подпись -->
+                            <div class="text-muted small">В среднем за период</div>
+
+                        </div>
+                    </div>
+
+                    <!-- БЛОК 8 -->
+                    <div class="col-md-4 col-6 d-flex order-5 order-md-5">
+                        <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+
+                            <!-- Верхняя часть: бейдж + заголовок KPI -->
+                            <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
+                                <div class="badge kpi-badge">
+                                    <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
+                                    <span id="conversionRate">…%</span>
+                                </div>
+                                <div class="fw-medium fs-6 kpi-heading">Конверсия</div>
+                            </div>
+
+                            <!-- Подпись -->
+                            <div class="text-muted small">Общий % эффективности</div>
+
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- РЯД 2: Блоки 3–5 -->
-            <div class="row gy-4 gx-2 mt-2">
-                <!-- БЛОК 3 Бонусы дня -->
-                <div class="col-md-4 col-6 d-flex order-1 order-md-1">
-                    <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+        <!-- отчетность — плейсхолдер -->
+        <div id="reportView" style="display: none;">
+            <div class="container report-container">
+                <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+                    <!-- Пустой блок слева (имитирует ширину кнопки справа) -->
+                    <div style="width: 140px;"></div>
 
-                        <!-- Верхняя часть -->
-                        <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
-                            <div class="badge kpi-badge">
-                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
-                                <span id="dayBonusesAmount">… ₽</span>
-                            </div>
-                            <div class="fw-medium fs-6 kpi-heading">Накоплено бонусов дня</div>
-                        </div>
+                    <!-- Центрированный заголовок -->
+                    <h2 class="report-header text-center m-0 position-absolute start-50 translate-middle-x">
+                        Отчетность
+                    </h2>
 
-                        <!-- Подпись -->
-                        <div class="text-muted small">Выплачивается как то там</div>
-
-                    </div>
+                    <!-- Кнопка справа -->
+                    <button class="btn text-center btn-upload fw-semibold px-4 py-2" style="width: 140px;">
+                        Загрузить
+                    </button>
                 </div>
-
-                <!-- БЛОК 4 Основная часть заработной платы -->
-                <div class="col-md-4 col-6 d-flex order-2 order-md-2">
-                    <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
-
-                        <!-- Верхняя часть -->
-                        <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
-                            <div class="badge kpi-badge">
-                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
-                                <span id="mainSalaryPart">… ₽</span>
+                <div class="row g-4 row-cols-1 row-cols-lg-3">
+                    <!-- Левая колонка: Касса + Пробные -->
+                    <div class="col d-flex flex-column gap-4 h-100">
+                        <!-- Блок "Касса в студии" -->
+                        <div class="card shadow-sm rounded-4 p-4 report-block">
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Касса в студии</h4>
+                                <button class="help-button" type="button" data-section="Касса в студии">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
                             </div>
-                            <div class="fw-medium fs-6 kpi-heading">Основная часть заработной платы</div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Начало смены</label>
+                                    <input type="text" class="form-control yellow-input" id="shiftStart">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Конец смены</label>
+                                    <input type="text" class="form-control yellow-input" id="shiftEnd">
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Подпись -->
-                        <div class="text-muted small">Выплачивается как то там</div>
+                        <!-- Блок "Пробные" -->
+                        <div class="card shadow-sm rounded-4 p-4 report-block">
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Пробные</h4>
+                                <button class="help-button" type="button" data-section="Пробные">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
+                            </div>
 
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Пришли</label>
+                                <input type="number" class="form-control yellow-input" id="trialCame">
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Купили</label>
+                                    <input type="number" class="form-control yellow-input" id="trialBought">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="trialBoughtAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Оплат пр.</label>
+                                    <input type="number" class="form-control yellow-input" id="trialPaid">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="trialPaidAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Предоплаты</label>
+                                    <input type="number" class="form-control yellow-input" id="prepayment">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="prepaymentAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Доплаты</label>
+                                    <input type="number" class="form-control yellow-input" id="surcharge">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="surchargeAmount">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- БЛОК 5 Личная выручка -->
-                <div class="col-md-4 col-6 d-flex order-3 order-md-3">
-                    <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
-
-                        <!-- Верхняя часть -->
-                        <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
-                            <div class="badge kpi-badge">
-                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1">
-                                <span id="personalRevenue">… ₽</span>
+                    <!-- Правая колонка: Текущие -->
+                    <div class="col d-flex flex-column gap-4 h-100">
+                        <!-- Блок "Текущие" -->
+                        <div class="card shadow-sm rounded-4 p-4 report-block current-section">
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Текущие</h4>
+                                <button class="help-button" type="button" data-section="Текущие">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
                             </div>
-                            <div class="fw-medium fs-6 kpi-heading">Личная выручка</div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Закончили</label>
+                                <input type="number" class="form-control yellow-input" id="currentFinished">
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Продлили</label>
+                                    <input type="number" class="form-control yellow-input" id="currentExtended">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="currentExtendedAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Апгрейды</label>
+                                    <input type="number" class="form-control yellow-input" id="currentUpgrades">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="currentUpgradesAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Вернулось</label>
+                                    <input type="number" class="form-control yellow-input" id="currentReturned">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="currentReturnedAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Предоплата</label>
+                                    <input type="number" class="form-control yellow-input" id="currentPrepayment">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="currentPrepaymentAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Доплаты</label>
+                                    <input type="number" class="form-control yellow-input" id="currentSurcharge">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="currentSurchargeAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Индивидуально</label>
+                                    <input type="number" class="form-control yellow-input" id="currentIndividual">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="currentIndividualAmount">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Разовые</label>
+                                    <input type="number" class="form-control yellow-input" id="currentOneTime">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Сумма</label>
+                                    <input type="number" class="form-control yellow-input" id="currentOneTimeAmount">
+                                </div>
+                            </div>
                         </div>
-
-                        <!-- Подпись -->
-                        <div class="text-muted small">Формируется по показателям</div>
-
                     </div>
-                </div>
 
-                <!-- РЯД 3: Блоки 6–8 -->
-                <!-- БЛОК 6 Максимальная дневная выручка -->
-                <div class="col-md-4 col-6 d-flex order-4 order-md-6">
-                    <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
+                    <!-- КОЛОНКА 3: Информация + Операции -->
+                    <div class="col d-flex flex-column gap-4 h-100">
 
-                        <!-- Верхняя часть -->
-                        <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
-                            <div class="badge kpi-badge">
-                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
-                                <span id="maxDailyRevenue">… ₽</span>
+                        <!-- БЛОК: Информация -->
+                        <div class="card shadow-sm rounded-4 p-4 report-block">
+                            <!-- Дата -->
+                            <div class="text-center fs-5 fw-semibold mb-3" id="infoDate">03.05 - ср</div>
+
+                            <!-- Локация -->
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="fw-semibold">Локация</div>
+                                <div id="infoLocation">Богородского</div>
                             </div>
-                            <div class="fw-medium fs-6 kpi-heading">Максимальная дневная выручка</div>
+
+                            <!-- Имя -->
+                            <div class="d-flex justify-content-between">
+                                <div class="fw-semibold">Имя</div>
+                                <div id="infoName">Яна</div>
+                            </div>
                         </div>
 
-                        <!-- Подпись -->
-                        <div class="text-muted small">Лучший результат за смену</div>
-
-                    </div>
-                </div>
-
-                <!-- БЛОК 7 Средняя выручка за смену -->
-                <div class="col-md-4 col-6 d-flex order-6 order-md-4">
-                    <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
-
-                        <!-- Верхняя часть -->
-                        <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
-                            <div class="badge kpi-badge">
-                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
-                                <span id="avgRevenuePerDay">… ₽</span>
+                        <!-- БЛОК: Операции -->
+                        <div class="card shadow-sm rounded-4 pt-4 px-4 pb-0 report-block operations-block d-flex flex-column">                            <!-- Заголовок -->
+                            <div class="d-flex justify-content-center position-relative mb-3">
+                                <h4 class="section-title text-center m-0">Операции</h4>
+                                <button class="help-button" type="button" data-section="Операции">
+                                    <img src="/assets/general/help.svg" alt="?" class="help-icon">
+                                </button>
                             </div>
-                            <div class="fw-medium fs-6 kpi-heading">Средняя выручка за смену</div>
-                        </div>
 
-                        <!-- Подпись -->
-                        <div class="text-muted small">В среднем за период</div>
+                            <div id="operationCounter" class="operation-counter d-none">0</div>
 
-                    </div>
-                </div>
-
-                <!-- БЛОК 8 -->
-                <div class="col-md-4 col-6 d-flex order-5 order-md-5">
-                    <div class="card kpi-card shadow-sm rounded-4 p-3 w-100 h-100 d-flex flex-column justify-content-between">
-
-                        <!-- Верхняя часть: бейдж + заголовок KPI -->
-                        <div class="d-flex flex-column align-items-start justify-content-start kpi-top mb-2">
-                            <div class="badge kpi-badge">
-                                <img src="/assets/dashboard/svg/Crown.svg" alt="crown" class="crown-icon me-1" />
-                                <span id="conversionRate">…%</span>
+                            <!-- ВСПЛЫВАЮЩЕЕ ОКНО -->
+                            <div id="operationPopup" class="operation-popup d-none">
+                                <ul id="operationList" class="list-unstyled mb-0 px-3 py-2"></ul>
                             </div>
-                            <div class="fw-medium fs-6 kpi-heading">Конверсия</div>
+
+                            <!-- Поля -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Тип</label>
+                                <select class="form-select yellow-input" id="operationType">
+                                    <option value="" selected disabled>Выберите</option>
+                                    <option value="Приход">Приход</option>
+                                    <option value="Расход">Расход</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Сумма</label>
+                                <input type="number" class="form-control yellow-input" id="operationAmount">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Касса \ РС</label>
+                                <select class="form-select yellow-input" id="operationTypeAccount">
+                                    <option value="" selected disabled>Выберите</option>
+                                    <option value="Наличный">Наличный</option>
+                                    <option value="Перевод">Перевод</option>
+                                    <option value="QR - Код">QR - Код</option>
+                                    <option value="Сбербанк рассрочка терминал - безналичный">Сбербанк рассрочка терминал - безналичный</option>
+                                    <option value="Тинькофф рассрочка - безналичный">Тинькофф рассрочка - безналичный</option>
+                                    <option value="Сбербанк терминал (оплата картой) - безналичный">Сбербанк терминал (оплата картой) - безналичный</option>
+                                    <option value="Мoneycare - безналичный">Мoneycare - безналичный</option>
+                                    <option value="Тинькофф Долями - безналичный">Тинькофф Долями - безналичный</option>
+                                    <option value="Сбербанк рассрочка по ссылке - безналичный">Сбербанк рассрочка по ссылке - безналичный</option>
+                                    <option value="ОТП рассрочка - безналичный">ОТП рассрочка - безналичный</option>
+                                    <option value="Яндекс Сплит - безналичный">Яндекс Сплит - безналичный</option>
+                                    <option value="Юкасса интернет-эквайринг - безналичный">Юкасса интернет-эквайринг - безналичный</option>
+                                    <option value="Плати частями Сбербанк - безналичный">Плати частями Сбербанк - безналичный</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Статья</label>
+                                <select class="form-select yellow-input" id="operationCategory">
+                                    <option value="" selected disabled>Выберите</option>
+                                    <option value="Приход - Апгрейд">Приход - Апгрейд</option>
+                                    <option value="Приход - Оплата пробного зан-я">Приход - Оплата пробного зан-я</option>
+                                    <option value="Приход - Оплата разового занятия">Приход - Оплата разового занятия</option>
+                                    <option value="Приход - Предоплата (новый клиент)">Приход - Предоплата (новый клиент)</option>
+                                    <option value="Приход - Предоплата (пост. клиент)">Приход - Предоплата (пост. клиент)</option>
+                                    <option value="Приход - Покупка 1-го абонемента">Приход - Покупка 1-го абонемента</option>
+                                    <option value="Приход - Покупка абонемента (пост. клиент)">Приход - Покупка абонемента (пост. клиент)</option>
+                                    <option value="Приход - Доплата до полной стоимости (новый клиент)">Приход - Доплата до полной стоимости (новый клиент)</option>
+                                    <option value="Приход - Доплата до полной стоимости (пост. клиент)">Приход - Доплата до полной стоимости (пост. клиент)</option>
+                                    <option value="Приход - Покупка инд. занятий (новый клиент)">Приход - Покупка инд. занятий (новый клиент)</option>
+                                    <option value="Приход - Покупка инд. занятий (пост. клиент)">Приход - Покупка инд. занятий (пост. клиент)</option>
+                                    <option value="Расход - Покупка быт.химии">Расход - Покупка быт.химии</option>
+                                    <option value="Расход - Покупка бумаги">Расход - Покупка бумаги</option>
+                                    <option value="Расход - Оплата ЗП уборщицы">Расход - Оплата ЗП уборщицы</option>
+                                    <option value="Расход - ЗП администратора">Расход - ЗП администратора</option>
+                                    <option value="Расход - Оплата воды">Расход - Оплата воды</option>
+                                    <option value="Расход - ЗП педагогов">Расход - ЗП педагогов</option>
+                                    <option value="Расход - Административные расходы (укажи комментарий)">Расход - Административные расходы (укажи комментарий)</option>
+                                    <option value="Расход - Возврат">Расход - Возврат</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Комментарий</label>
+                                <input type="text" class="form-control yellow-input" id="operationComment">
+                            </div>
                         </div>
-
-                        <!-- Подпись -->
-                        <div class="text-muted small">Общий % эффективности</div>
-
+                        <!-- Кнопка -->
+                        <div class="mt-3">
+                            <button class="btn btn-warning w-100 fw-semibold" id="addOperationBtn" type="button">
+                                Добавить операцию
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -259,6 +562,8 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/js/dashboard.js"></script>
+<script type="module" src="/js/csrf.js"></script>
+<script type="module" src="/js/dashboard.js"></script>
+<script type="module" src="/js/report.js"></script>
 </body>
 </html>
