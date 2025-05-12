@@ -1,18 +1,16 @@
 package com.levita.levita_monitoring.configuration.sheet_reports;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import java.util.Map;
 
-@Component
-@ConfigurationProperties(prefix = "sheets-names")
-public class SheetNamesConfig {
+public class SheetNamesDescriptor {
 
     private String shift;
     private String trial;
     private String current;
     private Map<String, String> operations;
+
+    public SheetNamesDescriptor() {
+    }
 
     public String getShift() {
         return shift;
