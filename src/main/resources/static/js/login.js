@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // собираем форму
-        const data = new URLSearchParams({
+        const formData = new URLSearchParams({
             username: usernameIn.value,
             password: passwordIn.value
         });
@@ -40,8 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await csrfFetch('/login', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: data
+                body: formData
             });
             if (res.redirected) {
                 window.location.href = res.url;

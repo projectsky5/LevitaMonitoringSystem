@@ -7,7 +7,7 @@ export async function getCsrfToken() {
 export async function csrfFetch(url, options = {}) {
     const token = await getCsrfToken();
     return fetch(url, {
-        credentials: 'same-origin',
+        credentials: 'include',
         ...options,
         headers: {
             ...(options.headers || {}),
