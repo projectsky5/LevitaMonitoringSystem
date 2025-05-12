@@ -20,7 +20,22 @@ public class ReportSubmissionService {
 
     @Transactional
     public ReportSubmission submitReport(Long userId){
-        ReportSubmission submission = new ReportSubmission(userId, Instant.now());
+        Instant now = Instant.now();
+        Optional<ReportSubmission> optReportSubmission = repository
+                .findTopByUserIdOrderBySubmittedAtDesc(userId);
+
+        ReportSubmission submission = optReportSubmission
+                .map(existing -> {
+                    existing.setSubmittedAt(now);
+                    existing.setRollBackAt(null);
+                    return existing;
+                })
+                .orElseGet(() -> {
+                    ReportSubmission first = new ReportSubmission(userId, now);
+                    first.setRollBackAt(null);
+                    return first;
+                });
+
         return repository.save(submission);
     }
 
@@ -28,19 +43,64 @@ public class ReportSubmissionService {
     public ReportSubmission rollbackReport(Long userId) {
         ReportSubmission submission = repository
                 .findTopByUserIdOrderBySubmittedAtDesc(userId)
-                .orElseThrow(() -> new IllegalStateException("No submission to rollback"));
-        submission.setRollBackAt(Instant.now());
+                .orElseThrow(() -> new IllegalArgumentException("No submission to rollback"));
+
+        Instant now = Instant.now();
+        submission.setRollBackAt(now);
+        submission.setSubmittedAt(null);
+
         return repository.save(submission);
     }
 
     public ReportStatusDto getStatus(Long userId) {
-        Optional<ReportSubmission> optional = repository.findTopByUserIdOrderBySubmittedAtDesc(userId);
-        Instant deadline = computeDailyDeadline();
-        if (optional.isEmpty()) {
-            return new ReportStatusDto(null, null, deadline);
+        ZoneId msk = ZoneId.of("Europe/Moscow");
+        ZonedDateTime nowMsk = ZonedDateTime.now(msk);
+        LocalDate today = nowMsk.toLocalDate();
+        LocalTime time = nowMsk.toLocalTime();
+
+        // 1) начало «рабочего» периода
+        ZonedDateTime periodStartMsk;
+        if (time.isBefore(LocalTime.of(2, 0))) {
+            // до 02:00 — отчёт за «вчерашний» день, период начинался вчера в 09:00
+            periodStartMsk = ZonedDateTime.of(
+                    today.minusDays(1),
+                    LocalTime.of(9, 0),
+                    msk
+            );
+        } else {
+            // после 02:00 — отчёт за «сегодняшний» день, период начался сегодня в 09:00
+            periodStartMsk = ZonedDateTime.of(
+                    today,
+                    LocalTime.of(9, 0),
+                    msk
+            );
         }
-        ReportSubmission submission = optional.get();
-        return new ReportStatusDto(submission.getSubmittedAt(), submission.getRollBackAt(), deadline);
+        Instant periodStart = periodStartMsk.toInstant();
+
+        // 2) пытаемся достать последнюю запись (по полю createdAt)
+        Optional<ReportSubmission> opt = repository
+                .findTopByUserIdOrderByCreatedAtDesc(userId);
+
+        ReportSubmission todaySubmission;
+        if (opt.isEmpty() || opt.get().getCreatedAt().isBefore(periodStart)) {
+            // 3) нет «сегодняшней» — создаём чистую
+            todaySubmission = new ReportSubmission();
+            todaySubmission.setUserId(userId);
+            todaySubmission.setCreatedAt(periodStart);
+            todaySubmission.setSubmittedAt(null);
+            todaySubmission.setRollBackAt(null);
+            todaySubmission = repository.save(todaySubmission);
+        } else {
+            todaySubmission = opt.get();
+        }
+
+        // 4) собираем DTO
+        Instant deadline = computeDailyDeadline();  // ваш метод
+        return new ReportStatusDto(
+                todaySubmission.getSubmittedAt(),
+                todaySubmission.getRollBackAt(),
+                deadline
+        );
     }
 
     private Instant computeDailyDeadline(){

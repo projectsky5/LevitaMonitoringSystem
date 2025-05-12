@@ -14,10 +14,12 @@ public class ReportSubmission {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
     private Instant submittedAt;
 
     private Instant rollBackAt;
+
+    @Column(nullable = false)
+    private Instant createdAt;
 
     public ReportSubmission() {
     }
@@ -57,5 +59,13 @@ public class ReportSubmission {
 
     public void setRollBackAt(Instant rollBackAt) {
         this.rollBackAt = rollBackAt;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }

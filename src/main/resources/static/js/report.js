@@ -1,312 +1,311 @@
-document.addEventListener('DOMContentLoaded', () => {
+import { csrfFetch } from "./csrf.js";
+
+document.addEventListener('DOMContentLoaded', async () => {
     let operations = [];
     let rollbackTimeout = null;
     let rollbackInterval = null;
-    let rollbackActive = false;  // добавляем переменную состояния
+    let rollbackActive = false;
 
     const operationCounter = document.getElementById('operationCounter');
-    const operationPopup = document.getElementById('operationPopup');
-    const operationList = document.getElementById('operationList');
-    const uploadButton = document.querySelector('.btn-upload');
+    const operationPopup   = document.getElementById('operationPopup');
+    const operationList    = document.getElementById('operationList');
+    const uploadButton     = document.querySelector('.btn-upload');
 
-    // Создание кнопки "Отменить" динамически
+    //
+    // === Построение UI для кнопки «Отменить» и таймера ===
+    //
     const cancelButton = document.createElement('button');
-    // Создание таймера
-    const timerSpan = document.createElement('span');
+    const timerSpan    = document.createElement('span');
     timerSpan.style.fontWeight = 'bold';
-    timerSpan.style.color = '#CD171A';
-    timerSpan.style.display = 'none';
+    timerSpan.style.color      = '#CD171A';
+    timerSpan.style.display    = 'none';
 
-// Обёртка для кнопки и таймера
     const rollbackContainer = document.createElement('div');
-    rollbackContainer.classList.add('d-flex', 'align-items-center');
+    rollbackContainer.classList.add('d-flex','align-items-center');
     rollbackContainer.style.gap = '12px';
-    rollbackContainer.appendChild(cancelButton);
-    rollbackContainer.appendChild(timerSpan);
+    rollbackContainer.append(cancelButton, timerSpan);
 
-// Перед загрузкой
     uploadButton.parentElement.prepend(rollbackContainer);
     cancelButton.textContent = 'Отменить';
-    cancelButton.classList.add('btn', 'btn-outline-danger', 'fw-semibold');
+    cancelButton.classList.add('btn','btn-outline-danger','fw-semibold');
     cancelButton.style.marginRight = '16px';
-    cancelButton.style.display = 'none';
+    cancelButton.style.display     = 'none';
 
-    cancelButton.addEventListener('click', () => {
+    cancelButton.addEventListener('click', async () => {
         rollbackActive = false;
-        console.log('Rollback requested');
         cancelButton.style.display = 'none';
-        timerSpan.style.display = 'none';
-        uploadButton.disabled = false;
+        timerSpan.style.display    = 'none';
+        uploadButton.disabled      = false;
         uploadButton.classList.remove('disabled');
 
-        alert('Отправка на /api/report/rollback');
-
-        if (rollbackTimeout) {
+        try {
+            await csrfFetch('/api/report/rollback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reportDate: getReportDate() })
+            });
+        } catch (e) {
+            console.error("Rollback failed", e);
+        } finally {
             clearTimeout(rollbackTimeout);
-            rollbackTimeout = null;
-        }
-        if (rollbackInterval) {
             clearInterval(rollbackInterval);
-            rollbackInterval = null;
+            rollbackTimeout  = rollbackInterval = null;
         }
     });
 
-    function formatDateWithDay() {
-        const now = new Date();
-        const day = now.getDate().toString().padStart(2, '0');
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const weekdayNames = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
-        const weekday = weekdayNames[now.getDay()];
-        return `${day}.${month} - ${weekday}`;
+    async function loadReportStatus() {
+        try {
+            const res = await csrfFetch('/api/report/status');
+            if (!res.ok) throw new Error('status fetch failed');
+            const {submittedAt, rolledBackAt } = await res.json();
+            // если есть отправка после сегодняшнего дедлайна и не сделан rollback
+            rollbackActive = !!(submittedAt && rolledBackAt === null);
+            if (rollbackActive) startRollbackTimerUntil0200();
+        } catch (e) {
+            console.warn('Не удалось загрузить статус отчёта', e);
+            rollbackActive = false;
+        } finally {
+            // отрисуем кнопки исходя из rollbackActive
+            if (rollbackActive) {
+                cancelButton.style.display = 'inline-block';
+                timerSpan.style.display    = 'inline-block';
+            } else {
+                cancelButton.style.display = 'none';
+                timerSpan.style.display    = 'none';
+            }
+            checkUploadAvailability();
+        }
     }
 
-    window.removeOperation = function (index) {
-        operations.splice(index, 1);
-        if (operations.length === 0) {
+    //
+    // === Вычисление reportDate в формате "dd.MM - xx" ===
+    //
+    function getReportDate() {
+        const parts = new Intl.DateTimeFormat('ru-RU', {
+            timeZone: 'Europe/Moscow',
+            hour12: false,
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        }).formatToParts(new Date())
+            .reduce((acc, p) => {
+                if (p.type !== 'literal') acc[p.type] = p.value;
+                return acc;
+            }, {});
+
+        const msk = new Date(
+            `${parts.year}-${parts.month}-${parts.day}T` +
+            `${parts.hour}:${parts.minute}:${parts.second}+03:00`
+        );
+
+        // если до 02:00 — считаем отчёт за предыдущий день
+        if (msk.getHours() < 2) {
+            msk.setDate(msk.getDate() - 1);
+        }
+        const d  = String(msk.getDate()).padStart(2, '0');
+        const m  = String(msk.getMonth() + 1).padStart(2, '0');
+        const wd = ['вс','пн','вт','ср','чт','пт','сб'][msk.getDay()];
+        return `${d}.${m} - ${wd}`;
+    }
+
+    //
+    // === Запуск таймера отката до 02:00 ===
+    //
+    function startRollbackTimerUntil0200() {
+        const nowParts = new Intl.DateTimeFormat('ru-RU', {
+            timeZone:'Europe/Moscow', hour12:false,
+            year:'numeric', month:'2-digit', day:'2-digit',
+            hour:'2-digit', minute:'2-digit', second:'2-digit'
+        }).formatToParts(new Date())
+            .reduce((acc, p) => { if (p.type !== 'literal') acc[p.type] = p.value; return acc; }, {});
+        const mskNow = new Date(
+            `${nowParts.year}-${nowParts.month}-${nowParts.day}T` +
+            `${nowParts.hour}:${nowParts.minute}:${nowParts.second}+03:00`
+        );
+
+        // цель — ближайшие 02:00
+        let endMSK = new Date(
+            `${nowParts.year}-${nowParts.month}-${nowParts.day}T02:00:00+03:00`
+        );
+        if (mskNow.getHours() >= 2) {
+            endMSK.setDate(endMSK.getDate() + 1);
+        }
+
+        const remainingMs = endMSK - mskNow;
+        if (remainingMs <= 0) return;
+
+        let sec = Math.floor(remainingMs / 1000);
+        cancelButton.style.display = 'inline-block';
+        timerSpan.style.display    = 'inline-block';
+
+        const tick = () => {
+            const h = String(Math.floor(sec / 3600)).padStart(2,'0');
+            const m = String(Math.floor((sec % 3600)/60)).padStart(2,'0');
+            const s = String(sec % 60).padStart(2,'0');
+            timerSpan.textContent = `${h}:${m}:${s}`;
+        };
+        tick();
+        rollbackInterval = setInterval(() => {
+            sec--; tick();
+            if (sec <= 0) clearInterval(rollbackInterval);
+        }, 1000);
+        rollbackTimeout = setTimeout(() => {
+            cancelButton.style.display = 'none';
+            timerSpan.style.display    = 'none';
+            rollbackActive = false;
+        }, remainingMs);
+    }
+
+    //
+    // === Вспомогалки для операций ===
+    //
+    function clearAllInputs() {
+        document.querySelectorAll('#reportView input, #reportView select')
+            .forEach(i => i.tagName==='SELECT' ? i.selectedIndex=0 : i.value='');
+    }
+    function updateOperationList() {
+        operationList.innerHTML = '';
+        operations.forEach((op, i) => {
+            const li = document.createElement('li');
+            li.className = 'mb-3';
+            li.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <strong>Операция ${i+1}</strong>
+          <button class="btn-close-operation"
+            onclick="removeOperation(${i});event.stopPropagation();">&times;</button>
+        </div>
+        <div>Тип: <strong>${op.type}</strong></div>
+        <div>Сумма: <strong>${op.amount}₽</strong></div>
+        <div>Касса / РС: <strong>${op.cashType}</strong></div>
+        <div>Статья: <strong>${op.category}</strong></div>
+        <div>Комментарий: <strong>${op.comment||'-'}</strong></div>`;
+            operationList.append(li);
+        });
+    }
+    window.removeOperation = idx => {
+        operations.splice(idx,1);
+        if (!operations.length) {
             operationPopup.classList.add('d-none');
             operationCounter.classList.add('d-none');
         }
         operationCounter.textContent = operations.length;
         updateOperationList();
     };
-
-    function clearAllInputs() {
-        const inputs = document.querySelectorAll('#reportView input, #reportView select');
-        inputs.forEach(input => {
-            if (input.tagName === 'SELECT') {
-                input.selectedIndex = 0;
-            } else {
-                input.value = '';
-            }
-        });
-    }
-
-    function updateOperationList() {
-        operationList.innerHTML = '';
-        operations.forEach((op, index) => {
-            const entry = document.createElement('li');
-            entry.classList.add('mb-3');
-            entry.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <strong>Операция ${index + 1}</strong>
-                <button class="btn-close-operation" onclick="removeOperation(${index}); event.stopPropagation();">&times;</button>
-            </div>
-            <div>Тип: <strong>${op.type}</strong></div>
-            <div>Сумма: <strong>${op.amount}₽</strong></div>
-            <div>Касса / РС: <strong>${op.cashType}</strong></div>
-            <div>Статья: <strong>${op.category}</strong></div>
-            <div>Комментарий: <strong>${op.comment || '-'}</strong></div>
-        `;
-            operationList.appendChild(entry);
-        });
-    }
-
     document.getElementById('addOperationBtn').addEventListener('click', () => {
-        const type = document.getElementById('operationType').value;
-        const amount = parseFloat(document.getElementById('operationAmount').value);
-        const cashType = document.getElementById('operationTypeAccount').value;
-        const category = document.getElementById('operationCategory').value;
-        const comment = document.getElementById('operationComment').value;
-
+        const type        = document.getElementById('operationType').value;
+        const amount      = parseFloat(document.getElementById('operationAmount').value);
+        const cashType    = document.getElementById('operationTypeAccount').value;
+        const category    = document.getElementById('operationCategory').value;
+        const comment     = document.getElementById('operationComment').value;
         if (!type || isNaN(amount) || !cashType || !category) {
-            alert("Пожалуйста, заполните все обязательные поля для операции.");
-            return;
+            return alert("Пожалуйста, заполните все поля операции.");
         }
-
-        operations.push({ type, amount, cashType, category, comment });
+        operations.push({type,amount,cashType,category,comment});
         operationCounter.textContent = operations.length;
         operationCounter.classList.remove('d-none');
-
-        document.getElementById('operationType').value = '';
-        document.getElementById('operationAmount').value = '';
-        document.getElementById('operationTypeAccount').value = '';
-        document.getElementById('operationCategory').value = '';
-        document.getElementById('operationComment').value = '';
+        ['operationType','operationAmount','operationTypeAccount','operationCategory','operationComment']
+            .forEach(id => document.getElementById(id).value = '');
     });
-
     operationCounter.addEventListener('click', () => {
-        if (operations.length === 0) return;
+        if (!operations.length) return;
         updateOperationList();
         operationPopup.classList.toggle('d-none');
     });
-
-    document.addEventListener('click', (event) => {
-        const isClickInside = operationPopup.contains(event.target) || operationCounter.contains(event.target);
-        if (!isClickInside) {
+    document.addEventListener('click', e => {
+        if (!operationPopup.contains(e.target) &&
+            !operationCounter.contains(e.target)) {
             operationPopup.classList.add('d-none');
         }
     });
 
-    function startRollbackTimerUntil2355() {
-        const now = new Date();
-
-        // Получаем время в часовом поясе Europe/Moscow в виде компонентов
-        const mskTime = new Intl.DateTimeFormat('ru-RU', {
-            timeZone: 'Europe/Moscow',
-            hour12: false,
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        }).formatToParts(now).reduce((acc, part) => {
-            if (part.type !== 'literal') acc[part.type] = part.value;
-            return acc;
-        }, {});
-
-        // Преобразуем в объект Date с корректным московским временем
-        const mskNow = new Date(
-            `${mskTime.year}-${mskTime.month}-${mskTime.day}T${mskTime.hour}:${mskTime.minute}:${mskTime.second}+03:00`
-        );
-
-        const endMSK = new Date(
-            `${mskTime.year}-${mskTime.month}-${mskTime.day}T23:55:00+03:00`
-        );
-
-        const remainingMs = endMSK - mskNow;
-
-        if (remainingMs <= 0) {
-            // Уже позже 23:55
-            return;
-        }
-
-        let remaining = Math.floor(remainingMs / 1000);
-
-        cancelButton.style.display = 'inline-block';
-        timerSpan.style.display = 'inline-block';
-
-        const updateTimerText = () => {
-            const hours = String(Math.floor(remaining / 3600)).padStart(2, '0');
-            const minutes = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
-            const seconds = String(remaining % 60).padStart(2, '0');
-            timerSpan.textContent = `${hours}:${minutes}:${seconds}`;
-        };
-
-        updateTimerText();
-
-        rollbackInterval = setInterval(() => {
-            remaining--;
-            updateTimerText();
-            if (remaining <= 0) {
-                clearInterval(rollbackInterval);
-                rollbackInterval = null;
-            }
-        }, 1000);
-
-        rollbackTimeout = setTimeout(() => {
-            cancelButton.style.display = 'none';
-            timerSpan.style.display = 'none';
-            rollbackActive = false;
-        }, remainingMs);
-    }
-
-    uploadButton.addEventListener('click', () => {
+    //
+    // === Обработчик «Загрузить отчёт» ===
+    //
+    uploadButton.addEventListener('click', async () => {
         rollbackActive = true;
-        // Проверка времени перед выполнением
         if (!isUploadAllowed()) {
-            alert("Загрузка отчёта доступна только с 9:00 до 23:55 по МСК");
-            return;
+            return alert("Загрузка доступна с 9:00 до 02:00 (МСК)");
         }
 
-        const reportData = collectReportData();
-        console.log('Report data:', reportData);
-
-        operations = [];
-        operationCounter.textContent = '0';
-        operationCounter.classList.add('d-none');
-        operationPopup.classList.add('d-none');
-
-        clearAllInputs();
-
-        // Блокируем кнопку и показываем "Отменить" и таймер
-        uploadButton.disabled = true;
-        uploadButton.classList.add('disabled');
-        startRollbackTimerUntil2355();
-    });
-
-    function collectReportData() {
-        const shiftStart = parseFloat(document.getElementById('shiftStart').value) || 0;
-        const shiftEnd = parseFloat(document.getElementById('shiftEnd').value) || 0;
-
-        const trial = {
-            trialCame: parseInt(document.getElementById('trialCame').value) || 0,
-            trialBought: parseInt(document.getElementById('trialBought').value) || 0,
-            trialBoughtAmount: parseFloat(document.getElementById('trialBoughtAmount').value) || 0,
-            trialPaid: parseInt(document.getElementById('trialPaid').value) || 0,
-            trialPaidAmount: parseFloat(document.getElementById('trialPaidAmount').value) || 0,
-            prepayment: parseInt(document.getElementById('prepayment').value) || 0,
-            prepaymentAmount: parseFloat(document.getElementById('prepaymentAmount').value) || 0,
-            surcharge: parseInt(document.getElementById('surcharge').value) || 0,
-            surchargeAmount: parseFloat(document.getElementById('surchargeAmount').value) || 0
-        };
-
-        const current = {
-            finished: parseInt(document.getElementById('currentFinished').value) || 0,
-            extended: parseInt(document.getElementById('currentExtended').value) || 0,
-            extendedAmount: parseFloat(document.getElementById('currentExtendedAmount').value) || 0,
-            upgrades: parseInt(document.getElementById('currentUpgrades').value) || 0,
-            upgradeAmount: parseFloat(document.getElementById('currentUpgradesAmount').value) || 0,
-            returned: parseInt(document.getElementById('currentReturned').value) || 0,
-            returnedAmount: parseFloat(document.getElementById('currentReturnedAmount').value) || 0,
-            prepayment: parseInt(document.getElementById('currentPrepayment').value) || 0,
-            prepaymentAmount: parseFloat(document.getElementById('currentPrepaymentAmount').value) || 0,
-            surcharge: parseInt(document.getElementById('currentSurcharge').value) || 0,
-            surchargeAmount: parseFloat(document.getElementById('currentSurchargeAmount').value) || 0,
-            individual: parseInt(document.getElementById('currentIndividual').value) || 0,
-            individualAmount: parseFloat(document.getElementById('currentIndividualAmount').value) || 0,
-            singleVisits: parseInt(document.getElementById('currentOneTime').value) || 0,
-            singleVisitAmount: parseFloat(document.getElementById('currentOneTimeAmount').value) || 0
-        };
-
-        return {
-            shift: { shiftStart, shiftEnd },
-            trial,
-            current,
+        const payload = {
+            reportDate: getReportDate(),
+            shift: {
+                shiftStart: parseFloat(document.getElementById('shiftStart').value)||0,
+                shiftEnd:   parseFloat(document.getElementById('shiftEnd').value)||0
+            },
+            trial: {
+                trialCame:         parseInt(document.getElementById('trialCame').value)||0,
+                trialBought:       parseInt(document.getElementById('trialBought').value)||0,
+                trialBoughtAmount: parseFloat(document.getElementById('trialBoughtAmount').value)||0,
+                trialPaid:         parseInt(document.getElementById('trialPaid').value)||0,
+                trialPaidAmount:   parseFloat(document.getElementById('trialPaidAmount').value)||0,
+                prepayment:        parseInt(document.getElementById('prepayment').value)||0,
+                prepaymentAmount:  parseFloat(document.getElementById('prepaymentAmount').value)||0,
+                surcharge:         parseInt(document.getElementById('surcharge').value)||0,
+                surchargeAmount:   parseFloat(document.getElementById('surchargeAmount').value)||0
+            },
+            current: {
+                finished:         parseInt(document.getElementById('currentFinished').value)||0,
+                extended:         parseInt(document.getElementById('currentExtended').value)||0,
+                extendedAmount:   parseFloat(document.getElementById('currentExtendedAmount').value)||0,
+                upgrades:         parseInt(document.getElementById('currentUpgrades').value)||0,
+                upgradeAmount:    parseFloat(document.getElementById('currentUpgradesAmount').value)||0,
+                returned:         parseInt(document.getElementById('currentReturned').value)||0,
+                returnedAmount:   parseFloat(document.getElementById('currentReturnedAmount').value)||0,
+                prepayment:       parseInt(document.getElementById('currentPrepayment').value)||0,
+                prepaymentAmount: parseFloat(document.getElementById('currentPrepaymentAmount').value)||0,
+                surcharge:        parseInt(document.getElementById('currentSurcharge').value)||0,
+                surchargeAmount:  parseFloat(document.getElementById('currentSurchargeAmount').value)||0,
+                individual:       parseInt(document.getElementById('currentIndividual').value)||0,
+                individualAmount: parseFloat(document.getElementById('currentIndividualAmount').value)||0,
+                singleVisits:     parseInt(document.getElementById('currentOneTime').value)||0,
+                singleVisitAmount:parseFloat(document.getElementById('currentOneTimeAmount').value)||0
+            },
             operations
         };
-    }
 
-    document.getElementById('infoDate').textContent = formatDateWithDay();
+        try {
+            const res = await csrfFetch('/api/report', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw await res.json();
+            // on success:
+            clearAllInputs();
+            operations = [];
+            operationCounter.textContent = '0';
+            operationCounter.classList.add('d-none');
+            operationPopup.classList.add('d-none');
+            startRollbackTimerUntil0200();
+            await loadReportStatus();
+        } catch (err) {
+            console.error("Ошибка при отправке:", err);
+            alert("Не удалось отправить отчёт. Подробнее в консоли.");
+            rollbackActive = false;
+        }
+    });
 
-    checkUploadAvailability();                         // Проверка при загрузке
-    setInterval(checkUploadAvailability, 60000);       // Проверка каждую минуту
-
-    const username = document.getElementById('username')?.textContent?.trim();
-    const location = document.getElementById('locationName')?.textContent?.trim();
-
-    if (username) document.getElementById('infoName').textContent = username;
-    if (location) document.getElementById('infoLocation').textContent = location;
-
+    //
+    // === Проверка разрешённого времени 09:00–02:00 ===
+    //
     function isUploadAllowed() {
-        const now = new Date();
-
-        const mskParts = new Intl.DateTimeFormat('ru-RU', {
-            timeZone: 'Europe/Moscow',
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit'
-        }).formatToParts(now).reduce((acc, part) => {
-            if (part.type !== 'literal') acc[part.type] = parseInt(part.value, 10);
-            return acc;
-        }, {});
-
-        const hours = mskParts.hour;
-        const minutes = mskParts.minute;
-
-        const after9am = hours > 9 || (hours === 9 && minutes >= 0);
-        const before2355 = hours < 23 || (hours === 23 && minutes < 55);
-
-        return after9am && before2355;
+        const parts = new Intl.DateTimeFormat('ru-RU',{
+            timeZone:'Europe/Moscow', hour12:false,
+            hour:'2-digit', minute:'2-digit'
+        }).formatToParts(new Date())
+            .reduce((a,p)=>{ if(p.type!=='literal') a[p.type]=+p.value; return a },{});
+        const h = parts.hour, m = parts.minute;
+        const after9  = h > 9  || (h === 9 && m >= 0);
+        const before2 = h < 2;
+        // сюда попадаем если (после 9 утра) ИЛИ (до 2 ночи)
+        return after9 || before2;
     }
 
     function checkUploadAvailability() {
-        const uploadButton = document.querySelector('.btn-upload');
-
         if (!isUploadAllowed() || rollbackActive) {
             uploadButton.disabled = true;
             uploadButton.classList.add('disabled');
-            uploadButton.title = 'Загрузка отчёта доступна с 9:00 до 23:55 по МСК';
+            uploadButton.title = 'Загрузка доступна 09:00–02:00 (МСК)';
         } else {
             uploadButton.disabled = false;
             uploadButton.classList.remove('disabled');
@@ -314,6 +313,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // checkUploadAvailability();
+    // setInterval(checkUploadAvailability, 60_000);
+
+    await loadReportStatus();
+    setInterval(loadReportStatus, 60_000);
+    checkUploadAvailability();
+    setInterval(checkUploadAvailability, 60_000);
+
+    //
+    // === Помощь по разделам (оставляем как есть) ===
+    //
     setTimeout(() => {
         const helpMessages = {
             'Касса в студии': 'Справка по разделу "Касса в студии":\n' +
@@ -357,16 +367,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 '1.3 — При нажатии на счетчик добавленных операций откроется список сохраненных (еще не отправленных) операций.\n' +
                 '1.3.1 — Нажмите на крестик напротив Операция "номер операции" чтобы удалить эту операцию.'
         };
-
-        document.querySelectorAll('.help-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const sectionEl = button.closest('.report-block')?.querySelector('.section-title');
-                const sectionTitle = button.dataset.section || sectionEl?.textContent?.trim();
-                if (helpMessages[sectionTitle]) {
-                    alert(helpMessages[sectionTitle]);
-                } else {
-                    alert('Справка для этого раздела пока не доступна.');
-                }
+        document.querySelectorAll('.help-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const title = btn.dataset.section
+                    || btn.closest('.report-block')?.querySelector('.section-title')?.textContent?.trim();
+                alert(helpMessages[title] || 'Справка для этого раздела пока не доступна.');
             });
         });
     }, 0);

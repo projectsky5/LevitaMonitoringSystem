@@ -4,12 +4,12 @@ import java.time.Instant;
 
 public class ReportStatusDto {
     private final Instant submittedAt;
-    private final Instant rolledBackAt;
+    private final Instant rollBackAt;
     private final Instant rollbackDeadline;
 
-    public ReportStatusDto(Instant submittedAt, Instant rolledBackAt, Instant rollbackDeadline) {
+    public ReportStatusDto(Instant submittedAt, Instant rollBackAt, Instant rollbackDeadline) {
         this.submittedAt = submittedAt;
-        this.rolledBackAt = rolledBackAt;
+        this.rollBackAt = rollBackAt;
         this.rollbackDeadline = rollbackDeadline;
     }
 
@@ -18,7 +18,7 @@ public class ReportStatusDto {
     }
 
     public Instant getRolledBackAt() {
-        return rolledBackAt;
+        return rollBackAt;
     }
 
     public Instant getRollbackDeadline() {

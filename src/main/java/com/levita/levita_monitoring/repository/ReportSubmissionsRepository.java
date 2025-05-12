@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ReportSubmissionsRepository extends JpaRepository<ReportSubmission, Long> {
     Optional<ReportSubmission> findTopByUserIdOrderBySubmittedAtDesc(Long userId);
+    Optional<ReportSubmission> findTopByUserIdOrderByCreatedAtDesc(long userId);
 }
