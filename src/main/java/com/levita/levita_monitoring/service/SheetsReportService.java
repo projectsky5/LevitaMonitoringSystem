@@ -8,12 +8,10 @@ import com.levita.levita_monitoring.configuration.sheet_reports.CurrentColumnsDe
 import com.levita.levita_monitoring.configuration.sheet_reports.TrialColumnsDescriptor;
 import com.levita.levita_monitoring.model.User;
 import com.levita.levita_monitoring.dto.FullReportDto;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,7 +19,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -48,48 +45,6 @@ public class SheetsReportService {
                                YamlConfigLoader yamlLoader) {
         this.sheets = sheets;
         this.yamlLoader = yamlLoader;
-    }
-
-    @Scheduled(cron = "0 0 3 * * *", zone = "Europe/Moscow")
-    public void insertDateRowIfMissing() throws IOException {
-        String today = LocalDate.now().format(dateFormatter);
-        log.info("{} - Запуск плановой установки текущей даты", today);
-
-        Map<String,String> dateMap = yamlLoader.getDateColumnsDescriptor().getDateColumns();
-        for (var entry : dateMap.entrySet()) {
-            String sheetName = entry.getKey();
-            if (sheetName.startsWith("Журнал операций")) {
-                log.info("Пропущена плановая вставка даты для листа: [{}]", sheetName);
-                continue;
-            }
-            String col = entry.getValue();
-
-            int startRow = switch (sheetName) {
-                case "Пробные (команда Кати)", "Пробные (команда Алины)" -> 8;
-                case "Текущие (команда Кати)", "Текущие (команда Алины)" -> 6;
-                default -> 3;
-            };
-
-            String range = String.format("'%s'!%s%d:%s", sheetName, col, startRow, col);
-            ValueRange response = sheets.spreadsheets().values()
-                    .get(spreadsheetId, range).execute();
-
-            List<List<Object>> values = response.getValues();
-            if (values != null) {
-                boolean exists = values.stream()
-                        .anyMatch(r -> !r.isEmpty() && today.equals(r.getFirst().toString()));
-                if (!exists) {
-                    int rowToInsert = startRow + values.size();
-                    String insertRange = buildCellRange(sheetName, col, rowToInsert);
-                    sheets.spreadsheets().values()
-                            .update(spreadsheetId, insertRange,
-                                    new ValueRange().setValues(List.of(List.of(today))))
-                            .setValueInputOption(VALUE_INPUT_OPTION).execute();
-                }
-            }
-            log.info("Дата в листе [{}] установлена успешно", sheetName);
-        }
-        log.info("Плановая установка текущей даты завершена");
     }
 
     public void updateFullReport(User user, FullReportDto dto) throws IOException {
@@ -498,4 +453,5 @@ public class SheetsReportService {
     private List<Object> emptyRow(int size){
         return new ArrayList<>(Collections.nCopies(size, EMPTY_CELL));
     }
+
 }

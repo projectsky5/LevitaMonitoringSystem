@@ -1,6 +1,6 @@
 package com.levita.levita_monitoring.util;
 
-public class SanitizationUtils {
+public final class SanitizationUtils {
 
     private SanitizationUtils() {}
 
