@@ -1,4 +1,4 @@
-package com.levita.levita_monitoring.service;
+package com.levita.levita_monitoring.service.report;
 
 import com.levita.levita_monitoring.dto.FullReportDto;
 import com.levita.levita_monitoring.model.User;

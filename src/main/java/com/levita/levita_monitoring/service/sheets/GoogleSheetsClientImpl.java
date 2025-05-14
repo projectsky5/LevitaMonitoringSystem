@@ -1,8 +1,7 @@
-package com.levita.levita_monitoring.service.impl;
+package com.levita.levita_monitoring.service.sheets;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
-import com.levita.levita_monitoring.service.SheetsClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -94,6 +93,16 @@ public class GoogleSheetsClientImpl implements SheetsClient {
         sheets.spreadsheets().batchUpdate(spreadsheetId,
                 new BatchUpdateSpreadsheetRequest().setRequests(reqs)
         ).execute();
+    }
+
+    @Override
+    public List<ValueRange> batchGetValues(String spreadsheetId, List<String> ranges) throws IOException {
+        return sheets.spreadsheets()
+                .values()
+                .batchGet(spreadsheetId)
+                .setRanges(ranges)
+                .execute()
+                .getValueRanges();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.levita.levita_monitoring.service;
+package com.levita.levita_monitoring.service.report;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.levita.levita_monitoring.dto.FullReportDto;
@@ -38,5 +38,4 @@ public interface ReportValueRangeBuilder {
     void updateDefaultValues(
             ValueRange range
     ) throws IOException;
-
 }

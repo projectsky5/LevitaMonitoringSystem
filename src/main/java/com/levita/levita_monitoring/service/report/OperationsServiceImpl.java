@@ -1,10 +1,9 @@
-package com.levita.levita_monitoring.service.impl;
+package com.levita.levita_monitoring.service.report;
 
 import com.levita.levita_monitoring.configuration.sheet_reports.YamlConfigLoader;
 import com.levita.levita_monitoring.dto.FullReportDto;
 import com.levita.levita_monitoring.model.User;
-import com.levita.levita_monitoring.service.OperationsService;
-import com.levita.levita_monitoring.service.SheetsClient;
+import com.levita.levita_monitoring.service.sheets.SheetsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class OperationsServiceImpl implements OperationsService {
@@ -29,7 +29,7 @@ public class OperationsServiceImpl implements OperationsService {
 
     @Override
     public void saveOperations(List<FullReportDto.OperationDto> operations, User user, String reportDate) throws IOException {
-        String location = user.getLocation().getName();
+        String location = normalizeLocation(user.getLocation().getName());
         String sheetName = yamlLoader.getSheetNamesDescriptor().getOperations().get(location);
         if (sheetName == null) {
             throw new IllegalArgumentException(
@@ -71,7 +71,7 @@ public class OperationsServiceImpl implements OperationsService {
 
     @Override
     public void rollbackOperations(User user, String reportDate) throws IOException {
-        String location  = user.getLocation().getName();
+        String location = normalizeLocation(user.getLocation().getName());
         String sheetName = yamlLoader.getSheetNamesDescriptor()
                 .getOperations()
                 .get(location);
@@ -166,6 +166,13 @@ public class OperationsServiceImpl implements OperationsService {
         row.add(admin);
         row.add(comment);
         return row;
+    }
+
+    private String normalizeLocation(String rawLocation) {
+        if (rawLocation == null || rawLocation.isBlank()) return rawLocation;
+        // для русского локали
+        String lower = rawLocation.toLowerCase(new Locale("ru"));
+        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }
 
 }

@@ -3,6 +3,9 @@ package com.levita.levita_monitoring.service;
 import com.google.api.services.sheets.v4.model.*;
 import com.levita.levita_monitoring.model.User;
 import com.levita.levita_monitoring.dto.FullReportDto;
+import com.levita.levita_monitoring.service.report.OperationsService;
+import com.levita.levita_monitoring.service.report.ReportValueRangeBuilder;
+import com.levita.levita_monitoring.service.sheets.SheetsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,8 +48,11 @@ public class SheetsReportService {
 
         List<ValueRange> batch = new ArrayList<>();
         batch.add(builder.buildShiftValueRange(dto.shift(), user, reportDate));
+        log.info("Загружен шифт");
         batch.add(builder.buildTrialValueRange(dto.trial(), user, reportDate));
+        log.info("Загружен триал");
         batch.add(builder.buildCurrentValueRange(dto.current(), user, reportDate));
+        log.info("Загружен куррент");
 
         if (!batch.isEmpty()) {
             for (ValueRange valueRange : batch) {

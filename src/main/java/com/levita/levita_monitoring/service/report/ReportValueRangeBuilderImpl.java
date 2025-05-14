@@ -1,4 +1,4 @@
-package com.levita.levita_monitoring.service.impl;
+package com.levita.levita_monitoring.service.report;
 
 import com.google.api.services.sheets.v4.model.*;
 import com.levita.levita_monitoring.configuration.sheet_reports.CurrentColumnsDescriptor;
@@ -6,8 +6,9 @@ import com.levita.levita_monitoring.configuration.sheet_reports.TrialColumnsDesc
 import com.levita.levita_monitoring.configuration.sheet_reports.YamlConfigLoader;
 import com.levita.levita_monitoring.dto.FullReportDto;
 import com.levita.levita_monitoring.model.User;
-import com.levita.levita_monitoring.service.ReportValueRangeBuilder;
-import com.levita.levita_monitoring.service.SheetsClient;
+import com.levita.levita_monitoring.service.sheets.SheetsClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.util.*;
 
 @Component
 public class ReportValueRangeBuilderImpl implements ReportValueRangeBuilder {
+
+    private static final Logger log = LoggerFactory.getLogger(ReportValueRangeBuilderImpl.class);
 
     private final YamlConfigLoader yamlLoader;
     private final SheetsClient sheetsClient;
@@ -26,33 +29,39 @@ public class ReportValueRangeBuilderImpl implements ReportValueRangeBuilder {
 
     @Override
     public ValueRange buildShiftValueRange(FullReportDto.ShiftReportDto shift, User user, String reportDate) throws IOException {
-        String location = user.getLocation().getName();
-        String dateCol = yamlLoader.getShiftColumnsDescriptor().getShiftColumns().get(location);
+        String normalizedLoc = normalizeLocation(user.getLocation().getName());
+        String dateCol = yamlLoader.getShiftColumnsDescriptor().getShiftColumns().get(normalizedLoc);
         int row = findRowByDate(
                 yamlLoader.getSheetNamesDescriptor().getShift(),
                 dateCol,
                 3,
                 reportDate
         );
+        log.info("2");
         List<Object> data = List.of(
                 shift.shiftStart(),
                 shift.shiftEnd(),
                 user.getName()
         );
+        log.info("3");
         String startCol = nextColumn(dateCol);
         String endCol = startCol;
+        log.info("4");
         for (int i = 1; i < data.size(); i++) {
             endCol = nextColumn(endCol);
         }
+        log.info("5");
         String range = String.format("'%s'!%s%d:%s%d",
                 yamlLoader.getSheetNamesDescriptor().getShift(), startCol, row, endCol, row);
+        log.info("6");
         return new ValueRange().setRange(range).setValues(List.of(data));
     }
 
     @Override
     public ValueRange buildTrialValueRange(FullReportDto.TrialReportDto trial, User user, String reportDate) throws IOException {
+        String normalizedLoc = normalizeLocation(user.getLocation().getName());
         String key = String.format("%s (%s)",
-                user.getName(), user.getLocation().getName());
+                user.getName(), normalizedLoc);
         TrialColumnsDescriptor.Entry entry =
                 yamlLoader.getTrialColumnsDescriptor().getTrialColumns().get(key);
         String sheet = entry.getSheet();
@@ -70,8 +79,9 @@ public class ReportValueRangeBuilderImpl implements ReportValueRangeBuilder {
 
     @Override
     public ValueRange buildCurrentValueRange(FullReportDto.CurrentReportDto current, User user, String reportDate) throws IOException {
+        String normalizedLoc = normalizeLocation(user.getLocation().getName());
         String key = String.format("%s (%s)",
-                user.getName(), user.getLocation().getName());
+                user.getName(), normalizedLoc);
         CurrentColumnsDescriptor.Entry entry =
                 yamlLoader.getCurrentColumnsDescriptor().getCurrentColumns().get(key);
         String sheet = entry.getSheet();
@@ -90,7 +100,8 @@ public class ReportValueRangeBuilderImpl implements ReportValueRangeBuilder {
 
     @Override
     public ValueRange buildClearShiftValueRange(User user, String reportDate) throws IOException {
-        String dateCol = yamlLoader.getShiftColumnsDescriptor().getShiftColumns().get(user.getLocation().getName());
+        String normalizedLoc = normalizeLocation(user.getLocation().getName());
+        String dateCol = yamlLoader.getShiftColumnsDescriptor().getShiftColumns().get(normalizedLoc);
         int row = findRowByDate(yamlLoader.getSheetNamesDescriptor().getShift(), dateCol, 3, reportDate);
         String startCol = nextColumn(dateCol);
         String endCol = nextColumn(startCol);
@@ -103,8 +114,9 @@ public class ReportValueRangeBuilderImpl implements ReportValueRangeBuilder {
 
     @Override
     public ValueRange buildClearTrialValueRange(User user, String reportDate) throws IOException {
+        String normalizedLoc = normalizeLocation(user.getLocation().getName());
         String key = String.format("%s (%s)",
-                user.getName(), user.getLocation().getName());
+                user.getName(), normalizedLoc);
         TrialColumnsDescriptor.Entry trialEntry =
                 yamlLoader.getTrialColumnsDescriptor().getTrialColumns().get(key);
 
@@ -120,8 +132,9 @@ public class ReportValueRangeBuilderImpl implements ReportValueRangeBuilder {
 
     @Override
     public ValueRange buildClearCurrentValueRange(User user, String reportDate) throws IOException {
+        String normalizedLoc = normalizeLocation(user.getLocation().getName());
         String key = String.format("%s (%s)",
-                user.getName(), user.getLocation().getName());
+                user.getName(), normalizedLoc);
         CurrentColumnsDescriptor.Entry currentEntry =
                 yamlLoader.getCurrentColumnsDescriptor().getCurrentColumns().get(key);
 
@@ -179,6 +192,13 @@ public class ReportValueRangeBuilderImpl implements ReportValueRangeBuilder {
                 sheet, cols[0], row, cols[1], row);
         return new ValueRange().setRange(range)
                 .setValues(List.of(empty));
+    }
+
+    private String normalizeLocation(String rawLocation) {
+        if (rawLocation == null || rawLocation.isBlank()) return rawLocation;
+        // для русского локали
+        String lower = rawLocation.toLowerCase(new Locale("ru"));
+        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }
 
 }
