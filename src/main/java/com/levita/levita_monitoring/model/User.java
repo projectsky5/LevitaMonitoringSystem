@@ -90,6 +90,10 @@ public class User {
         this.role = role;
     }
 
+    public void setUserKpi(UserKpi userKpi) {
+        this.userKpi = userKpi;
+    }
+
     public boolean equals(final Object o) {
         if (o == this) return true;
         if (!(o instanceof User)) return false;

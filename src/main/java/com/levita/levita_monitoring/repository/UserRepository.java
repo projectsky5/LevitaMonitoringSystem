@@ -23,7 +23,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
         WHERE u.role = :role
     """)
     List<User> findAllAdminsWithKpi(@Param("role") Role role);
-
-    Optional<User> findByNameIgnoreCaseAndLocation_NameIgnoreCase(String name, String locationName);
-    boolean existsByNameIgnoreCaseAndLocation_NameIgnoreCase(String name, String locationName);
 }
