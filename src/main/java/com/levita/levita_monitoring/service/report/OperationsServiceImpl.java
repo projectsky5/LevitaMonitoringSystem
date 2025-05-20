@@ -120,9 +120,15 @@ public class OperationsServiceImpl implements OperationsService {
 
     @Override
     public Object formatAmount(BigDecimal amt) {
-        if (amt == null) return null;
+        if (amt == null) {
+            return null;
+        }
         BigDecimal clean = amt.stripTrailingZeros();
-        return clean.scale() <= 0 ? clean.longValue() : clean.doubleValue();
+        if (clean.scale() <= 0) {
+            return clean.longValueExact();
+        } else {
+            return clean.doubleValue();
+        }
     }
 
     @Override
@@ -168,7 +174,7 @@ public class OperationsServiceImpl implements OperationsService {
         return row;
     }
 
-    private String normalizeLocation(String rawLocation) {
+    String normalizeLocation(String rawLocation) {
         if (rawLocation == null || rawLocation.isBlank()) return rawLocation;
         // для русского локали
         String lower = rawLocation.toLowerCase(new Locale("ru"));
