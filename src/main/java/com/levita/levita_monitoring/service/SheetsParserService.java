@@ -8,6 +8,7 @@ import com.levita.levita_monitoring.service.sheets.SheetsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -45,6 +46,7 @@ public class SheetsParserService {
         this.rangeFilter = rangeFilter;
     }
 
+    @Scheduled(fixedDelay = 12 * 60 * 60 * 1000)
     public void runSheetsParser() {
         log.info("Запуск планового парсинга данных из Google Sheets");
         parseLocations();
