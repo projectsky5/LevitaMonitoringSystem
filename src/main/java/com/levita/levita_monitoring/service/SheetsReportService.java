@@ -51,10 +51,6 @@ public class SheetsReportService {
         batch.add(builder.buildTrialValueRange(dto.trial(), user, reportDate));
         batch.add(builder.buildCurrentValueRange(dto.current(), user, reportDate));
 
-        for (ValueRange valueRange : batch) {
-            sheetsClient.updateValues(valueRange.getRange(), valueRange.getValues());
-        }
-
         if (!batch.isEmpty()) {
             for (ValueRange valueRange : batch) {
                 builder.updateDefaultValues(valueRange);
