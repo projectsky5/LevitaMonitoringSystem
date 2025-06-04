@@ -14,6 +14,8 @@ logs/*.log
 src/main/resources/static/assets/**
 src/main/resources/static/fonts/**
 src/main/resources/static/favicon.ico
+.DS_Store
+.env
 
 ### STS ###
 .apt_generated
