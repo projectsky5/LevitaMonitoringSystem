@@ -48,11 +48,8 @@ public class SheetsReportService {
 
         List<ValueRange> batch = new ArrayList<>();
         batch.add(builder.buildShiftValueRange(dto.shift(), user, reportDate));
-        log.info("Загружен шифт");
         batch.add(builder.buildTrialValueRange(dto.trial(), user, reportDate));
-        log.info("Загружен триал");
         batch.add(builder.buildCurrentValueRange(dto.current(), user, reportDate));
-        log.info("Загружен куррент");
 
         if (!batch.isEmpty()) {
             for (ValueRange valueRange : batch) {

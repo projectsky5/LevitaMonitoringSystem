@@ -79,16 +79,22 @@ class SheetsReportServiceTest {
 
         service.updateFullReport(user, dto);
 
-        InOrder inOrder = inOrder(builder, operationsService);
+        InOrder inOrder = inOrder(builder, sheetsClient, operationsService);
         inOrder.verify(builder).buildShiftValueRange(dto.shift(), user, dto.reportDate());
         inOrder.verify(builder).buildTrialValueRange(dto.trial(), user, dto.reportDate());
         inOrder.verify(builder).buildCurrentValueRange(dto.current(), user, dto.reportDate());
+
+        inOrder.verify(sheetsClient).updateValues("A1", vr1.getValues());
+        inOrder.verify(sheetsClient).updateValues("B2", vr2.getValues());
+        inOrder.verify(sheetsClient).updateValues("C3", vr3.getValues());
+
         inOrder.verify(builder).updateDefaultValues(vr1);
         inOrder.verify(builder).updateDefaultValues(vr2);
         inOrder.verify(builder).updateDefaultValues(vr3);
+        // 4. операции
+        inOrder.verify(operationsService).saveOperations(dto.operations(), user, dto.reportDate());
 
-        verify(operationsService).saveOperations(dto.operations(), user, dto.reportDate());
-        verifyNoMoreInteractions(builder, operationsService, sheetsClient);
+        verifyNoMoreInteractions(builder, sheetsClient, operationsService);
     }
 
     @Test
